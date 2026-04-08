@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-neon-purple: #9d00ff;
+  --color-neon-cyan: #00f2ff;
+  --color-neon-blue: #0066ff;
+  --color-neon-red: #ff0055;
+  
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  
+  --shadow-neon-purple: 0 0 15px rgba(157, 0, 255, 0.5);
+  --shadow-neon-cyan: 0 0 15px rgba(0, 242, 255, 0.5);
+  --shadow-neon-red: 0 0 15px rgba(255, 0, 85, 0.5);
+
+  --font-gaming: 'Outfit', sans-serif;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #020617;
+  
+  --color-glass: rgba(255, 255, 255, 0.4);
+  --color-glass-border: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+  
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-gaming);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer components {
+  .glass-card {
+    background-color: var(--color-glass);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 1rem;
+  }
+  
+  .neon-glow-purple {
+    text-shadow: 0 0 10px rgba(157, 0, 255, 0.8);
+  }
+  
+  .neon-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.8);
+  }
+  
+  .neon-border-purple {
+    @apply border-neon-purple/50 shadow-[0_0_15px_rgba(157,0,255,0.3)];
+  }
+  
+  .neon-border-cyan {
+    @apply border-neon-cyan/50 shadow-[0_0_15px_rgba(0,242,255,0.3)];
+  }
+  
+  .btn-neon-purple {
+    @apply bg-neon-purple text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(157,0,255,0.6)] active:scale-95;
+  }
+  
+  .btn-neon-cyan {
+    @apply bg-neon-cyan text-black px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,242,255,0.6)] active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border border-white/20 bg-white/5 backdrop-blur-sm text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:bg-white/10 hover:border-white/40 active:scale-95;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
