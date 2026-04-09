@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Trophy, Home, User, Menu, X, LogIn, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -18,10 +18,39 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between glass-card px-6 py-3 bg-background/80 shadow-lg backdrop-blur-md">
+    <>
+      {/* Top blur fade overlay — blurs content scrolling behind navbar */}
+      <div
+        className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
+        style={{
+          height: '100px',
+          backdropFilter: scrolled ? `blur(${Math.min(scrollY / 10, 8)}px)` : 'none',
+          WebkitBackdropFilter: scrolled ? `blur(${Math.min(scrollY / 10, 8)}px)` : 'none',
+          maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
+          transition: 'backdrop-filter 0.2s ease',
+        }}
+      />
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
+      <div className={cn(
+        "max-w-7xl mx-auto flex items-center justify-between glass-card px-6 py-3 shadow-lg transition-all duration-300",
+        scrolled
+          ? "bg-background/90 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          : "bg-background/60 backdrop-blur-md"
+      )}>
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/logo.png"
@@ -88,20 +117,8 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Toggle */}
-        <div className="md:hidden flex items-center gap-3">
-          {/* Mobile profile pic → dashboard */}
-          {session?.user?.image && (
-            <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-              <Image
-                src={session.user.image}
-                alt="avatar"
-                width={30}
-                height={30}
-                className="rounded-full ring-2 ring-neon-cyan/30"
-              />
-            </Link>
-          )}
+        {/* Mobile Toggle — only hamburger, no DP */}
+        <div className="md:hidden flex items-center">
           <button className="text-foreground p-1" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
             {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
           </button>
@@ -159,5 +176,6 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+    </>
   );
 }
