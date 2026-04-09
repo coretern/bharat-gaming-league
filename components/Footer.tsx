@@ -15,8 +15,9 @@ export default function Footer() {
                   <Trophy className="w-6 h-6 text-foreground" />
                 </div>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-foreground uppercase italic">
-                Arena<span className="text-neon-cyan">X</span>
+              <span className="text-xl font-black tracking-tighter text-foreground uppercase italic leading-tight">
+                Bharat<span className="text-neon-cyan">Gaming</span>
+                <span className="block text-[10px] font-black tracking-[0.3em] text-slate-500 normal-case not-italic">League</span>
               </span>
             </Link>
             <p className="text-slate-500 dark:text-slate-400 text-lg max-w-sm mb-8">
@@ -53,7 +54,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-foreground/5 text-slate-500 text-sm font-bold uppercase tracking-widest">
-          <p>© 2026 ArenaX Esports. All rights reserved.</p>
+          <p>© 2026 Bharat Gaming League. All rights reserved.</p>
           <p>Designed with ❤️ for Gamers</p>
         </div>
       </div>

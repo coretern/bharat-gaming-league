@@ -30,8 +30,9 @@ export default function Navbar() {
               <Trophy className="w-6 h-6 text-foreground" />
             </div>
           </div>
-          <span className="text-2xl font-black tracking-tighter text-foreground uppercase italic">
-            Arena<span className="text-neon-cyan">X</span>
+          <span className="text-xl font-black tracking-tighter text-foreground uppercase italic leading-tight">
+            Bharat<span className="text-neon-cyan">Gaming</span>
+            <span className="block text-[10px] font-black tracking-[0.3em] text-slate-500 normal-case not-italic">League</span>
           </span>
         </Link>
 
