@@ -33,10 +33,10 @@ export const authOptions: NextAuthOptions = {
         );
       } catch (err) {
         console.error('Failed to save user to DB:', err);
-        // Don't block sign-in on DB error
       }
       return true;
     },
+
     async jwt({ token, user, profile }) {
       const email = (
         token.email ||
@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
         (profile as any)?.email ||
         ''
       ).toLowerCase();
+
       const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
       if (email && adminEmail && email === adminEmail) {
         token.isAdmin = true;
@@ -51,12 +52,29 @@ export const authOptions: NextAuthOptions = {
       if (email) token.email = email;
       if (user?.image) token.picture = user.image;
       if (user?.name) token.name = user.name;
+
+      // ── Check if user still exists in DB ──
+      // Only check when email is known (skip on first sign-in creation)
+      if (email && !user) {
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email }).select('_id').lean();
+          if (!dbUser) {
+            token.deleted = true;
+          }
+        } catch {
+          // On DB error, don't block — let session continue
+        }
+      }
+
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.sub;
         (session.user as any).isAdmin = token.isAdmin ?? false;
+        (session.user as any).deleted = token.deleted ?? false;
         session.user.image = token.picture as string;
       }
       return session;

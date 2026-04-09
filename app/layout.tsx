@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AuthProvider from "@/components/AuthProvider";
+import SessionChecker from "@/components/SessionChecker";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <SessionChecker />
             <Toaster position="top-right" />
             {children}
           </ThemeProvider>

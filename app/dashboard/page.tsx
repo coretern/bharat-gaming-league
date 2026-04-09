@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from 'next/link';
 import {
-  User, Trophy, Calendar, LogOut,
+  User, Trophy, LogOut,
   CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Plus
 } from 'lucide-react';
 import Image from 'next/image';
@@ -82,76 +82,118 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen pt-24 pb-24 bg-background">
       <Navbar />
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-4 gap-8 mt-8">
+      <div className="container mx-auto px-4 mt-6">
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Profile Card */}
-            <div className="glass-card p-6 border-foreground/5 text-center">
+        {/* ── MOBILE HEADER (hidden on lg) ── */}
+        <div className="lg:hidden space-y-3 mb-5">
+
+          {/* Profile card with theme toggle in corner */}
+          <div className="glass-card p-4 flex items-center gap-4 relative">
+            {/* Theme toggle — top right */}
+            <div className="absolute top-3 right-3">
+              <ThemeToggle />
+            </div>
+
+            {user.image ? (
+              <Image src={user.image} alt="avatar" width={56} height={56}
+                className="rounded-full ring-2 ring-neon-cyan/30 shrink-0" />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-neon-purple/10 flex items-center justify-center shrink-0">
+                <User className="w-7 h-7 text-neon-purple" />
+              </div>
+            )}
+            <div className="min-w-0 flex-1 pr-24">
+              <p className="font-black italic uppercase tracking-tight text-foreground text-sm leading-tight truncate">{user.name}</p>
+              <p className="text-foreground/40 text-[11px] mt-0.5 truncate">{user.email}</p>
+              <span className="inline-block mt-1.5 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
+                Player
+              </span>
+            </div>
+          </div>
+
+          {/* Horizontal tab pills */}
+          <div className="glass-card p-1.5 flex gap-1.5">
+            {navItems.map(item => (
+              <button
+                key={item.name}
+                onClick={() => setActiveTab(item.name)}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all ${
+                  activeTab === item.name
+                    ? 'bg-neon-purple/10 text-neon-purple border border-neon-purple/20'
+                    : 'text-foreground/40 hover:text-foreground hover:bg-foreground/5'
+                }`}
+              >
+                <item.icon className="w-3.5 h-3.5 shrink-0" />
+                {item.name === 'My Registrations' ? 'Registrations' : item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Logout button */}
+          <button
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black text-red-500 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-all"
+          >
+            <LogOut className="w-3.5 h-3.5" /> Sign Out
+          </button>
+        </div>
+
+        {/* ── DESKTOP GRID (hidden on mobile) ── */}
+        <div className="grid lg:grid-cols-4 gap-8">
+
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block lg:col-span-1 space-y-4">
+            <div className="glass-card p-6 text-center">
               {user.image ? (
-                <Image
-                  src={user.image}
-                  alt="avatar"
-                  width={80}
-                  height={80}
-                  className="rounded-full mx-auto mb-3 ring-4 ring-neon-cyan/20"
-                />
+                <Image src={user.image} alt="avatar" width={80} height={80}
+                  className="rounded-full mx-auto mb-3 ring-4 ring-neon-cyan/20" />
               ) : (
                 <div className="w-20 h-20 rounded-full bg-neon-purple/10 flex items-center justify-center mx-auto mb-3">
                   <User className="w-10 h-10 text-neon-purple" />
                 </div>
               )}
-              <h2 className="font-black italic uppercase tracking-tight text-foreground text-lg leading-tight">
-                {user.name}
-              </h2>
-              <p className="text-slate-500 text-xs mt-1 break-all">{user.email}</p>
+              <h2 className="font-black italic uppercase tracking-tight text-foreground text-lg leading-tight">{user.name}</h2>
+              <p className="text-foreground/40 text-xs mt-1 break-all">{user.email}</p>
               <span className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
                 Player
               </span>
             </div>
 
-            {/* Nav */}
-            <div className="glass-card p-3 border-foreground/5">
+            <div className="glass-card p-3">
               {navItems.map(item => (
-                <button
-                  key={item.name}
-                  onClick={() => setActiveTab(item.name)}
+                <button key={item.name} onClick={() => setActiveTab(item.name)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                     activeTab === item.name
                       ? 'bg-neon-purple/10 text-neon-purple border border-neon-purple/20'
-                      : 'text-slate-500 hover:bg-foreground/5 hover:text-foreground'
+                      : 'text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
                   {item.name}
                 </button>
               ))}
-              <button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all mt-1"
-              >
+              <button onClick={() => signOut({ callbackUrl: '/' })}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all mt-1">
                 <LogOut className="w-4 h-4" /> Logout
               </button>
             </div>
 
-            {/* Theme Toggle */}
-            <div className="glass-card p-4 border-foreground/5 flex items-center justify-between">
-              <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Theme</span>
+            <div className="glass-card p-4 flex items-center justify-between">
+              <span className="text-sm font-bold text-foreground/40 uppercase tracking-widest">Theme</span>
               <ThemeToggle />
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* Main Content — full width on mobile, 3-cols on desktop */}
+          <div className="lg:col-span-3 space-y-5">
 
             {activeTab === 'Profile' && (
-              <div className="space-y-6">
-                <div className="glass-card p-8 border-foreground/5">
-                  <h2 className="font-black italic uppercase tracking-tight text-2xl text-foreground mb-6">
+              <div className="space-y-5">
+                <div className="glass-card p-6">
+                  <h2 className="font-black italic uppercase tracking-tight text-xl text-foreground mb-5">
                     Profile <span className="text-neon-purple">Info</span>
                   </h2>
-                  <div className="grid md:grid-cols-2 gap-5">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     {[
                       { label: 'Full Name', value: user.name || '—' },
                       { label: 'Email Address', value: user.email || '—' },
@@ -159,19 +201,19 @@ export default function DashboardPage() {
                       { label: 'Status', value: 'Active Player' },
                     ].map(f => (
                       <div key={f.label} className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{f.label}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">{f.label}</p>
                         <p className="font-bold text-foreground text-sm break-all">{f.value}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="glass-card p-6 border-foreground/5 flex items-center justify-between">
+                <div className="glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <p className="font-black italic uppercase text-foreground">Ready to compete?</p>
-                    <p className="text-slate-500 text-sm mt-0.5">Browse and register for upcoming tournaments.</p>
+                    <p className="font-black italic uppercase text-foreground text-sm">Ready to compete?</p>
+                    <p className="text-foreground/50 text-xs mt-0.5">Browse and register for upcoming tournaments.</p>
                   </div>
-                  <Link href="/tournaments" className="btn-neon-purple whitespace-nowrap flex items-center gap-2 text-xs">
+                  <Link href="/tournaments" className="btn-neon-purple whitespace-nowrap flex items-center gap-2 text-xs shrink-0">
                     <Plus className="w-4 h-4" /> Browse Tournaments
                   </Link>
                 </div>
@@ -179,61 +221,107 @@ export default function DashboardPage() {
             )}
 
             {activeTab === 'My Registrations' && (
-              <div className="glass-card border-foreground/5 overflow-hidden">
-                <div className="px-6 py-4 border-b border-foreground/5 flex items-center justify-between">
-                  <h2 className="font-black italic uppercase tracking-tight text-foreground">
+              <div className="glass-card overflow-hidden">
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-foreground/5 flex items-center justify-between gap-2">
+                  <h2 className="font-black italic uppercase tracking-tight text-foreground text-sm">
                     My Registrations
-                    <span className="ml-2 text-slate-500 text-sm font-bold">({myRegs.length})</span>
+                    <span className="ml-2 text-foreground/40 font-bold">({myRegs.length})</span>
                   </h2>
-                  <Link href="/tournaments" className="text-xs font-bold text-neon-cyan hover:text-neon-purple transition-colors">
+                  <Link href="/tournaments" className="text-xs font-bold text-neon-cyan hover:text-neon-purple transition-colors whitespace-nowrap shrink-0">
                     + Register More
                   </Link>
                 </div>
 
                 {loadingRegs ? (
-                  <div className="py-20 text-center text-slate-500 font-bold">Loading your registrations...</div>
+                  <div className="py-16 text-center text-foreground/40 font-bold text-sm">Loading your registrations...</div>
                 ) : myRegs.length === 0 ? (
-                  <div className="py-20 text-center">
-                    <Trophy className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-                    <p className="font-bold text-slate-500">No registrations yet.</p>
-                    <p className="text-sm text-slate-400 mt-1">Register for a tournament to get started.</p>
-                    <Link href="/tournaments" className="inline-block mt-4 btn-neon-purple text-xs">
-                      Browse Tournaments
-                    </Link>
+                  <div className="py-16 text-center">
+                    <Trophy className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
+                    <p className="font-bold text-foreground/40 text-sm">No registrations yet.</p>
+                    <p className="text-xs text-foreground/30 mt-1">Register for a tournament to get started.</p>
+                    <Link href="/tournaments" className="inline-block mt-4 btn-neon-purple text-xs">Browse Tournaments</Link>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-foreground/5 border-b border-foreground/5 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                          <th className="px-5 py-3">Tournament</th>
-                          <th className="px-5 py-3">Team</th>
-                          <th className="px-5 py-3">Status</th>
-                          <th className="px-5 py-3">Payment</th>
-                          <th className="px-5 py-3">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-foreground/5 text-sm text-foreground">
-                        {myRegs.map(reg => (
-                          <tr key={reg._id} className="hover:bg-foreground/2 transition-colors">
-                            <td className="px-5 py-4 font-black italic uppercase">{reg.tournamentName}</td>
-                            <td className="px-5 py-4 font-bold text-slate-500">{reg.teamName}</td>
-                            <td className="px-5 py-4"><StatusBadge status={reg.status} /></td>
-                            <td className="px-5 py-4">
-                              {reg.paymentVerified ? (
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>
-                              ) : (
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
-                              )}
-                            </td>
-                            <td className="px-5 py-4 text-[10px] text-slate-400 font-bold">
-                              {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                            </td>
+                  <>
+                    {/* Mobile cards (hidden on md+) */}
+                    <div className="md:hidden divide-y divide-foreground/5">
+                      {myRegs.map(reg => {
+                        const statusColor =
+                          reg.status === 'Approved' ? 'border-green-500 bg-green-500/5' :
+                          reg.status === 'Rejected' ? 'border-red-500 bg-red-500/5' :
+                          'border-amber-400 bg-amber-400/5';
+
+                        return (
+                          <div key={reg._id} className={`mx-4 my-3 rounded-xl border-l-4 p-4 ${statusColor}`}>
+                            {/* Tournament name + status */}
+                            <div className="flex items-start justify-between gap-2 mb-3">
+                              <div className="flex items-start gap-2">
+                                <Trophy className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                                <p className="font-black italic uppercase text-sm text-foreground leading-tight">{reg.tournamentName}</p>
+                              </div>
+                              <StatusBadge status={reg.status} />
+                            </div>
+
+                            {/* Info row */}
+                            <div className="grid grid-cols-3 gap-3 text-xs">
+                              <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Team</p>
+                                <p className="font-bold text-foreground truncate">{reg.teamName}</p>
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Payment</p>
+                                {reg.paymentVerified
+                                  ? <span className="flex items-center gap-0.5 font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Done</span>
+                                  : <span className="flex items-center gap-0.5 font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
+                                }
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Registered</p>
+                                <p className="font-bold text-foreground/60">
+                                  {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      <div className="h-3" /> {/* bottom spacer */}
+                    </div>
+
+                    {/* Desktop table (hidden on mobile) */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-foreground/5 border-b border-foreground/5 text-foreground/40 text-[10px] font-black uppercase tracking-widest">
+                            <th className="px-4 py-3">Tournament</th>
+                            <th className="px-4 py-3">Team</th>
+                            <th className="px-4 py-3">Status</th>
+                            <th className="px-4 py-3">Payment</th>
+                            <th className="px-4 py-3">Date</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody className="divide-y divide-foreground/5 text-sm text-foreground">
+                          {myRegs.map(reg => (
+                            <tr key={reg._id} className="hover:bg-foreground/5 transition-colors">
+                              <td className="px-4 py-3 font-black italic uppercase text-xs">{reg.tournamentName}</td>
+                              <td className="px-4 py-3 font-bold text-foreground/50 text-xs">{reg.teamName}</td>
+                              <td className="px-4 py-3"><StatusBadge status={reg.status} /></td>
+                              <td className="px-4 py-3">
+                                {reg.paymentVerified
+                                  ? <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>
+                                  : <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
+                                }
+                              </td>
+                              <td className="px-4 py-3 text-[10px] text-foreground/40 font-bold">
+                                {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 )}
               </div>
             )}
