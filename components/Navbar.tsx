@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, Home, User, Menu, X, LogIn, LogOut } from 'lucide-react';
+import { Trophy, Home, User, Menu, X, LogIn, LogOut, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,7 @@ import Image from 'next/image';
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Tournaments', href: '/tournaments', icon: Trophy },
+  { name: 'Rules', href: '/rules', icon: ShieldCheck },
 ];
 
 export default function Navbar() {

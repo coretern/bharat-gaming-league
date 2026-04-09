@@ -14,10 +14,11 @@ const quickLinks = [
 ];
 
 const supportLinks = [
-  { name: 'Help Center', href: '#' },
-  { name: 'Terms of Service', href: '#' },
-  { name: 'Privacy Policy', href: '#' },
-  { name: 'Rules & Regulations', href: '#' },
+  { name: 'Help Center', href: '/help' },
+  { name: 'Terms of Service', href: '/terms' },
+  { name: 'Privacy Policy', href: '/privacy' },
+  { name: 'Rules & Regulations', href: '/rules' },
+  { name: 'Refund & Cancellation', href: '/refund' },
 ];
 
 export default function Footer() {
