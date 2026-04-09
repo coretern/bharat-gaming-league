@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     images: ["/bgmi-thumb.png"],
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: "6-2YsSbv2RS6QhTItYR1F3sfxxMXvtDHHVl_-QtmIvw",
+  },
 };
 
 export default function RootLayout({
