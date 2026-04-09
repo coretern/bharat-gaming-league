@@ -19,11 +19,11 @@ export const metadata: Metadata = {
   keywords: ["BGMI tournament", "Free Fire tournament", "esports India", "mobile gaming tournament", "Bharat Gaming League", "BGL", "online gaming competition", "prize pool India"],
   authors: [{ name: "Bharat Gaming League" }],
   creator: "Bharat Gaming League",
-  metadataBase: new URL("https://tournament-web.vercel.app"),
+  metadataBase: new URL("https://bharatgamingleague.vercel.app"),
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://tournament-web.vercel.app",
+    url: "https://bharatgamingleague.vercel.app",
     siteName: "Bharat Gaming League",
     title: "Bharat Gaming League | #1 BGMI & Free Fire Tournament Platform",
     description: "India's most elite esports tournament platform. Compete in BGMI and Free Fire. Win big, play hard.",
