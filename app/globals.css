@@ -68,15 +68,15 @@ body {
   }
   
   .btn-neon-purple {
-    @apply bg-neon-purple text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(157,0,255,0.6)] active:scale-95;
+    @apply bg-neon-purple text-white px-6 py-2.5 rounded-full font-bold transition-colors duration-200;
   }
   
   .btn-neon-cyan {
-    @apply bg-neon-cyan text-black px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,242,255,0.6)] active:scale-95;
+    @apply bg-neon-cyan text-black px-6 py-2.5 rounded-full font-bold transition-colors duration-200;
   }
 
   .btn-outline {
-    @apply border border-white/20 bg-white/5 backdrop-blur-sm text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 hover:bg-white/10 hover:border-white/40 active:scale-95;
+    @apply border border-foreground/10 bg-foreground/5 text-foreground px-6 py-2.5 rounded-full font-bold transition-colors duration-200 hover:bg-foreground/10;
   }
 }
 
@@ -86,36 +86,12 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: var(--color-glass-border);
   border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

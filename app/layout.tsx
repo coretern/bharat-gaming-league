@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import AuthProvider from "@/components/AuthProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,16 +22,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${outfit.variable} font-gaming antialiased bg-slate-950 text-slate-50 min-h-screen transition-colors duration-300`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster position="top-right" />
-          {children}
-        </ThemeProvider>
+      <body className={`${outfit.variable} font-gaming antialiased bg-background text-foreground min-h-screen transition-colors duration-300`}>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster position="top-right" />
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

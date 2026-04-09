@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TournamentCard from "@/components/TournamentCard";
 import { tournaments } from "@/data/tournaments";
-import { Search, Filter, Trophy } from "lucide-react";
+import { Search, Trophy } from "lucide-react";
 
 export default function TournamentsPage() {
   const [filter, setFilter] = useState<'All' | 'BGMI' | 'Free Fire'>('All');
@@ -18,15 +18,15 @@ export default function TournamentsPage() {
   });
 
   return (
-    <main className="min-h-screen pt-32">
+    <main className="min-h-screen pt-32 bg-background">
       <Navbar />
       
       <div className="container mx-auto px-6">
         <header className="mb-16">
-          <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter mb-4">
+          <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter mb-4 text-foreground">
             Browse <span className="text-neon-cyan">Tournaments</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl">
+          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl font-bold">
             Find the perfect competition for your team. Filter by game, prize pool, or date.
           </p>
         </header>
@@ -41,19 +41,19 @@ export default function TournamentsPage() {
                 placeholder="Search tournaments..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 text-white focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 transition-all font-medium"
+                className="w-full h-14 bg-foreground/5 border border-foreground/10 rounded-2xl pl-12 pr-6 text-foreground focus:outline-none focus:border-neon-cyan transition-all font-medium"
               />
             </div>
             
-            <div className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-2xl h-14 self-start">
+            <div className="flex gap-2 p-1 bg-foreground/5 border border-foreground/10 rounded-2xl h-14 self-start">
               {(['All', 'BGMI', 'Free Fire'] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
                   className={`px-6 rounded-xl text-sm font-black uppercase tracking-widest transition-all ${
                     filter === f 
-                      ? 'bg-neon-cyan text-black shadow-neon-cyan' 
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-neon-cyan text-black shadow-md' 
+                      : 'text-slate-500 hover:text-foreground'
                   }`}
                 >
                   {f}
@@ -71,8 +71,8 @@ export default function TournamentsPage() {
             ))}
           </div>
         ) : (
-          <div className="py-32 text-center glass-card border-dashed border-white/10">
-            <Trophy className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+          <div className="py-32 text-center glass-card border-dashed border-foreground/10">
+            <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-2xl font-black uppercase italic text-slate-500">No Tournaments Found</h3>
             <p className="text-slate-600 mt-2">Try adjusting your filters or search query.</p>
           </div>

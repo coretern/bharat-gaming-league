@@ -1,131 +1,238 @@
 'use client';
 
+import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { User, Trophy, Calendar, Wallet, Settings, Bell, LogOut } from "lucide-react";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import Link from 'next/link';
+import {
+  User, Trophy, Calendar, LogOut,
+  CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Plus
+} from 'lucide-react';
+import Image from 'next/image';
 
-export default function Dashboard() {
-  const sidebarLinks = [
-    { name: 'Profile', icon: User, active: true },
-    { name: 'Joined Tournaments', icon: Trophy, active: false },
-    { name: 'Match Schedule', icon: Calendar, active: false },
-    { name: 'Winnings', icon: Wallet, active: false },
-    { name: 'Settings', icon: Settings, active: false },
-  ];
+interface MyReg {
+  _id: string;
+  tournamentName: string;
+  teamName: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  paymentVerified: boolean;
+  createdAt: string;
+}
+
+const navItems = [
+  { name: 'Profile', icon: User },
+  { name: 'My Registrations', icon: Trophy },
+];
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === 'Approved') return (
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-green-500/10 text-green-500 border border-green-500/20">
+      <CheckCircle2 className="w-3 h-3" /> Approved
+    </span>
+  );
+  if (status === 'Rejected') return (
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/10 text-red-500 border border-red-500/20">
+      <XCircle className="w-3 h-3" /> Rejected
+    </span>
+  );
+  return (
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">
+      <Clock className="w-3 h-3" /> Pending
+    </span>
+  );
+}
+
+export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('Profile');
+  const [myRegs, setMyRegs] = useState<MyReg[]>([]);
+  const [loadingRegs, setLoadingRegs] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') router.push('/login');
+  }, [status, router]);
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      setLoadingRegs(true);
+      fetch('/api/my-registrations')
+        .then(r => r.json())
+        .then(data => setMyRegs(Array.isArray(data) ? data : []))
+        .catch(() => setMyRegs([]))
+        .finally(() => setLoadingRegs(false));
+    }
+  }, [session]);
+
+  if (status === 'loading') {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-slate-500 font-bold">Loading...</p>
+      </main>
+    );
+  }
+
+  if (!session) return null;
+
+  const user = session.user!;
 
   return (
-    <main className="min-h-screen pt-24 bg-slate-950">
+    <main className="min-h-screen pt-24 pb-24 bg-background">
       <Navbar />
-      
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-4 gap-8 mt-8">
+
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="glass-card p-6 border-white/5">
-              <div className="flex flex-col items-center text-center mb-8">
-                <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-neon-purple to-neon-cyan mb-4">
-                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
-                    <User className="w-12 h-12 text-slate-500" />
-                  </div>
+          <div className="lg:col-span-1 space-y-4">
+            {/* Profile Card */}
+            <div className="glass-card p-6 border-foreground/5 text-center">
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt="avatar"
+                  width={80}
+                  height={80}
+                  className="rounded-full mx-auto mb-3 ring-4 ring-neon-cyan/20"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-neon-purple/10 flex items-center justify-center mx-auto mb-3">
+                  <User className="w-10 h-10 text-neon-purple" />
                 </div>
-                <h2 className="text-xl font-black italic uppercase tracking-tight">John "Neo" Wick</h2>
-                <span className="text-[10px] font-black uppercase text-neon-cyan tracking-[0.2em] mt-1">Pro Member</span>
-              </div>
+              )}
+              <h2 className="font-black italic uppercase tracking-tight text-foreground text-lg leading-tight">
+                {user.name}
+              </h2>
+              <p className="text-slate-500 text-xs mt-1 break-all">{user.email}</p>
+              <span className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
+                Player
+              </span>
+            </div>
 
-              <nav className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-hide">
-                {sidebarLinks.map((link) => (
-                  <button
-                    key={link.name}
-                    className={`whitespace-nowrap flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all shrink-0 ${
-                      link.active 
-                        ? 'bg-neon-purple text-white shadow-neon-purple/20' 
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-white/5 hover:text-white dark:hover:text-white'
-                    }`}
-                  >
-                    <link.icon className="w-4 h-4" />
-                    {link.name}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="mt-8 pt-6 border-t border-white/5">
-                <button className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all">
-                  <LogOut className="w-4 h-4" />
-                  Logout
+            {/* Nav */}
+            <div className="glass-card p-3 border-foreground/5">
+              {navItems.map(item => (
+                <button
+                  key={item.name}
+                  onClick={() => setActiveTab(item.name)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                    activeTab === item.name
+                      ? 'bg-neon-purple/10 text-neon-purple border border-neon-purple/20'
+                      : 'text-slate-500 hover:bg-foreground/5 hover:text-foreground'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.name}
                 </button>
-              </div>
+              ))}
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all mt-1"
+              >
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-8">
-            {/* Stats Header */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                { label: 'Total Matches', value: '124', icon: Trophy, color: 'text-neon-cyan' },
-                { label: 'Wins', value: '42', icon: Trophy, color: 'text-neon-purple' },
-                { label: 'Total Winnings', value: '₹12,400', icon: Wallet, color: 'text-green-400' },
-              ].map((stat, i) => (
-                <div key={i} className="glass-card p-6 flex flex-col justify-between h-32 border-white/5">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{stat.label}</span>
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+          <div className="lg:col-span-3 space-y-6">
+
+            {activeTab === 'Profile' && (
+              <div className="space-y-6">
+                <div className="glass-card p-8 border-foreground/5">
+                  <h2 className="font-black italic uppercase tracking-tight text-2xl text-foreground mb-6">
+                    Profile <span className="text-neon-purple">Info</span>
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-5">
+                    {[
+                      { label: 'Full Name', value: user.name || '—' },
+                      { label: 'Email Address', value: user.email || '—' },
+                      { label: 'Account Type', value: 'Google' },
+                      { label: 'Status', value: 'Active Player' },
+                    ].map(f => (
+                      <div key={f.label} className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{f.label}</p>
+                        <p className="font-bold text-foreground text-sm break-all">{f.value}</p>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-3xl font-black italic tracking-tighter">{stat.value}</span>
                 </div>
-              ))}
-            </div>
 
-            {/* Content Section */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-black italic uppercase tracking-tighter">Your <span className="text-neon-cyan">Competitions</span></h3>
-                <button className="text-[10px] font-black uppercase text-slate-500 hover:text-white transition-colors tracking-widest bg-white/5 px-4 py-2 rounded-lg">View All</button>
+                <div className="glass-card p-6 border-foreground/5 flex items-center justify-between">
+                  <div>
+                    <p className="font-black italic uppercase text-foreground">Ready to compete?</p>
+                    <p className="text-slate-500 text-sm mt-0.5">Browse and register for upcoming tournaments.</p>
+                  </div>
+                  <Link href="/tournaments" className="btn-neon-purple whitespace-nowrap flex items-center gap-2 text-xs">
+                    <Plus className="w-4 h-4" /> Browse Tournaments
+                  </Link>
+                </div>
               </div>
+            )}
 
-              <div className="glass-card border-white/5 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-white/5 border-b border-white/5">
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Tournament Name</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Game</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Placement</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Prize</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {[
-                        { name: 'BGMI Clash of Kings', game: 'BGMI', status: 'Completed', rank: '#4', prize: '₹2,500' },
-                        { name: 'Elite Scrims', game: 'Free Fire', status: 'In Progress', rank: '-', prize: '-' },
-                        { name: 'Sunday Mega Cup', game: 'BGMI', status: 'Completed', rank: '#2', prize: '₹5,000' },
-                      ].map((item, i) => (
-                        <tr key={i} className="hover:bg-white/2 transition-colors">
-                          <td className="px-6 py-6 font-bold uppercase italic">{item.name}</td>
-                          <td className="px-6 py-6 text-sm text-slate-400 font-bold">{item.game}</td>
-                          <td className="px-6 py-6">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                              item.status === 'Completed' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-neon-cyan/10 text-neon-cyan border-neon-cyan/20'
-                            }`}>
-                              {item.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-6 font-black italic text-neon-purple">{item.rank}</td>
-                          <td className="px-6 py-6 font-black text-right text-white italic">{item.prize}</td>
+            {activeTab === 'My Registrations' && (
+              <div className="glass-card border-foreground/5 overflow-hidden">
+                <div className="px-6 py-4 border-b border-foreground/5 flex items-center justify-between">
+                  <h2 className="font-black italic uppercase tracking-tight text-foreground">
+                    My Registrations
+                    <span className="ml-2 text-slate-500 text-sm font-bold">({myRegs.length})</span>
+                  </h2>
+                  <Link href="/tournaments" className="text-xs font-bold text-neon-cyan hover:text-neon-purple transition-colors">
+                    + Register More
+                  </Link>
+                </div>
+
+                {loadingRegs ? (
+                  <div className="py-20 text-center text-slate-500 font-bold">Loading your registrations...</div>
+                ) : myRegs.length === 0 ? (
+                  <div className="py-20 text-center">
+                    <Trophy className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                    <p className="font-bold text-slate-500">No registrations yet.</p>
+                    <p className="text-sm text-slate-400 mt-1">Register for a tournament to get started.</p>
+                    <Link href="/tournaments" className="inline-block mt-4 btn-neon-purple text-xs">
+                      Browse Tournaments
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-foreground/5 border-b border-foreground/5 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                          <th className="px-5 py-3">Tournament</th>
+                          <th className="px-5 py-3">Team</th>
+                          <th className="px-5 py-3">Status</th>
+                          <th className="px-5 py-3">Payment</th>
+                          <th className="px-5 py-3">Date</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-foreground/5 text-sm text-foreground">
+                        {myRegs.map(reg => (
+                          <tr key={reg._id} className="hover:bg-foreground/2 transition-colors">
+                            <td className="px-5 py-4 font-black italic uppercase">{reg.tournamentName}</td>
+                            <td className="px-5 py-4 font-bold text-slate-500">{reg.teamName}</td>
+                            <td className="px-5 py-4"><StatusBadge status={reg.status} /></td>
+                            <td className="px-5 py-4">
+                              {reg.paymentVerified ? (
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
+                              )}
+                            </td>
+                            <td className="px-5 py-4 text-[10px] text-slate-400 font-bold">
+                              {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-
       <Footer />
     </main>
   );

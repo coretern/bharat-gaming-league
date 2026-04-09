@@ -1,0 +1,35 @@
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import { Registration } from '@/models/Registration';
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
+    const userEmail = (token?.email as string || '').toLowerCase();
+
+    if (!token || userEmail !== adminEmail) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    await connectDB();
+    const body = await req.json();
+
+    const reg = await Registration.findByIdAndUpdate(id, body, { new: true });
+    if (!reg) {
+      return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
+    }
+
+    console.log(`✅ Admin updated registration ${id}:`, body);
+    return NextResponse.json(reg);
+  } catch (err: any) {
+    console.error('Admin PATCH error:', err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
