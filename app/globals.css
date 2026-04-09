@@ -45,6 +45,11 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Pointer cursor on all clickable elements */
+a, button, [role="button"], label[for], select, summary {
+  cursor: pointer;
+}
+
 @layer components {
   .glass-card {
     background-color: var(--color-glass);
