@@ -176,7 +176,7 @@ export default function AdminPanel() {
               Admin <span className="text-neon-red">Panel</span>
             </h1>
             <p className="text-slate-500 mt-1 text-xs font-bold uppercase tracking-widest">
-              Welcome back, {session.user?.name?.split(' ')[0]}
+              Welcome back, {session?.user?.name?.split(' ')[0]}
             </p>
           </div>
           <button onClick={() => { fetchRegistrations(); fetchUsers(); }}
