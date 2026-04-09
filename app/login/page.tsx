@@ -1,6 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 import { Chrome } from 'lucide-react';
 
 export default function LoginPage() {
@@ -8,9 +9,13 @@ export default function LoginPage() {
     <main className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-lg text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-neon-purple to-neon-cyan rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <span className="text-lg font-black text-white italic">BGL</span>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Bharat Gaming League"
+            width={64}
+            height={64}
+            className="rounded-2xl mx-auto mb-6"
+          />
           <h1 className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-foreground">
             Welcome to <span className="text-neon-purple">Bharat Gaming League</span>
           </h1>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Trophy, Github, Instagram, Twitter, Youtube } from 'lucide-react';
+import Image from 'next/image';
+import { Twitter, Instagram, Youtube, Github } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,12 +10,14 @@ export default function Footer() {
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-12 mb-20">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 bg-gradient-to-br from-neon-purple to-neon-cyan p-[2px] rounded-xl">
-                <div className="w-full h-full bg-background rounded-[10px] flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-foreground" />
-                </div>
-              </div>
+            <Link href="/" className="flex items-center gap-3 mb-8">
+              <Image
+                src="/logo.png"
+                alt="Bharat Gaming League"
+                width={44}
+                height={44}
+                className="rounded-xl"
+              />
               <span className="text-xl font-black tracking-tighter text-foreground uppercase italic leading-tight">
                 Bharat<span className="text-neon-cyan">Gaming</span>
                 <span className="block text-[10px] font-black tracking-[0.3em] text-slate-500 normal-case not-italic">League</span>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, Home, Calendar, User, Menu, X, LogIn, LogOut } from 'lucide-react';
+import { Home, Calendar, User, Menu, X, LogIn, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
@@ -24,12 +24,14 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between glass-card px-6 py-3 bg-background/80 shadow-lg backdrop-blur-md">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-neon-purple to-neon-cyan p-[2px] rounded-xl">
-            <div className="w-full h-full bg-background rounded-[10px] flex items-center justify-center">
-              <Trophy className="w-6 h-6 text-foreground" />
-            </div>
-          </div>
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/logo.png"
+            alt="Bharat Gaming League"
+            width={40}
+            height={40}
+            className="rounded-xl"
+          />
           <span className="text-xl font-black tracking-tighter text-foreground uppercase italic leading-tight">
             Bharat<span className="text-neon-cyan">Gaming</span>
             <span className="block text-[10px] font-black tracking-[0.3em] text-slate-500 normal-case not-italic">League</span>
