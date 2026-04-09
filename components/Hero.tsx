@@ -11,15 +11,21 @@ const stats = [
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-24 overflow-hidden">
-      {/* Background gradient orbs */}
-      <div className="gradient-orb w-[600px] h-[600px] bg-neon-purple top-[-100px] left-[-200px]" />
-      <div className="gradient-orb w-[500px] h-[500px] bg-neon-cyan top-[100px] right-[-150px] opacity-10" />
-      <div className="gradient-orb w-[400px] h-[400px] bg-neon-red bottom-[0px] left-[30%] opacity-[0.07]" />
+    <section className="relative min-h-screen flex items-center pt-24">
+      {/* Background gradient orbs — using radial gradients (no overflow-hidden clipping) */}
+      <div className="absolute w-[700px] h-[700px] rounded-full top-[-200px] left-[-250px] pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(157,0,255,0.25) 0%, transparent 70%)' }}
+      />
+      <div className="absolute w-[600px] h-[600px] rounded-full top-[50px] right-[-200px] pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 70%)' }}
+      />
+      <div className="absolute w-[500px] h-[500px] rounded-full bottom-[-100px] left-[35%] pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(255,0,85,0.1) 0%, transparent 70%)' }}
+      />
 
       {/* Subtle grid overlay */}
-      <div className="absolute inset-0 opacity-[0.04]"
-        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
       />
 
       <div className="container mx-auto px-6 relative z-10 py-16">
