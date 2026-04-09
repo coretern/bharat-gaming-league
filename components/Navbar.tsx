@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, Home, Calendar, User, Menu, X, LogIn, LogOut } from 'lucide-react';
+import { Trophy, Home, User, Menu, X, LogIn, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
@@ -12,7 +12,6 @@ import Image from 'next/image';
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Tournaments', href: '/tournaments', icon: Trophy },
-  { name: 'Register', href: '/register', icon: Calendar },
   { name: 'Dashboard', href: '/dashboard', icon: User },
 ];
 
