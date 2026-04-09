@@ -11,6 +11,7 @@ import {
   CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Plus
 } from 'lucide-react';
 import Image from 'next/image';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface MyReg {
   _id: string;
@@ -132,6 +133,12 @@ export default function DashboardPage() {
               >
                 <LogOut className="w-4 h-4" /> Logout
               </button>
+            </div>
+
+            {/* Theme Toggle */}
+            <div className="glass-card p-4 border-foreground/5 flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Theme</span>
+              <ThemeToggle />
             </div>
           </div>
 

@@ -5,14 +5,13 @@ import { usePathname } from 'next/navigation';
 import { Trophy, Home, User, Menu, X, LogIn, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from './ThemeToggle';
+
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
 
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Tournaments', href: '/tournaments', icon: Trophy },
-  { name: 'Dashboard', href: '/dashboard', icon: User },
 ];
 
 export default function Navbar() {
@@ -52,14 +51,26 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
-          <ThemeToggle />
+
 
           {status === 'loading' ? null : session ? (
             <div className="flex items-center gap-3">
-              {session.user?.image && (
-                <Image src={session.user.image} alt="avatar" width={32} height={32} className="rounded-full ring-2 ring-neon-cyan/30" />
-              )}
-              <span className="text-sm font-bold text-foreground hidden lg:block">{session.user?.name?.split(' ')[0]}</span>
+              {/* Profile pic → links to dashboard */}
+              <Link href="/dashboard" title="My Dashboard">
+                {session.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="avatar"
+                    width={36}
+                    height={36}
+                    className="rounded-full ring-2 ring-neon-cyan/40 hover:ring-neon-cyan transition-all cursor-pointer"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-neon-purple/20 flex items-center justify-center ring-2 ring-neon-purple/40 hover:ring-neon-purple transition-all cursor-pointer">
+                    <User className="w-4 h-4 text-neon-purple" />
+                  </div>
+                )}
+              </Link>
               <button
                 onClick={() => signOut()}
                 className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-red-500 transition-colors"
@@ -79,9 +90,17 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="md:hidden flex items-center gap-3">
-          <ThemeToggle />
+          {/* Mobile profile pic → dashboard */}
           {session?.user?.image && (
-            <Image src={session.user.image} alt="avatar" width={28} height={28} className="rounded-full" />
+            <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+              <Image
+                src={session.user.image}
+                alt="avatar"
+                width={30}
+                height={30}
+                className="rounded-full ring-2 ring-neon-cyan/30"
+              />
+            </Link>
           )}
           <button className="text-foreground p-1" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
             {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
@@ -106,6 +125,20 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+          {/* Dashboard link in mobile menu when logged in */}
+          {session && (
+            <Link
+              href="/dashboard"
+              onClick={() => setIsOpen(false)}
+              className={cn(
+                "text-base font-bold flex items-center gap-3 p-3 rounded-xl transition-colors",
+                pathname === '/dashboard' ? "bg-neon-cyan/10 text-neon-cyan" : "text-slate-500 hover:bg-foreground/5 hover:text-foreground"
+              )}
+            >
+              <User className="w-5 h-5" />
+              My Dashboard
+            </Link>
+          )}
           <div className="pt-2 border-t border-foreground/5">
             {session ? (
               <button

@@ -40,7 +40,6 @@ export default function Footer() {
             <ul className="flex flex-col gap-4 text-slate-500 dark:text-slate-400 font-medium">
               <li><Link href="/" className="hover:text-neon-cyan transition-colors">Home</Link></li>
               <li><Link href="/tournaments" className="hover:text-neon-cyan transition-colors">Tournaments</Link></li>
-              <li><Link href="/dashboard" className="hover:text-neon-cyan transition-colors">User Panel</Link></li>
             </ul>
           </div>
 
