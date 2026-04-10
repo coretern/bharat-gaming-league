@@ -1,8 +1,8 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from 'next/link';
@@ -45,9 +45,10 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function DashboardPage() {
+function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('Profile');
   const [myRegs, setMyRegs] = useState<MyReg[]>([]);
   const [loadingRegs, setLoadingRegs] = useState(false);
@@ -64,8 +65,31 @@ export default function DashboardPage() {
         .then(data => setMyRegs(Array.isArray(data) ? data : []))
         .catch(() => setMyRegs([]))
         .finally(() => setLoadingRegs(false));
+
+      // Handle payment verification if order_id is present
+      const orderId = searchParams.get('order_id');
+      if (orderId) {
+        fetch(`/api/payment/verify?order_id=${orderId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.status === 'PAID') {
+              import('react-hot-toast').then(t => t.default.success('Payment Verified! Registration Confirmed.'));
+              // Refresh registrations to show updated status
+              fetch('/api/my-registrations')
+                .then(r => r.json())
+                .then(d => setMyRegs(Array.isArray(d) ? d : []));
+            } else if (data.status === 'ACTIVE' || data.status === 'PENDING') {
+              import('react-hot-toast').then(t => t.default.error('Payment is still pending.'));
+            } else {
+              import('react-hot-toast').then(t => t.default.error(`Payment Status: ${data.status || 'Failed'}`));
+            }
+          })
+          .catch(err => {
+            console.error('Verification error:', err);
+          });
+      }
     }
-  }, [session]);
+  }, [session, searchParams]);
 
   if (status === 'loading') {
     return (
@@ -330,5 +354,13 @@ export default function DashboardPage() {
       </div>
       <Footer />
     </main>
+  );
+}
+
+export default function DashboardPageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold">Loading...</div>}>
+      <DashboardPage />
+    </Suspense>
   );
 }

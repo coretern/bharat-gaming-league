@@ -10,8 +10,10 @@ const RegistrationSchema = new Schema({
   teamName: { type: String, required: true },
   leaderUid: { type: String, required: true },
   whatsapp: { type: String, required: true },
-  paymentScreenshot: { type: String }, // Cloudinary URL
+  paymentScreenshot: { type: String }, // Used as Profile Screenshot now
   status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+  paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
+  orderId: { type: String },
   paymentVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });

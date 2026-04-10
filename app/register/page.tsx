@@ -62,13 +62,37 @@ function RegistrationForm() {
       fd.append('whatsapp', whatsapp);
       fd.append('tournamentId', tournamentId);
       fd.append('tournamentName', tournament?.title || 'General Tournament');
-      if (file) fd.append('paymentScreenshot', file);
+      fd.append('entryFee', tournament?.entryFee || '0');
+      if (file) fd.append('profileScreenshot', file);
 
       const res = await fetch('/api/register', { method: 'POST', body: fd });
       const data = await res.json();
+      
       if (!res.ok) throw new Error(data.error || 'Failed to register');
-      setIsSubmitted(true);
-      toast.success('Registration submitted!');
+
+      // Cashfree Integration
+      if (data.paymentSessionId) {
+        const cashfree = (window as any).Cashfree({
+          mode: "sandbox" // Change to "production" later
+        });
+
+        const checkoutOptions = {
+          paymentSessionId: data.paymentSessionId,
+          redirectTarget: "_self",
+        };
+
+        cashfree.checkout(checkoutOptions).then((result: any) => {
+          if (result.error) {
+            toast.error(result.error.message);
+          }
+          if (result.redirect) {
+            console.log("Redirecting for payment...");
+          }
+        });
+      } else {
+        setIsSubmitted(true);
+        toast.success('Registration submitted!');
+      }
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -81,8 +105,8 @@ function RegistrationForm() {
       <div className="text-center py-16 max-w-lg mx-auto">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-md">
           <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Registered!</h2>
-          <p className="text-slate-500 text-sm mb-6">Your registration is submitted. We'll verify and notify you on WhatsApp.</p>
+          <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Payment Successful!</h2>
+          <p className="text-slate-500 text-sm mb-6">Your registration is confirmed. We've received your payment and profile details.</p>
           <button onClick={() => router.push('/')} className="w-full h-11 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-lg">
             Back to Home
           </button>
@@ -120,20 +144,21 @@ function RegistrationForm() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">WhatsApp Number</label>
-              <input required value={whatsapp} onChange={e => setWhatsapp(e.target.value)} type="tel" placeholder="+91 7488168228"
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">WhatsApp Number (10 Digits)</label>
+              <input required value={whatsapp} onChange={e => setWhatsapp(e.target.value.replace(/\D/g, '').slice(0, 10))} 
+                type="tel" placeholder="9999999999" pattern="[0-9]{10}"
                 className="w-full h-11 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 text-foreground text-sm" />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Payment Screenshot</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Game Profile Screenshot</label>
               <input required type="file" accept="image/*" onChange={e => setFile(e.target.files?.[0] || null)}
                 className="w-full h-11 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 cursor-pointer text-xs text-slate-500 pt-2.5" />
             </div>
 
             <button disabled={loading} type="submit"
               className="w-full h-12 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-lg hover:opacity-90 transition-all disabled:opacity-50">
-              {loading ? 'Submitting...' : 'Complete Registration'}
+              {loading ? 'Processing...' : `Pay ${tournament?.entryFee.split(' / ')[0]} & Register`}
             </button>
           </form>
         </div>
@@ -151,7 +176,7 @@ function RegistrationForm() {
         <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
           <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-foreground"><Info className="w-4 h-4 text-slate-500" /> Rules</h3>
           <ul className="space-y-2 text-sm text-slate-500">
-            {['Team must have 4 active players.','UIDs must match in-game profile.','Transaction ID must be visible.','Join Discord for lobby times.'].map(r => (
+            {['Team must have 4 active players.','UIDs must match in-game profile.','Game profile screenshot is required.','Join WhatsApp/Telegram for lobby times.'].map(r => (
               <li key={r} className="flex gap-2"><span>•</span>{r}</li>
             ))}
           </ul>
@@ -170,7 +195,7 @@ export default function RegisterPage() {
           <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-2 text-foreground">
             Team <span className="text-neon-purple">Registration</span>
           </h1>
-          <p className="text-slate-500 text-sm font-semibold">Secure your slot. Fill in your details and upload payment proof.</p>
+          <p className="text-slate-500 text-sm font-semibold">Secure your slot. Fill in your details and upload your game profile screenshot.</p>
         </header>
         <Suspense fallback={<div className="text-center py-24 text-foreground">Loading...</div>}>
           <RegistrationForm />

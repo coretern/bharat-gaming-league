@@ -28,39 +28,90 @@ export async function POST(req: NextRequest) {
     const whatsapp = formData.get('whatsapp') as string;
     const tournamentId = formData.get('tournamentId') as string;
     const tournamentName = formData.get('tournamentName') as string;
-    const file = formData.get('paymentScreenshot') as File | null;
+    const entryFeeStr = formData.get('entryFee') as string || '0'; 
+    const file = formData.get('profileScreenshot') as File | null;
 
-    console.log('Fields:', { teamName, leaderUid, whatsapp, tournamentId });
+    // Parse numeric fee from strings like "₹200 / Team"
+    const orderAmount = parseFloat(entryFeeStr.replace(/[^\d.]/g, '')) || 0;
+    const cleanPhone = whatsapp.replace(/\D/g, '').slice(-10);
+
+    console.log('Fields:', { teamName, leaderUid, whatsapp, cleanPhone, tournamentId, orderAmount });
 
     if (!teamName || !leaderUid || !whatsapp || !tournamentId) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
 
-    let paymentScreenshotUrl = '';
+    if (cleanPhone.length !== 10) {
+      return NextResponse.json({ error: 'Please provide a valid 10-digit WhatsApp number.' }, { status: 400 });
+    }
+
+    let profileScreenshotUrl = '';
 
     if (file && file.size > 0 && process.env.CLOUDINARY_CLOUD_NAME) {
-      console.log('Uploading to Cloudinary...');
+      console.log('Uploading profile screenshot to Cloudinary...');
       try {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         const result = await new Promise<any>((resolve, reject) => {
           cloudinary.uploader.upload_stream(
-            { folder: 'arenax/payments' },
+            { folder: 'arenax/profiles' },
             (error, result) => {
               if (error) reject(error);
               else resolve(result);
             }
           ).end(buffer);
         });
-        paymentScreenshotUrl = result.secure_url;
-        console.log('Cloudinary URL:', paymentScreenshotUrl);
+        profileScreenshotUrl = result.secure_url;
+        console.log('Cloudinary URL:', profileScreenshotUrl);
       } catch (cloudErr: any) {
         console.error('Cloudinary error (skipping):', cloudErr.message);
       }
     }
 
     await connectDB();
-    console.log('DB connected, creating registration...');
+    
+    // Create a unique order ID
+    const orderId = `BGL_ORD_${Date.now()}`;
+
+    // Create Cashfree Order
+    let paymentSessionId = '';
+    try {
+      const cfResponse = await fetch(`${process.env.CASHFREE_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'x-client-id': process.env.CASHFREE_APP_ID!,
+          'x-client-secret': process.env.CASHFREE_SECRET_KEY!,
+          'x-api-version': '2023-08-01',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          order_amount: orderAmount,
+          order_currency: 'INR',
+          customer_details: {
+            customer_id: token.sub || token.email,
+            customer_email: token.email,
+            customer_phone: cleanPhone,
+            customer_name: token.name || 'Gamer'
+          },
+          order_meta: {
+            return_url: `${process.env.NEXTAUTH_URL}/dashboard?order_id={order_id}`
+          }
+        })
+      });
+
+      const cfData = await cfResponse.json();
+      if (!cfResponse.ok) {
+        console.error('Cashfree Error:', cfData);
+        throw new Error(cfData.message || 'Payment initiation failed');
+      }
+      paymentSessionId = cfData.payment_session_id;
+    } catch (cfErr: any) {
+      console.error('Cashfree Integration Error:', cfErr.message);
+      return NextResponse.json({ error: `Payment Error: ${cfErr.message}` }, { status: 500 });
+    }
+
+    console.log('DB connected, creating pending registration...');
 
     const registration = await Registration.create({
       userId: token.sub || token.email,
@@ -72,11 +123,18 @@ export async function POST(req: NextRequest) {
       teamName,
       leaderUid,
       whatsapp,
-      paymentScreenshot: paymentScreenshotUrl,
+      paymentScreenshot: profileScreenshotUrl, // Actually profile screenshot now
+      orderId: orderId,
+      paymentStatus: 'Pending',
     });
 
     console.log('✅ Registration saved! ID:', registration._id.toString());
-    return NextResponse.json({ success: true, id: registration._id });
+    return NextResponse.json({ 
+      success: true, 
+      id: registration._id, 
+      paymentSessionId,
+      orderId
+    });
   } catch (err: any) {
     console.error('❌ REGISTRATION ERROR:', err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
