@@ -30,10 +30,6 @@ interface Reg {
   whatsapp: string;
   instagram?: string;
   payoutDetails?: {
-    bankName: string;
-    accNumber: string;
-    ifsc: string;
-    accHolder: string;
     qrCodeUrl: string;
   };
   status: 'Pending' | 'Approved' | 'Rejected';
@@ -42,6 +38,7 @@ interface Reg {
   previousRejectionReason?: string;
   isResubmitted?: boolean;
   paymentVerified: boolean;
+  orderId?: string;
   createdAt: string;
 }
 
@@ -126,7 +123,7 @@ export default function AdminPanel() {
     }
   };
 
-  const fetchWinners = async () => {
+  const loadWinnersData = async () => {
     setLoadingWinners(true);
     try {
       const res = await fetch('/api/admin/winners');
@@ -144,7 +141,7 @@ export default function AdminPanel() {
       fetchRegistrations();
       fetchUsers();
       fetchTournaments();
-      fetchWinners();
+      loadWinnersData();
     }
   }, [isAdmin]);
 
@@ -160,7 +157,7 @@ export default function AdminPanel() {
       if (!res.ok) throw new Error('Failed to add');
       toast.success('Winner added!');
       setShowAddWinner(false);
-      fetchWinners();
+      loadWinnersData();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -175,7 +172,7 @@ export default function AdminPanel() {
       const res = await fetch(`/api/admin/winners/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       toast.success('Winner removed');
-      fetchWinners();
+      loadWinnersData();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -675,8 +672,6 @@ export default function AdminPanel() {
       {viewReg && (
           <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={() => setViewReg(null)}>
             <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl p-8 relative my-8" onClick={e => e.stopPropagation()}>
-                <button onClick={() => setViewReg(null)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"><X className="w-6 h-6" /></button>
-                
                 <header className="mb-8 flex justify-between items-start">
                     <div>
                         <h2 className="text-3xl font-black italic uppercase text-foreground leading-none">Team <span className="text-neon-purple">{viewReg.teamName}</span></h2>
@@ -685,14 +680,19 @@ export default function AdminPanel() {
                             <span className="px-3 py-1 bg-neon-cyan/10 rounded-full text-[10px] font-black uppercase text-neon-cyan">{viewReg.matchType}</span>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => deleteRegistration(viewReg._id)}
-                        disabled={updating === viewReg._id}
-                        className="p-3 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg active:scale-95"
-                        title="Delete Permanently"
-                    >
-                        <Trash2 className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => deleteRegistration(viewReg._id)}
+                            disabled={updating === viewReg._id}
+                            className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-95"
+                            title="Delete Permanently"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                        </button>
+                        <button onClick={() => setViewReg(null)} className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
                 </header>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -727,13 +727,42 @@ export default function AdminPanel() {
 
                     {/* Meta Info */}
                     <div className="space-y-6">
+                        {/* Registration Stats */}
+                        <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200 dark:border-slate-700 pb-2">Registration Info</h4>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase">WhatsApp</span>
+                                    <a href={`https://wa.me/${viewReg.whatsapp}`} target="_blank" className="text-xs font-black text-neon-cyan hover:underline">{viewReg.whatsapp}</a>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Registered On</span>
+                                    <span className="text-xs font-black text-foreground">{new Date(viewReg.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Payment Status</span>
+                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${viewReg.paymentVerified ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                        {viewReg.paymentVerified ? 'VERIFIED' : 'PENDING'}
+                                    </span>
+                                </div>
+                                {viewReg.orderId && (
+                                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-800">
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase">Order ID</span>
+                                        <span className="text-[10px] font-black text-slate-400 select-all tracking-tighter">{viewReg.orderId}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="p-6 rounded-3xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200/50 dark:border-amber-900/30">
-                            <h4 className="text-[10px] font-black uppercase text-amber-600 mb-3">Payout Details</h4>
-                            {viewReg.payoutDetails?.qrCodeUrl && (
+                            <h4 className="text-[10px] font-black uppercase text-amber-600 mb-3 tracking-widest">Payout Details (QR)</h4>
+                            {viewReg.payoutDetails?.qrCodeUrl ? (
                                 <button onClick={() => setPreviewImg(viewReg.payoutDetails!.qrCodeUrl!)} 
                                     className="mt-4 w-full h-10 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900 text-[10px] font-black uppercase text-amber-600 flex items-center justify-center gap-2 hover:bg-amber-100 transition-all">
-                                    <Trophy className="w-3 h-3" /> View QR Scanner
+                                    <Eye className="w-3 h-3" /> View QR Scanner
                                 </button>
+                            ) : (
+                                <p className="text-[10px] font-bold text-amber-600/50 italic">No QR Code provided</p>
                             )}
                         </div>
 
@@ -844,19 +873,49 @@ export default function AdminPanel() {
                 </header>
 
                 <form onSubmit={addWinner} className="space-y-4">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Select Tournament</label>
-                        <select 
-                            required 
-                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-neon-cyan/20 transition-all"
-                            onChange={(e) => {
-                                const t = liveTournaments.find(x => x.id === e.target.value);
-                                if (t) setNewWinner({...newWinner, tournamentId: t.id, tournamentName: t.title});
-                            }}
-                        >
-                            <option value="">Choose a tournament...</option>
-                            {liveTournaments.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
-                        </select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">1. Select Tournament</label>
+                            <select 
+                                required 
+                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-neon-cyan/20 transition-all"
+                                onChange={(e) => {
+                                    const t = liveTournaments.find(x => x.id === e.target.value);
+                                    if (t) setNewWinner({...newWinner, tournamentId: t.id, tournamentName: t.title});
+                                }}
+                            >
+                                <option value="">Choose a tournament...</option>
+                                {liveTournaments.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
+                            </select>
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">2. Auto-Fill from Registration</label>
+                            <select 
+                                disabled={!newWinner.tournamentId}
+                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-neon-cyan/20 transition-all disabled:opacity-50"
+                                onChange={(e) => {
+                                    const reg = registrations.find(r => r._id === e.target.value);
+                                    if (reg) {
+                                        setNewWinner({
+                                            ...newWinner,
+                                            playerName: reg.players[0]?.name || reg.userName,
+                                            teamName: reg.teamName
+                                        });
+                                    }
+                                }}
+                            >
+                                <option value="">Select a team...</option>
+                                {registrations
+                                    .filter(r => r.tournamentId === newWinner.tournamentId)
+                                    .map(r => (
+                                        <option key={r._id} value={r._id}>
+                                            {r.teamName} ({r.players[0]?.name || r.userName})
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

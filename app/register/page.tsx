@@ -168,6 +168,9 @@ function RegistrationForm() {
       } else {
         setIsSubmitted(true);
         toast.success(isEdit ? 'Registration updated!' : 'Registration submitted!');
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000);
       }
     } catch (err: any) {
       toast.error(err.message);
@@ -182,7 +185,7 @@ function RegistrationForm() {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-md">
           <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Registered!</h2>
-          <p className="text-slate-500 text-sm mb-6">Redirecting to payment if applicable...</p>
+          <p className="text-slate-500 text-sm mb-6">Redirecting to your dashboard...</p>
         </div>
       </div>
     );

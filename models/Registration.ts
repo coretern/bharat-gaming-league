@@ -18,10 +18,6 @@ const RegistrationSchema = new Schema({
     instagram: { type: String }
   }],
   payoutDetails: {
-    bankName: { type: String },
-    accountNumber: { type: String },
-    ifscCode: { type: String },
-    accountHolder: { type: String },
     qrCodeUrl: { type: String }
   },
   status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
