@@ -23,9 +23,11 @@ interface Player {
 interface Reg {
   _id: string;
   tournamentName: string;
+  tournamentId: string;
   matchType: string;
   teamName: string;
   userName: string;
+  userId: string;
   userEmail: string;
   userImage: string;
   players: Player[];
@@ -37,6 +39,7 @@ interface Reg {
   status: 'Pending' | 'Approved' | 'Rejected';
   rejectionReason?: string;
   rejectionTargets?: string[];
+  rejectionIndices?: number[];
   previousRejectionReason?: string;
   isResubmitted?: boolean;
   paymentVerified: boolean;
