@@ -62,7 +62,7 @@ function DashboardPage() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoadingRegs(true);
-      fetch('/api/my-registrations')
+      fetch(`/api/my-registrations?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => setMyRegs(Array.isArray(data) ? data : []))
         .catch(() => setMyRegs([]))
@@ -77,7 +77,7 @@ function DashboardPage() {
             if (data.success && data.status === 'PAID') {
               import('react-hot-toast').then(t => t.default.success('Payment Verified! Registration Confirmed.'));
               // Refresh registrations to show updated status
-              fetch('/api/my-registrations')
+              fetch(`/api/my-registrations?t=${Date.now()}`, { cache: 'no-store' })
                 .then(r => r.json())
                 .then(d => setMyRegs(Array.isArray(d) ? d : []));
             } else if (data.status === 'ACTIVE' || data.status === 'PENDING') {
@@ -286,10 +286,12 @@ function DashboardPage() {
                               <StatusBadge status={reg.status} />
                             </div>
 
-                            {reg.status === 'Rejected' && reg.rejectionReason && (
-                                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                                    <p className="text-[9px] font-black uppercase text-red-500 mb-1">Reason for Rejection:</p>
-                                    <p className="text-xs font-bold text-red-700 dark:text-red-400 italic">"{reg.rejectionReason}"</p>
+                            {reg.status === 'Rejected' && (
+                                <div className="mb-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                                    <p className="text-[10px] font-black uppercase text-red-500 mb-1">Reason for Rejection:</p>
+                                    <p className="text-xs font-bold text-red-600 dark:text-red-400 italic">
+                                        "{reg.rejectionReason || 'No reason specified by admin'}"
+                                    </p>
                                 </div>
                             )}
 
@@ -348,14 +350,22 @@ function DashboardPage() {
                               <td className="px-4 py-3 text-[10px] font-black uppercase text-neon-purple">{reg.matchType}</td>
                               <td className="px-4 py-3 font-bold text-foreground/50 text-xs">{reg.teamName}</td>
                               <td className="px-4 py-3">
-                                <div className="space-y-2">
-                                    <StatusBadge status={reg.status} />
+                                <div className="space-y-1.5 mt-1 min-w-[140px]">
+                                    <div className="flex items-center gap-2">
+                                        <StatusBadge status={reg.status} />
+                                        <span className="text-[8px] font-mono text-slate-400">ID: ...{reg._id.slice(-4)}</span>
+                                    </div>
                                     {reg.status === 'Rejected' && (
-                                        <div className="flex flex-col gap-1">
-                                            {reg.rejectionReason && (
-                                                <p className="text-[9px] text-red-500 font-bold italic leading-tight max-w-[150px]">"{reg.rejectionReason}"</p>
-                                            )}
-                                            <Link href={`/register?tournament=${reg._id}&edit=true`} className="text-[9px] font-black uppercase text-neon-cyan hover:underline">Edit & Resubmit</Link>
+                                        <div className="flex flex-col gap-1.5">
+                                            <div className="bg-red-50 dark:bg-red-500/5 p-3 rounded-2xl border border-red-500/10 shadow-sm">
+                                                <p className="text-[9px] font-black uppercase text-red-500/50 mb-1 tracking-widest">Reason for Rejection</p>
+                                                <p className="text-[11px] font-bold text-red-600 dark:text-red-400 leading-snug">
+                                                    {reg.rejectionReason ? `"${reg.rejectionReason}"` : 'No reason specified by admin'}
+                                                </p>
+                                            </div>
+                                            <Link href={`/register?tournament=${reg._id}&edit=true`} className="px-3 py-1.5 rounded-xl bg-neon-cyan/10 text-[10px] font-black uppercase text-neon-cyan hover:bg-neon-cyan hover:text-white transition-all text-center">
+                                                Edit & Resubmit
+                                            </Link>
                                         </div>
                                     )}
                                 </div>

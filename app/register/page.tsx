@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Upload, CheckCircle2, Trophy, LogIn, ExternalLink, Info } from "lucide-react";
+import { Upload, CheckCircle2, Trophy, LogIn, ExternalLink, Info, ShieldCheck } from "lucide-react";
 import toast from 'react-hot-toast';
 
 function RegistrationForm() {
@@ -24,6 +24,8 @@ function RegistrationForm() {
   const [players, setPlayers] = useState([{ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' }]);
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [existingQrUrl, setExistingQrUrl] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
+  const [rejectionTargets, setRejectionTargets] = useState<string[]>([]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,8 @@ function RegistrationForm() {
                         existingUrl: p.profileScreenshot
                     })));
                     setExistingQrUrl(reg.payoutDetails?.qrCodeUrl || '');
+                    setIsPaid(reg.paymentVerified || reg.paymentStatus === 'Paid');
+                    setRejectionTargets(reg.rejectionTargets || []);
                     
                     // Fetch tournament info for header
                     const tRes = await fetch('/api/tournaments');
@@ -72,7 +76,7 @@ function RegistrationForm() {
   const handleMatchTypeChange = (type: 'Solo' | 'Duo' | 'Squad') => {
     setMatchType(type);
     const count = type === 'Solo' ? 1 : type === 'Duo' ? 2 : 4;
-    setPlayers(Array(count).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null })));
+    setPlayers(Array(count).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
   };
 
   const updatePlayer = (index: number, field: string, value: any) => {
@@ -204,7 +208,19 @@ function RegistrationForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 pb-24">
+      <form onSubmit={handleSubmit} className="space-y-10">
+        {isPaid && (
+          <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-6 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-green-500 flex items-center justify-center text-white">
+                <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+                <p className="text-xs font-black uppercase text-green-500 tracking-widest">Payment Verified</p>
+                <p className="text-[10px] text-green-600/70 font-bold">You have already paid for this registration. You only need to update your details.</p>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
           <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-slate-400">1. Tournament Format</h3>
           <div className="grid grid-cols-3 gap-3">
@@ -212,14 +228,18 @@ function RegistrationForm() {
               <button
                 key={type}
                 type="button"
+                disabled={isEdit}
                 onClick={() => handleMatchTypeChange(type)}
                 className={`py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all border ${
                   matchType === type
                     ? 'bg-neon-purple text-white border-neon-purple shadow-lg shadow-neon-purple/20 scale-[1.02]'
-                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
+                    : isEdit 
+                      ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed opacity-50 border-transparent'
+                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
                 }`}
               >
                 {type}
+                {isEdit && matchType === type && <span className="block text-[8px] opacity-70 mt-1 uppercase tracking-tighter font-black">Locked Selection</span>}
               </button>
             ))}
           </div>
@@ -275,10 +295,13 @@ function RegistrationForm() {
                 <div className="relative h-14 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 flex items-center gap-3 overflow-hidden group hover:border-neon-purple/50 transition-colors">
                     <Upload className="w-4 h-4 text-slate-400 group-hover:text-neon-purple transition-colors" />
                     <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300">
-                        {player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
+                        {(!rejectionTargets.includes('profiles') && isEdit) ? 'Locked (Already Received)' : player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
                     </span>
-                    <input required type="file" accept="image/*" onChange={e => updatePlayer(idx, 'file', e.target.files?.[0] || null)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                    <input 
+                      disabled={isEdit && !rejectionTargets.includes('profiles')}
+                      required={!isEdit || rejectionTargets.includes('profiles')} 
+                      type="file" accept="image/*" onChange={e => updatePlayer(idx, 'file', e.target.files?.[0] || null)}
+                      className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && !rejectionTargets.includes('profiles') ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
                 </div>
               </div>
             </div>
@@ -292,12 +315,15 @@ function RegistrationForm() {
             Please upload your PhonePe/GPay QR code. If you win, we will use this to send your prize money.
           </div>
 
-          <div className="relative h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center group hover:border-neon-purple/50 transition-colors bg-slate-50/50 dark:bg-slate-900">
-            <input required type="file" accept="image/*" onChange={e => setQrFile(e.target.files?.[0] || null)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+          <div className={`relative h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center group transition-colors ${isEdit && !rejectionTargets.includes('qr') ? 'bg-slate-100 opacity-60' : 'hover:border-neon-purple/50 bg-slate-50/50 dark:bg-slate-900 cursor-pointer'}`}>
+            <input 
+              disabled={isEdit && !rejectionTargets.includes('qr')}
+              required={!isEdit || rejectionTargets.includes('qr')} 
+              type="file" accept="image/*" onChange={e => setQrFile(e.target.files?.[0] || null)}
+              className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && !rejectionTargets.includes('qr') ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
             <Upload className="w-6 h-6 text-slate-400 group-hover:text-neon-purple mb-2" />
-            <p className="text-xs font-black uppercase text-slate-500">
-                {qrFile ? qrFile.name : existingQrUrl ? '(Already Uploaded) Change QR' : 'Upload Payment QR'}
+            <p className="text-xs font-black uppercase text-slate-500 text-center px-4">
+                {(!rejectionTargets.includes('qr') && isEdit) ? 'QR Locked (Already Received)' : qrFile ? qrFile.name : existingQrUrl ? '(Already Uploaded) Change QR' : 'Upload Payment QR'}
             </p>
             <p className="text-[10px] text-slate-400 mt-1">PNG, JPG or JPEG</p>
           </div>
@@ -305,7 +331,7 @@ function RegistrationForm() {
 
         <button disabled={loading} type="submit"
           className="w-full h-16 bg-slate-900 border-2 border-slate-900 dark:bg-neon-purple dark:border-neon-purple text-white font-black italic uppercase rounded-3xl hover:bg-transparent hover:text-slate-900 dark:hover:text-white transition-all disabled:opacity-50 text-base shadow-xl active:scale-[0.98]">
-          {loading ? 'Processing...' : `Confirm Registration · ₹${getEntryFee()}`}
+          {loading ? 'Processing...' : isPaid ? 'Confirm & Resubmit' : `Confirm Registration · ₹${getEntryFee()}`}
         </button>
       </form>
     </div>

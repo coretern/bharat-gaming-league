@@ -38,6 +38,7 @@ interface Reg {
   };
   status: 'Pending' | 'Approved' | 'Rejected';
   rejectionReason?: string;
+  rejectionTargets?: string[];
   previousRejectionReason?: string;
   isResubmitted?: boolean;
   paymentVerified: boolean;
@@ -68,6 +69,8 @@ export default function AdminPanel() {
   const [loadingTours, setLoadingTours] = useState(true);
   const [loadingWinners, setLoadingWinners] = useState(true);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectionOptions, setRejectionOptions] = useState({ qr: false, profiles: false, msg: "" });
   const [viewReg, setViewReg] = useState<Reg | null>(null);
   const [editTour, setEditTour] = useState<any | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -734,6 +737,13 @@ export default function AdminPanel() {
                             )}
                         </div>
 
+                        {viewReg.status === 'Rejected' && viewReg.rejectionReason && (
+                            <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+                                <h4 className="text-[10px] font-black uppercase text-amber-600 mb-2">Current Rejection Reason</h4>
+                                <p className="text-xs font-bold text-slate-500 italic">"{viewReg.rejectionReason}"</p>
+                            </div>
+                        )}
+
                         {viewReg.previousRejectionReason && (
                             <div className="p-5 rounded-2xl bg-red-500/5 border border-red-500/10">
                                 <h4 className="text-[10px] font-black uppercase text-red-500 mb-2">Previous Rejection Reason</h4>
@@ -747,14 +757,60 @@ export default function AdminPanel() {
                                 className="flex-1 h-12 rounded-xl bg-green-500 text-white font-black uppercase text-xs hover:bg-green-600 disabled:opacity-50 shadow-lg shadow-green-500/20 active:scale-95 transition-all">
                                 Approve
                             </button>
-                            <button disabled={updating === viewReg._id || viewReg.status === 'Rejected'}
-                                onClick={() => {
-                                    const msg = prompt('Reason for rejection (this will be shown to the user):');
-                                    if (msg !== null) updateStatus(viewReg._id, { status: 'Rejected', rejectionReason: msg });
-                                }}
-                                className="flex-1 h-12 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase text-xs hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95">
-                                Reject
-                            </button>
+                            <div className="flex-1 space-y-3">
+                                {rejectingId === viewReg._id ? (
+                                    <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 space-y-4">
+                                        <p className="text-[10px] font-black uppercase text-red-500">What needs to be fixed?</p>
+                                        <div className="flex gap-4">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" checked={rejectionOptions.qr} 
+                                                    onChange={e => setRejectionOptions({...rejectionOptions, qr: e.target.checked})}
+                                                    className="w-4 h-4 accent-red-500" />
+                                                <span className="text-[10px] font-bold uppercase text-slate-500">Payout QR</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" checked={rejectionOptions.profiles} 
+                                                    onChange={e => setRejectionOptions({...rejectionOptions, profiles: e.target.checked})}
+                                                    className="w-4 h-4 accent-red-500" />
+                                                <span className="text-[10px] font-bold uppercase text-slate-500">Profile Proofs</span>
+                                            </label>
+                                        </div>
+                                        <textarea 
+                                            placeholder="Detailed reason..."
+                                            value={rejectionOptions.msg}
+                                            onChange={e => setRejectionOptions({...rejectionOptions, msg: e.target.value})}
+                                            className="w-full h-20 p-3 rounded-xl bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900/50 text-xs focus:ring-1 focus:ring-red-500 outline-none"
+                                        />
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => {
+                                                    const targets = [];
+                                                    if (rejectionOptions.qr) targets.push('qr');
+                                                    if (rejectionOptions.profiles) targets.push('profiles');
+                                                    updateStatus(viewReg._id, { 
+                                                        status: 'Rejected', 
+                                                        rejectionReason: rejectionOptions.msg,
+                                                        rejectionTargets: targets
+                                                    });
+                                                    setRejectingId(null);
+                                                }}
+                                                className="flex-1 h-10 rounded-xl bg-red-500 text-white text-[10px] font-black uppercase hover:bg-red-600 transition-all font-bold">
+                                                Confirm Reject
+                                            </button>
+                                            <button onClick={() => setRejectingId(null)} className="px-4 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase text-slate-500 font-bold">Cancel</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button disabled={updating === viewReg._id || viewReg.status === 'Rejected'}
+                                        onClick={() => {
+                                            setRejectingId(viewReg._id);
+                                            setRejectionOptions({ qr: false, profiles: false, msg: "" });
+                                        }}
+                                        className="w-full h-12 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase text-xs hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95">
+                                        Reject Registration
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

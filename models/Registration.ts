@@ -29,6 +29,7 @@ const RegistrationSchema = new Schema({
   orderId: { type: String },
   paymentVerified: { type: Boolean, default: false },
   rejectionReason: { type: String },
+  rejectionTargets: [String],
   previousRejectionReason: { type: String },
   isResubmitted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

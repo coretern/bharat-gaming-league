@@ -11,7 +11,15 @@ export async function GET(req: NextRequest) {
     }
     await connectDB();
     const registrations = await Registration.find({ userEmail: token.email }).sort({ createdAt: -1 }).lean();
-    return NextResponse.json(registrations);
+    
+    // Explicitly verify fields are present
+    const sanitized = registrations.map((r: any) => ({
+        ...r,
+        rejectionReason: r.rejectionReason || '',
+        rejectionTargets: r.rejectionTargets || []
+    }));
+
+    return NextResponse.json(sanitized);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

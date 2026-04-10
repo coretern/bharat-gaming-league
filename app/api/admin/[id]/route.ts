@@ -21,7 +21,11 @@ export async function PATCH(
     await connectDB();
     const body = await req.json();
 
-    const reg = await Registration.findByIdAndUpdate(id, body, { new: true });
+    const reg = await Registration.findByIdAndUpdate(
+      id, 
+      { $set: body }, 
+      { new: true, runValidators: true }
+    );
     if (!reg) {
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
     }

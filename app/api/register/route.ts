@@ -200,6 +200,49 @@ export async function PUT(req: NextRequest) {
         qrCodeUrl = await uploadToCloudinary(qrFile, 'arenax/payouts');
     }
 
+    let paymentSessionId = '';
+    let orderId = existing.orderId;
+
+    if (!existing.paymentVerified) {
+        // If not paid yet, we might need a new payment session
+        // Only if the fee is > 0
+        const entryFeeStr = formData.get('entryFee') as string;
+        const orderAmount = parseInt(entryFeeStr.replace('₹', ''));
+
+        if (orderAmount > 0) {
+            orderId = `BGL_ORD_${Date.now()}`;
+            try {
+                const cfResponse = await fetch('https://sandbox.cashfree.com/pg/orders', {
+                    method: 'POST',
+                    headers: {
+                        'x-api-version': '2023-08-01',
+                        'x-client-id': process.env.CASHFREE_APP_ID || '',
+                        'x-client-secret': process.env.CASHFREE_SECRET_KEY || '',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        order_amount: orderAmount,
+                        order_currency: 'INR',
+                        customer_details: {
+                            customer_id: token.sub || token.email,
+                            customer_email: token.email,
+                            customer_phone: whatsapp.replace(/\D/g, '').slice(-10) || '0000000000',
+                            customer_name: token.name || 'Gamer'
+                        },
+                        order_meta: {
+                            return_url: `${process.env.NEXTAUTH_URL}/dashboard?order_id={order_id}`
+                        }
+                    })
+                });
+                const cfData = await cfResponse.json();
+                if (cfResponse.ok) paymentSessionId = cfData.payment_session_id;
+            } catch (err) {
+                console.error('Payment Error in PUT:', err);
+            }
+        }
+    }
+
     await Registration.findByIdAndUpdate(registrationId, {
         $set: {
             matchType,
@@ -212,10 +255,11 @@ export async function PUT(req: NextRequest) {
             previousRejectionReason: existing.rejectionReason, // Save old reason
             rejectionReason: '', // Clear current reason for user
             isResubmitted: true,
+            orderId: orderId, // Update order ID if new payment session created
         }
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, paymentSessionId, orderId });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
