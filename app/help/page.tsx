@@ -78,11 +78,11 @@ export default function HelpPage() {
           <h2 className="text-foreground font-black uppercase tracking-tight text-lg mb-2">Still need help?</h2>
           <p className="text-foreground/50 text-sm mb-5">Our support team is available Mon–Sat, 10am–8pm.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://t.me/freefire_tounamentt" target="_blank" rel="noopener noreferrer"
-              className="btn-neon-cyan px-8 py-2.5 text-sm font-black uppercase tracking-widest inline-block">
-              Telegram Support
+            <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer"
+              className="btn-outline px-8 py-2.5 text-sm font-black uppercase tracking-widest inline-block border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10">
+              WhatsApp Support
             </a>
-            <a href="mailto:support@bharatgamingleague.in"
+            <a href="mailto:worktoearn@gmail.com"
               className="btn-outline px-8 py-2.5 text-sm font-black uppercase tracking-widest inline-block">
               Email Us
             </a>

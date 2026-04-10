@@ -53,7 +53,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">6. Your Rights</h2>
-            <p>You have the right to request deletion of your account and associated data at any time. Contact us at <a href="mailto:support@bharatgamingleague.in" className="text-neon-cyan hover:underline">support@bharatgamingleague.in</a> and we will process your request within 7 business days.</p>
+            <p>You have the right to request deletion of your account and associated data at any time. Contact us at <a href="mailto:worktoearn@gmail.com" className="text-neon-cyan hover:underline">worktoearn@gmail.com</a> and we will process your request within 7 business days.</p>
           </section>
 
           <section>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">8. Contact</h2>
-            <p>For privacy-related queries, contact: <a href="mailto:support@bharatgamingleague.in" className="text-neon-cyan hover:underline">support@bharatgamingleague.in</a></p>
+            <p>For privacy-related queries, contact: <a href="mailto:worktoearn@gmail.com" className="text-neon-cyan hover:underline">worktoearn@gmail.com</a> or WhatsApp: <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="text-neon-cyan hover:underline">+91 7488168228</a></p>
           </section>
 
         </div>

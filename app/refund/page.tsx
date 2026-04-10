@@ -74,7 +74,8 @@ export default function RefundPage() {
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">7. Contact for Refund Requests</h2>
             <p>
               To raise a refund request, contact us:<br /><br />
-              📧 Email: <a href="mailto:support@bharatgamingleague.in" className="text-neon-cyan hover:underline">support@bharatgamingleague.in</a><br />
+              📧 Email: <a href="mailto:worktoearn@gmail.com" className="text-neon-cyan hover:underline">worktoearn@gmail.com</a><br />
+              📱 WhatsApp: <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="text-neon-cyan hover:underline">+91 7488168228</a><br />
               ✈️ Telegram: <a href="https://t.me/freefire_tounamentt" className="text-neon-cyan hover:underline">t.me/freefire_tounamentt</a><br />
               🕐 Response Time: Within 24 hours (Mon–Sat, 10am–8pm)
             </p>

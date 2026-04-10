@@ -83,7 +83,7 @@ export default function RulesPage() {
 
           <section>
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">8. Contact for Disputes</h2>
-            <p>Raise disputes via Telegram: <a href="https://t.me/freefire_tounamentt" className="text-neon-cyan hover:underline">t.me/freefire_tounamentt</a> or email: <a href="mailto:support@bharatgamingleague.in" className="text-neon-cyan hover:underline">support@bharatgamingleague.in</a></p>
+            <p>Raise disputes via WhatsApp: <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="text-neon-cyan hover:underline">+91 7488168228</a>, Telegram: <a href="https://t.me/freefire_tounamentt" className="text-neon-cyan hover:underline">t.me/freefire_tounamentt</a> or email: <a href="mailto:worktoearn@gmail.com" className="text-neon-cyan hover:underline">worktoearn@gmail.com</a></p>
           </section>
 
         </div>

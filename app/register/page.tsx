@@ -121,7 +121,7 @@ function RegistrationForm() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">WhatsApp Number</label>
-              <input required value={whatsapp} onChange={e => setWhatsapp(e.target.value)} type="tel" placeholder="+91 00000 00000"
+              <input required value={whatsapp} onChange={e => setWhatsapp(e.target.value)} type="tel" placeholder="+91 7488168228"
                 className="w-full h-11 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 text-foreground text-sm" />
             </div>
 

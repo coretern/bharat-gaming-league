@@ -77,11 +77,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-foreground/50 font-medium">
               <li className="flex items-start gap-2">
                 <span>📧</span>
-                <span>support@bharatgamingleague.in</span>
+                <a href="mailto:worktoearn@gmail.com" className="hover:text-neon-cyan transition-colors">worktoearn@gmail.com</a>
               </li>
               <li className="flex items-start gap-2">
                 <span>📱</span>
-                <span>WhatsApp: +91 00000 00000</span>
+                <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-colors">WhatsApp: +91 7488168228</a>
               </li>
               <li className="flex items-start gap-2">
                 <span>🕐</span>
