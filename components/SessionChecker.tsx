@@ -12,8 +12,13 @@ export default function SessionChecker() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'authenticated' && (session?.user as any)?.deleted) {
-      signOut({ callbackUrl: '/login' });
+    if (status === 'authenticated') {
+      const user = session?.user as any;
+      if (user?.deleted) {
+        signOut({ callbackUrl: '/login' });
+      } else if (user?.isBanned) {
+        signOut({ callbackUrl: '/login?error=BAN_ACTIVE' });
+      }
     }
   }, [session, status]);
 

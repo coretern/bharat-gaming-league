@@ -2,10 +2,10 @@
 
 import Navbar from "@/components/Navbar";
 import TournamentCard from "@/components/TournamentCard";
-import { tournaments } from "@/data/tournaments";
 import { Trophy, TrendingUp, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { useState, useEffect } from "react";
 
 const winners = [
   { team: 'Team Alpha', prize: '₹1,000', tournament: 'Pro League S15' },
@@ -17,7 +17,17 @@ const winners = [
 ];
 
 export default function Home() {
-  const featuredTournaments = tournaments.slice(0, 3);
+  const [liveTournaments, setLiveTournaments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/tournaments')
+      .then(res => res.json())
+      .then(data => {
+        setLiveTournaments(Array.isArray(data) ? data.slice(0, 3) : []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <main className="min-h-screen relative overflow-x-hidden bg-background">
@@ -27,7 +37,7 @@ export default function Home() {
       <section className="pt-32 pb-24 relative">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-            <div>
+            <div className="flex flex-col items-center md:items-start">
               {/* Winners ticker */}
               <div className="flex items-center gap-3 mb-4 overflow-hidden w-full max-w-sm">
                 <span className="shrink-0 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-neon-cyan border border-neon-cyan/30 bg-neon-cyan/10 px-2.5 py-1 rounded-full">
@@ -47,53 +57,31 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">
+              <h1 className="hidden md:block text-4xl md:text-5xl font-black italic uppercase tracking-tighter">
                 Featured <span className="text-neon-cyan">Tournaments</span>
               </h1>
             </div>
-            <Link href="/tournaments">
-              <button className="btn-outline text-xs uppercase tracking-widest px-8 group">
-                View All <span className="inline-block transition-transform group-hover:translate-x-1 ml-2">→</span>
-              </button>
-            </Link>
+            
+            <div className="flex justify-center md:justify-end w-full md:w-auto">
+              <Link href="/tournaments">
+                <button className="btn-outline text-xs uppercase tracking-widest px-8 group">
+                  View All <span className="inline-block transition-transform group-hover:translate-x-1 ml-2">→</span>
+                </button>
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredTournaments.map((tournament) => (
+            {loading ? (
+              [1, 2, 3].map(i => <div key={i} className="h-[400px] rounded-3xl bg-foreground/5 animate-pulse" />)
+            ) : liveTournaments.map((tournament) => (
               <TournamentCard key={tournament.id} {...tournament} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-24 container mx-auto px-6 border-t border-foreground/5">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="flex flex-col gap-4 p-8 glass-card">
-            <div className="w-14 h-14 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple mb-2">
-              <Trophy className="w-8 h-8" />
-            </div>
-            <h3 className="text-2xl font-black uppercase italic tracking-tight">Massive Prize Pools</h3>
-            <p className="text-slate-400 font-medium text-sm leading-relaxed">We host the biggest tournaments with the highest stakes. Win life-changing rewards every single month.</p>
-          </div>
 
-          <div className="flex flex-col gap-4 p-8 glass-card">
-            <div className="w-14 h-14 rounded-2xl bg-neon-cyan/10 flex items-center justify-center text-neon-cyan mb-2">
-              <ShieldCheck className="w-8 h-8" />
-            </div>
-            <h3 className="text-2xl font-black uppercase italic tracking-tight">Fair Play Guaranteed</h3>
-            <p className="text-slate-400 font-medium text-sm leading-relaxed">Advanced anti-cheat systems and dedicated admins ensure a level playing field for every competitor.</p>
-          </div>
-
-          <div className="flex flex-col gap-4 p-8 glass-card">
-            <div className="w-14 h-14 rounded-2xl bg-neon-red/10 flex items-center justify-center text-neon-red mb-2">
-              <TrendingUp className="w-8 h-8" />
-            </div>
-            <h3 className="text-2xl font-black uppercase italic tracking-tight">Real-time Leaderboards</h3>
-            <p className="text-slate-400 font-medium text-sm leading-relaxed">Track your progress and rankings in real-time. See where you stand against the world's best players.</p>
-          </div>
-        </div>
-      </section>
 
       {/* Trust & Track Record Section */}
       <section className="py-24 border-t border-foreground/5 relative overflow-hidden">

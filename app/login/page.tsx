@@ -1,10 +1,16 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import Image from 'next/image';
-import { Chrome } from 'lucide-react';
+import { Chrome, ShieldAlert } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function LoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+  const isBanned = error === 'BAN_ACTIVE' || error === 'Callback';
+
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -22,6 +28,16 @@ export default function LoginPage() {
           <p className="text-slate-500 mb-8 text-sm font-semibold">
             Sign in to register for tournaments and track your progress.
           </p>
+
+          {isBanned && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+              <ShieldAlert className="w-8 h-8 text-red-500 mx-auto mb-2" />
+              <h3 className="text-sm font-black uppercase text-red-500 mb-1">Access Restricted</h3>
+              <p className="text-xs text-slate-500 font-bold leading-relaxed">
+                Your account has been banned. If you think this is a mistake, contact us at <span className="text-foreground">worktoearn@gmail.com</span> or on Telegram for assistance.
+              </p>
+            </div>
+          )}
 
           <button
             onClick={() => signIn('google', { callbackUrl: '/' })}
@@ -42,5 +58,13 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   );
 }

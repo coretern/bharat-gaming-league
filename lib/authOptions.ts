@@ -14,11 +14,18 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   callbacks: {
     async signIn({ user, account }) {
-      // Save / update user in DB on every login
       try {
         await connectDB();
+        const email = user.email?.toLowerCase();
+        
+        // Find user first to check ban status
+        const existingUser = await User.findOne({ email });
+        if (existingUser?.isBanned) {
+          throw new Error('BAN_ACTIVE');
+        }
+
         await User.findOneAndUpdate(
-          { email: user.email?.toLowerCase() },
+          { email },
           {
             $set: {
               name: user.name || '',
@@ -31,7 +38,8 @@ export const authOptions: NextAuthOptions = {
           },
           { upsert: true, new: true }
         );
-      } catch (err) {
+      } catch (err: any) {
+        if (err.message === 'BAN_ACTIVE') throw err;
         console.error('Failed to save user to DB:', err);
       }
       return true;
@@ -53,17 +61,18 @@ export const authOptions: NextAuthOptions = {
       if (user?.image) token.picture = user.image;
       if (user?.name) token.name = user.name;
 
-      // ── Check if user still exists in DB ──
-      // Only check when email is known (skip on first sign-in creation)
-      if (email && !user) {
+      // ── Check user status in DB ──
+      if (email) {
         try {
           await connectDB();
-          const dbUser = await User.findOne({ email }).select('_id').lean();
+          const dbUser = await User.findOne({ email }).select('_id isBanned').lean();
           if (!dbUser) {
             token.deleted = true;
+          } else if (dbUser.isBanned) {
+            token.banned = true;
           }
         } catch {
-          // On DB error, don't block — let session continue
+          // On DB error, don't block
         }
       }
 
@@ -75,6 +84,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.sub;
         (session.user as any).isAdmin = token.isAdmin ?? false;
         (session.user as any).deleted = token.deleted ?? false;
+        (session.user as any).isBanned = token.banned ?? false;
         session.user.image = token.picture as string;
       }
       return session;

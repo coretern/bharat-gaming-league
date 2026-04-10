@@ -10,12 +10,11 @@ interface TournamentCardProps {
   title: string;
   game: 'BGMI' | 'Free Fire';
   prizePool: string;
-  entryFee: string;
   date: string;
   time: string;
   slots: string;
   image: string;
-  status: 'Open' | 'Closed' | 'Coming Soon';
+  status?: 'Open' | 'Closed' | 'Coming Soon';
 }
 
 export default function TournamentCard({
@@ -23,7 +22,6 @@ export default function TournamentCard({
   title,
   game,
   prizePool,
-  entryFee,
   date,
   time,
   slots,
@@ -33,7 +31,7 @@ export default function TournamentCard({
   const isBGMI = game === 'BGMI';
 
   return (
-    <div className="glass-card group overflow-hidden border-foreground/5 hover:border-foreground/20 transition-all">
+    <div className="glass-card group overflow-hidden border-foreground/5 hover:border-foreground/20 transition-all font-bold">
       <div className="relative h-48 overflow-hidden">
         <Image 
           src={image} 
@@ -76,7 +74,7 @@ export default function TournamentCard({
             <DollarSign className="w-4 h-4 text-neon-purple" />
             <div className="flex flex-col">
               <span className="text-[10px] text-slate-500 uppercase font-black">Entry Fee</span>
-              <span className="text-sm font-black italic text-foreground">{entryFee}</span>
+              <span className="text-sm font-black italic text-foreground">₹36 - ₹144</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -95,14 +93,14 @@ export default function TournamentCard({
           </div>
         </div>
 
-        <Link href={`/register?tournament=${id}`}>
+        <Link href={status === 'Open' ? `/register?tournament=${id}` : '#'} className={cn(status !== 'Open' && "pointer-events-none")}>
           <button className={cn(
             "w-full h-12 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-sm transition-all shadow-md",
             status === 'Open' 
               ? isBGMI ? "bg-neon-cyan text-black" : "bg-neon-purple text-white"
               : "bg-foreground/5 text-slate-500 cursor-not-allowed border border-foreground/10"
           )}>
-            {status === 'Open' ? 'Register' : 'Closed'}
+            {status === 'Open' ? 'Register' : status}
             {status === 'Open' && <ArrowRight className="w-4 h-4" />}
           </button>
         </Link>

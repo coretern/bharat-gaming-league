@@ -16,8 +16,10 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 interface MyReg {
   _id: string;
   tournamentName: string;
+  matchType: string;
   teamName: string;
   status: 'Pending' | 'Approved' | 'Rejected';
+  rejectionReason?: string;
   paymentVerified: boolean;
   createdAt: string;
 }
@@ -113,10 +115,7 @@ function DashboardPage() {
 
           {/* Profile card with theme toggle in corner */}
           <div className="glass-card p-4 flex items-center gap-4 relative">
-            {/* Theme toggle — top right */}
-            <div className="absolute top-3 right-3">
-              <ThemeToggle />
-            </div>
+
 
             {user.image ? (
               <Image src={user.image} alt="avatar" width={56} height={56}
@@ -202,10 +201,7 @@ function DashboardPage() {
               </button>
             </div>
 
-            <div className="glass-card p-4 flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground/40 uppercase tracking-widest">Theme</span>
-              <ThemeToggle />
-            </div>
+
           </div>
 
           {/* Main Content — full width on mobile, 3-cols on desktop */}
@@ -282,13 +278,23 @@ function DashboardPage() {
                             <div className="flex items-start justify-between gap-2 mb-3">
                               <div className="flex items-start gap-2">
                                 <Trophy className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                                <p className="font-black italic uppercase text-sm text-foreground leading-tight">{reg.tournamentName}</p>
+                                <div>
+                                    <p className="font-black italic uppercase text-sm text-foreground leading-tight">{reg.tournamentName}</p>
+                                    <span className="text-[9px] font-black uppercase text-neon-purple mt-0.5 inline-block">{reg.matchType}</span>
+                                </div>
                               </div>
                               <StatusBadge status={reg.status} />
                             </div>
 
+                            {reg.status === 'Rejected' && reg.rejectionReason && (
+                                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                                    <p className="text-[9px] font-black uppercase text-red-500 mb-1">Reason for Rejection:</p>
+                                    <p className="text-xs font-bold text-red-700 dark:text-red-400 italic">"{reg.rejectionReason}"</p>
+                                </div>
+                            )}
+
                             {/* Info row */}
-                            <div className="grid grid-cols-3 gap-3 text-xs">
+                            <div className="grid grid-cols-3 gap-3 text-xs mb-4">
                               <div>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Team</p>
                                 <p className="font-bold text-foreground truncate">{reg.teamName}</p>
@@ -307,6 +313,15 @@ function DashboardPage() {
                                 </p>
                               </div>
                             </div>
+
+                            {reg.status === 'Rejected' && (
+                                <Link 
+                                    href={`/register?tournament=${reg._id}&edit=true`}
+                                    className="block w-full text-center py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                                >
+                                    Edit & Resubmit
+                                </Link>
+                            )}
                           </div>
                         );
                       })}
@@ -319,6 +334,7 @@ function DashboardPage() {
                         <thead>
                           <tr className="bg-foreground/5 border-b border-foreground/5 text-foreground/40 text-[10px] font-black uppercase tracking-widest">
                             <th className="px-4 py-3">Tournament</th>
+                            <th className="px-4 py-3">Match</th>
                             <th className="px-4 py-3">Team</th>
                             <th className="px-4 py-3">Status</th>
                             <th className="px-4 py-3">Payment</th>
@@ -329,8 +345,21 @@ function DashboardPage() {
                           {myRegs.map(reg => (
                             <tr key={reg._id} className="hover:bg-foreground/5 transition-colors">
                               <td className="px-4 py-3 font-black italic uppercase text-xs">{reg.tournamentName}</td>
+                              <td className="px-4 py-3 text-[10px] font-black uppercase text-neon-purple">{reg.matchType}</td>
                               <td className="px-4 py-3 font-bold text-foreground/50 text-xs">{reg.teamName}</td>
-                              <td className="px-4 py-3"><StatusBadge status={reg.status} /></td>
+                              <td className="px-4 py-3">
+                                <div className="space-y-2">
+                                    <StatusBadge status={reg.status} />
+                                    {reg.status === 'Rejected' && (
+                                        <div className="flex flex-col gap-1">
+                                            {reg.rejectionReason && (
+                                                <p className="text-[9px] text-red-500 font-bold italic leading-tight max-w-[150px]">"{reg.rejectionReason}"</p>
+                                            )}
+                                            <Link href={`/register?tournament=${reg._id}&edit=true`} className="text-[9px] font-black uppercase text-neon-cyan hover:underline">Edit & Resubmit</Link>
+                                        </div>
+                                    )}
+                                </div>
+                              </td>
                               <td className="px-4 py-3">
                                 {reg.paymentVerified
                                   ? <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>

@@ -1,17 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TournamentCard from "@/components/TournamentCard";
-import { tournaments } from "@/data/tournaments";
 import { Search, Trophy } from "lucide-react";
 
 export default function TournamentsPage() {
   const [filter, setFilter] = useState<'All' | 'BGMI' | 'Free Fire'>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [liveTournaments, setLiveTournaments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredTournaments = tournaments.filter(t => {
+  useEffect(() => {
+    fetch('/api/tournaments')
+      .then(res => res.json())
+      .then(data => {
+        setLiveTournaments(Array.isArray(data) ? data : []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredTournaments = liveTournaments.filter(t => {
     const matchesFilter = filter === 'All' || t.game === filter;
     const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
@@ -64,7 +74,11 @@ export default function TournamentsPage() {
         </div>
 
         {/* Results Grid */}
-        {filteredTournaments.length > 0 ? (
+        {loading ? (
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-24">
+             {[1, 2, 3, 4].map(i => <div key={i} className="h-[400px] rounded-3xl bg-foreground/5 animate-pulse" />)}
+           </div>
+        ) : filteredTournaments.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-24">
             {filteredTournaments.map((tournament) => (
               <TournamentCard key={tournament.id} {...tournament} />

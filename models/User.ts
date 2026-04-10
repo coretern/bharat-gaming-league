@@ -8,6 +8,7 @@ export interface IUser extends Document {
   firstLoginAt: Date;
   lastLoginAt: Date;
   loginCount: number;
+  isBanned: boolean;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -18,6 +19,7 @@ const UserSchema = new Schema<IUser>({
   firstLoginAt: { type: Date, default: Date.now },
   lastLoginAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 1 },
+  isBanned: { type: Boolean, default: false },
 });
 
 export const User = models.User || mongoose.model<IUser>('User', UserSchema);

@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, Home, User, Menu, X, LogIn, LogOut, ShieldCheck } from 'lucide-react';
+import { Trophy, Home, User, Menu, X, LogIn, LogOut, ShieldCheck, Medal } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
@@ -12,6 +13,7 @@ import Image from 'next/image';
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Tournaments', href: '/tournaments', icon: Trophy },
+  { name: 'Winners', href: '/winners', icon: Medal },
   { name: 'Rules', href: '/rules', icon: ShieldCheck },
 ];
 
@@ -82,6 +84,8 @@ export default function Navbar() {
             </Link>
           ))}
 
+
+          <ThemeToggle />
 
           {status === 'loading' ? null : session ? (
             <div className="flex items-center gap-3">
@@ -157,6 +161,10 @@ export default function Navbar() {
               My Dashboard
             </Link>
           )}
+          <div className="flex items-center justify-between p-3">
+             <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Theme</span>
+             <ThemeToggle />
+          </div>
           <div className="pt-2 border-t border-foreground/5">
             {session ? (
               <button
