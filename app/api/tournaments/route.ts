@@ -42,3 +42,19 @@ export async function GET() {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+export async function POST(req: Request) {
+  try {
+    await connectDB();
+    const body = await req.json();
+    
+    // Auto-generate ID if not provided
+    if (!body.id) {
+      body.id = body.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    }
+
+    const t = await Tournament.create(body);
+    return NextResponse.json(t);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

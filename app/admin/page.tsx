@@ -72,6 +72,17 @@ export default function AdminPanel() {
   const [editTour, setEditTour] = useState<any | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ email: string, stage: number } | null>(null);
+  const [showCreateTour, setShowCreateTour] = useState(false);
+  const [newTour, setNewTour] = useState({
+    title: '',
+    game: 'BGMI',
+    prizePool: '₹50,000',
+    date: '',
+    time: '08:00 PM',
+    slots: '0/100',
+    image: '/bgmi-thumb.png',
+    status: 'Open'
+  });
   const [showAddWinner, setShowAddWinner] = useState(false);
   const [newWinner, setNewWinner] = useState({
     tournamentId: '',
@@ -133,6 +144,26 @@ export default function AdminPanel() {
       toast.error('Failed to load winners');
     } finally {
       setLoadingWinners(false);
+    }
+  };
+
+  const createTournament = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdating('new-tour');
+    try {
+      const res = await fetch('/api/tournaments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTour)
+      });
+      if (!res.ok) throw new Error('Failed to create');
+      toast.success('Tournament created!');
+      setShowCreateTour(false);
+      fetchTournaments();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -560,7 +591,7 @@ export default function AdminPanel() {
               <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                     <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">All Tournaments</h2>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-neon-purple text-white rounded-xl text-xs font-black uppercase hover:bg-neon-purple/90 transition-all shadow-lg active:scale-95">
+                    <button onClick={() => setShowCreateTour(true)} className="flex items-center gap-2 px-4 py-2 bg-neon-purple text-white rounded-xl text-xs font-black uppercase hover:bg-neon-purple/90 transition-all shadow-lg active:scale-95">
                         <Plus className="w-4 h-4" /> Create New
                     </button>
                 </div>
@@ -943,6 +974,76 @@ export default function AdminPanel() {
                     <button type="submit" disabled={updating === 'new-winner'}
                         className="w-full h-14 mt-6 rounded-2xl bg-neon-cyan text-white font-black uppercase text-sm tracking-widest hover:bg-neon-cyan/90 disabled:opacity-50 transition-all shadow-lg active:scale-95">
                         {updating === 'new-winner' ? 'Recording...' : 'Publish Winner'}
+                    </button>
+                </form>
+            </div>
+        </div>
+      )}
+      {/* Create Tournament Modal */}
+      {showCreateTour && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowCreateTour(false)}>
+            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl p-8 relative my-8" onClick={e => e.stopPropagation()}>
+                <button onClick={() => setShowCreateTour(false)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"><X className="w-6 h-6" /></button>
+                <header className="mb-6">
+                    <h2 className="text-2xl font-black italic uppercase text-foreground">Launch New <span className="text-neon-purple">Tournament</span></h2>
+                    <p className="text-xs text-slate-500 font-bold tracking-widest uppercase mt-1">Start a new gaming event</p>
+                </header>
+
+                <form onSubmit={createTournament} className="space-y-4">
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Tournament Title</label>
+                        <input required placeholder="eg. BGMI Winter Cup" value={newTour.title} onChange={e => setNewTour({...newTour, title: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Select Game</label>
+                            <select value={newTour.game} onChange={e => setNewTour({...newTour, game: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold">
+                                <option value="BGMI">BGMI</option>
+                                <option value="Free Fire">Free Fire</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Prize Pool</label>
+                            <input required placeholder="eg. ₹1,00,000" value={newTour.prizePool} onChange={e => setNewTour({...newTour, prizePool: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Date</label>
+                            <input required placeholder="eg. 25 Oct 2026" value={newTour.date} onChange={e => setNewTour({...newTour, date: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Time</label>
+                            <input required placeholder="eg. 09:00 PM" value={newTour.time} onChange={e => setNewTour({...newTour, time: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Total Slots</label>
+                            <input required placeholder="eg. 0/100" value={newTour.slots} onChange={e => setNewTour({...newTour, slots: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Status</label>
+                            <select value={newTour.status} onChange={e => setNewTour({...newTour, status: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold">
+                                <option value="Open">Open</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Coming Soon">Coming Soon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Thumbnail URL</label>
+                        <input required placeholder="/bgmi-thumb.png" value={newTour.image} onChange={e => setNewTour({...newTour, image: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
+                        <p className="text-[8px] text-slate-400 mt-1 italic uppercase">Default thumbnails: /bgmi-thumb.png or /ff-thumb.png</p>
+                    </div>
+
+                    <button type="submit" disabled={updating === 'new-tour'}
+                        className="w-full h-14 mt-6 rounded-2xl bg-neon-purple text-white font-black uppercase text-sm tracking-widest hover:bg-neon-purple/90 disabled:opacity-50 transition-all shadow-lg active:scale-95">
+                        {updating === 'new-tour' ? 'Creating...' : 'Launch Tournament'}
                     </button>
                 </form>
             </div>
