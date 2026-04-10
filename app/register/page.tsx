@@ -26,6 +26,7 @@ function RegistrationForm() {
   const [existingQrUrl, setExistingQrUrl] = useState('');
   const [isPaid, setIsPaid] = useState(false);
   const [rejectionTargets, setRejectionTargets] = useState<string[]>([]);
+  const [rejectionIndices, setRejectionIndices] = useState<number[]>([]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,7 @@ function RegistrationForm() {
                     setExistingQrUrl(reg.payoutDetails?.qrCodeUrl || '');
                     setIsPaid(reg.paymentVerified || reg.paymentStatus === 'Paid');
                     setRejectionTargets(reg.rejectionTargets || []);
+                    setRejectionIndices((reg.rejectionIndices || []).map((i: any) => Number(i)));
                     
                     // Fetch tournament info for header
                     const tRes = await fetch('/api/tournaments');
@@ -274,37 +276,47 @@ function RegistrationForm() {
                 </h3>
               </div>
               
+              {rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx) && (
+                <div className="p-3 mb-4 rounded-xl bg-green-500/5 border border-green-500/10 flex items-center gap-3">
+                  <ShieldCheck className="w-4 h-4 text-green-500" />
+                  <p className="text-[10px] font-black uppercase text-slate-500">Screenshot Verified · <span className="text-green-500">Locked by Admin</span></p>
+                </div>
+              )}
+              
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name <span className="text-red-500">*</span></label>
-                  <input required value={player.name} onChange={e => updatePlayer(idx, 'name', e.target.value)} type="text" placeholder="Gamer Name"
+                  <input required 
+                    value={player.name} onChange={e => updatePlayer(idx, 'name', e.target.value)} type="text" placeholder="Gamer Name"
                     className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm focus:ring-2 focus:ring-neon-purple/20 transition-all outline-none" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Game UID <span className="text-red-500">*</span></label>
-                  <input required value={player.uid} onChange={e => updatePlayer(idx, 'uid', e.target.value)} type="text" placeholder="123456789"
+                  <input required 
+                    value={player.uid} onChange={e => updatePlayer(idx, 'uid', e.target.value)} type="text" placeholder="123456789"
                     className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm focus:ring-2 focus:ring-neon-purple/20 transition-all outline-none" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Instagram Profile</label>
-                <input value={player.instagram} onChange={e => updatePlayer(idx, 'instagram', e.target.value)} type="url" placeholder="https://instagram.com/profile"
+                <input 
+                  value={player.instagram} onChange={e => updatePlayer(idx, 'instagram', e.target.value)} type="url" placeholder="https://instagram.com/profile"
                   className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm focus:ring-2 focus:ring-neon-purple/20 transition-all outline-none" />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Game Profile Screenshot <span className="text-red-500">*</span></label>
-                <div className="relative h-14 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 flex items-center gap-3 overflow-hidden group hover:border-neon-purple/50 transition-colors">
+                <div className={`relative h-14 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 flex items-center gap-3 overflow-hidden group transition-colors ${isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx) ? 'opacity-50' : 'hover:border-neon-purple/50'}`}>
                     <Upload className="w-4 h-4 text-slate-400 group-hover:text-neon-purple transition-colors" />
                     <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300">
-                        {(!rejectionTargets.includes('profiles') && isEdit) ? 'Locked (Already Received)' : player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
+                        {(isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx)) ? 'Locked (Verified)' : player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
                     </span>
                     <input 
-                      disabled={isEdit && !rejectionTargets.includes('profiles')}
-                      required={!isEdit || rejectionTargets.includes('profiles')} 
+                      disabled={isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx)}
+                      required={!isEdit || (rejectionTargets.includes('profiles') && rejectionIndices.includes(idx))} 
                       type="file" accept="image/*" onChange={e => updatePlayer(idx, 'file', e.target.files?.[0] || null)}
-                      className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && !rejectionTargets.includes('profiles') ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
+                      className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx) ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
                 </div>
               </div>
             </div>

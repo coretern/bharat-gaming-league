@@ -24,9 +24,10 @@ const RegistrationSchema = new Schema({
   paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
   orderId: { type: String },
   paymentVerified: { type: Boolean, default: false },
-  rejectionReason: { type: String },
-  rejectionTargets: [String],
-  previousRejectionReason: { type: String },
+   rejectionReason: { type: String },
+   rejectionTargets: [String],
+   rejectionIndices: [Number],
+   previousRejectionReason: { type: String },
   isResubmitted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });

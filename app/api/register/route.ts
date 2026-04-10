@@ -252,8 +252,10 @@ export async function PUT(req: NextRequest) {
             players,
             'payoutDetails.qrCodeUrl': qrCodeUrl,
             status: 'Pending', // Reset status
-            previousRejectionReason: existing.rejectionReason, // Save old reason
             rejectionReason: '', // Clear current reason for user
+            rejectionTargets: [],
+            rejectionIndices: [],
+            previousRejectionReason: existing.rejectionReason, // Save old reason
             isResubmitted: true,
             orderId: orderId, // Update order ID if new payment session created
         }
