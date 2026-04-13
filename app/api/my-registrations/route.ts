@@ -9,8 +9,12 @@ export async function GET(req: NextRequest) {
     if (!token?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const emailParam = req.nextUrl.searchParams.get('email');
+    const isAdmin = (token as any)?.isAdmin === true;
+    const targetEmail = (isAdmin && emailParam) ? emailParam : token.email;
+
     await connectDB();
-    const registrations = await Registration.find({ userEmail: token.email }).sort({ createdAt: -1 }).lean();
+    const registrations = await Registration.find({ userEmail: targetEmail }).sort({ createdAt: -1 }).lean();
     
     // Explicitly verify fields are present
     const sanitized = registrations.map((r: any) => ({

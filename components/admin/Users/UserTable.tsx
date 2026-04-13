@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { RefreshCw, Clock, ShieldCheck, ShieldAlert, Trash2 } from 'lucide-react';
 import { SiteUser } from '../../types/admin';
@@ -56,14 +57,14 @@ const UserTable: React.FC<UserTableProps> = ({
             {users.map((user) => (
               <tr key={user.email} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
+                  <Link href={`/dashboard?view=${user.email}`} target="_blank" className="flex items-center gap-3 group/user">
                     {user.image ? (
-                      <Image src={user.image} alt={user.name} width={28} height={28} className="rounded-full shadow-sm" />
+                      <Image src={user.image} alt={user.name} width={28} height={28} className="rounded-full shadow-sm group-hover/user:ring-2 group-hover/user:ring-google-blue transition-all" />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-google-blue flex items-center justify-center text-[10px] text-white font-bold uppercase">{user.name.charAt(0)}</div>
+                      <div className="w-7 h-7 rounded-full bg-google-blue flex items-center justify-center text-[10px] text-white font-bold uppercase group-hover/user:scale-110 transition-all">{user.name.charAt(0)}</div>
                     )}
-                    <p className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-tight">{user.name}</p>
-                  </div>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-tight group-hover/user:text-google-blue transition-colors underline decoration-slate-200 decoration-1 underline-offset-4">{user.name}</p>
+                  </Link>
                 </td>
                 <td className="px-6 py-4 text-xs font-medium text-slate-500 tracking-tight">{user.email}</td>
                 <td className="px-6 py-4">
