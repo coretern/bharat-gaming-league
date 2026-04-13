@@ -20,17 +20,17 @@ interface RegistrationsTabProps {
 
 function StatusBadge({ status }: { status: string }) {
   if (status === 'Approved') return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-green-500/10 text-green-500 border border-green-500/20">
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-green-50 text-google-green border border-green-100">
       <CheckCircle2 className="w-3 h-3" /> Approved
     </span>
   );
   if (status === 'Rejected') return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/10 text-red-500 border border-red-500/20">
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-50 text-google-red border border-red-100">
       <XCircle className="w-3 h-3" /> Rejected
     </span>
   );
   return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">
+    <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-yellow-50 text-google-yellow border border-yellow-100">
       <Clock className="w-3 h-3" /> Pending
     </span>
   );
@@ -38,13 +38,13 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsTabProps) {
   return (
-    <div className="glass-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-foreground/5 flex items-center justify-between gap-2">
-        <h2 className="font-black italic uppercase tracking-tight text-foreground text-sm">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2">
+        <h2 className="font-semibold text-slate-900 dark:text-white text-base">
           My Registrations
-          <span className="ml-2 text-foreground/40 font-bold">({myRegs.length})</span>
+          <span className="ml-2 text-slate-400 font-medium text-sm">({myRegs.length})</span>
         </h2>
-        <Link href="/tournaments" className="text-xs font-bold text-neon-cyan hover:text-neon-purple transition-colors whitespace-nowrap shrink-0">
+        <Link href="/tournaments" className="text-sm font-medium text-google-blue hover:underline whitespace-nowrap shrink-0">
           + Register More
         </Link>
       </div>
@@ -118,46 +118,44 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
 
           {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left">
               <thead>
-                <tr className="bg-foreground/5 border-b border-foreground/5 text-foreground/40 text-[10px] font-black uppercase tracking-widest">
-                  <th className="px-4 py-3">Tournament</th>
-                  <th className="px-4 py-3">Match</th>
-                  <th className="px-4 py-3">Team</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Payment</th>
-                  <th className="px-4 py-3">Date</th>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-medium">
+                  <th className="px-6 py-4">Tournament</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Team</th>
+                  <th className="px-6 py-4">Payment</th>
+                  <th className="px-6 py-4">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-foreground/5 text-sm text-foreground">
+              <tbody className="divide-y divide-slate-100 text-sm">
                 {myRegs.map(reg => (
-                  <tr key={reg._id} className="hover:bg-foreground/5 transition-colors">
-                    <td className="px-4 py-3 font-black italic uppercase text-xs">{reg.tournamentName}</td>
-                    <td className="px-4 py-3 text-[10px] font-black uppercase text-neon-purple">{reg.matchType}</td>
-                    <td className="px-4 py-3 font-bold text-foreground/50 text-xs">{reg.teamName}</td>
-                    <td className="px-4 py-3">
-                      <div className="space-y-1.5 mt-1 min-w-[140px]">
+                  <tr key={reg._id} className="hover:bg-blue-50/20 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-900 dark:text-white">{reg.tournamentName}</span>
+                        <span className="text-[10px] text-google-blue font-bold uppercase">{reg.matchType}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="min-w-[140px] space-y-2">
                           <StatusBadge status={reg.status} />
                           {reg.status === 'Rejected' && (
-                              <div className="space-y-2">
-                                  <div className="bg-red-50 dark:bg-red-500/5 p-3 rounded-2xl border border-red-500/10">
-                                      <p className="text-[11px] font-bold text-red-600 dark:text-red-400">"{reg.rejectionReason || 'No reason specified'}"</p>
-                                  </div>
-                                  <Link href={`/register?tournament=${reg._id}&edit=true`} 
-                                      className="block px-3 py-1.5 rounded-xl bg-neon-cyan/10 text-[10px] font-black uppercase text-neon-cyan hover:bg-neon-cyan hover:text-white transition-all text-center">
-                                      Edit & Resubmit
-                                  </Link>
-                              </div>
+                              <Link href={`/register?tournament=${reg._id}&edit=true`} 
+                                  className="inline-block px-3 py-1 rounded-md bg-google-red/10 text-[10px] font-bold text-google-red hover:bg-google-red hover:text-white transition-all">
+                                  Resubmit
+                              </Link>
                           )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4 text-slate-600 font-medium">{reg.teamName}</td>
+                    <td className="px-6 py-4">
                       {reg.paymentVerified
-                        ? <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>
-                        : <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
+                        ? <span className="flex items-center gap-1 text-[10px] font-bold text-google-green"><ShieldCheck className="w-4 h-4" />Verified</span>
+                        : <span className="flex items-center gap-1 text-[10px] font-bold text-google-yellow"><ShieldAlert className="w-4 h-4" />Pending</span>
                       }
                     </td>
-                    <td className="px-4 py-3 text-[10px] text-foreground/40 font-bold">{new Date(reg.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-xs text-slate-500">{new Date(reg.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
