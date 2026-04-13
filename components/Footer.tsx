@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Twitter, Instagram, Youtube } from 'lucide-react';
+import { Twitter, Instagram, Youtube, Mail, MessageCircle, Send } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 const socials = [
   { icon: Twitter, href: '#', label: 'Twitter' },
@@ -18,10 +19,11 @@ const supportLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          <div className="col-span-1 md:col-span-1">
+    <footer className="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800">
+      <div className="container mx-auto px-6 pt-12 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
+          {/* Brand Column */}
+          <div className="md:col-span-4">
             <Link href="/" className="flex items-center gap-2 mb-6">
               <Image src="/logo.png" alt="Bharat Gaming League" width={32} height={32} className="rounded-lg" />
               <div className="flex flex-col">
@@ -31,33 +33,35 @@ export default function Footer() {
                 <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">League</span>
               </div>
             </Link>
-            <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium">
-              India's leading platform for competitive esports since 2021. Secure, transparent, and built for the serious gamer.
+            <p className="text-slate-500 text-sm leading-relaxed mb-6 font-medium max-w-sm">
+              India's premier competitive gaming platform. Building a safe and transparent ecosystem for professional esports athletes.
             </p>
             <div className="flex items-center gap-4">
               {socials.map(({ icon: Icon, href, label }) => (
-                <a key={label} href={href} className="text-slate-400 hover:text-google-blue transition-colors">
-                  <Icon className="w-5 h-5" />
+                <a key={label} href={href} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-google-blue transition-colors border border-slate-100 dark:border-slate-800">
+                  <Icon className="w-4 h-4" />
                 </a>
               ))}
             </div>
           </div>
 
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Platform</h4>
+          {/* Links Column 1 */}
+          <div className="md:col-span-2">
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-6">Platform</h4>
             <ul className="space-y-4">
-              <li><Link href="/tournaments" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Browse Matches</Link></li>
-              <li><Link href="/winners" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Hall of Fame</Link></li>
-              <li><Link href="/rules" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Tournament Rules</Link></li>
+              <li><Link href="/tournaments" className="text-slate-500 hover:text-google-blue text-xs font-bold uppercase transition-colors">Tournaments</Link></li>
+              <li><Link href="/winners" className="text-slate-500 hover:text-google-blue text-xs font-bold uppercase transition-colors">View Winners</Link></li>
+              <li><Link href="/rules" className="text-slate-500 hover:text-google-blue text-xs font-bold uppercase transition-colors">Regulations</Link></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Support</h4>
+          {/* Links Column 2 */}
+          <div className="md:col-span-3">
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-6">Support</h4>
             <ul className="space-y-4">
               {supportLinks.map(link => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">
+                  <Link href={link.href} className="text-slate-500 hover:text-google-blue text-xs font-bold uppercase transition-colors">
                     {link.name}
                   </Link>
                 </li>
@@ -65,31 +69,43 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Contact</h4>
-            <ul className="space-y-4 text-sm text-slate-500 font-medium">
-              <li className="flex items-center gap-3">
-                <span className="text-google-blue">📧</span>
-                <a href="mailto:worktoearn@gmail.com" className="hover:text-google-blue">worktoearn@gmail.com</a>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-google-green">📱</span>
-                <a href="https://wa.me/917488168228" className="hover:text-google-green">WhatsApp Support</a>
-              </li>
-              <li>
-                <div className="mt-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Telegram Community</p>
-                   <a href="https://t.me/freefire_tounamentt" className="text-xs font-bold text-google-blue hover:underline">t.me/freefire_tounamentt</a>
+          {/* Contact Column */}
+          <div className="md:col-span-3">
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-6">Connect</h4>
+            <div className="space-y-4">
+              <a href="mailto:worktoearn@gmail.com" className="group flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 transition-colors hover:border-google-blue/30">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-500/10 text-google-blue">
+                   <Mail className="w-4 h-4" />
                 </div>
-              </li>
-            </ul>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Email Support</span>
+              </a>
+              <a href="https://wa.me/917488168228" className="group flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 transition-colors hover:border-google-green/30">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 dark:bg-green-500/10 text-google-green">
+                   <MessageCircle className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">WhatsApp Live</span>
+              </a>
+              <a href="https://t.me/freefire_tounamentt" className="group flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 transition-colors hover:border-google-blue/30">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-500/10 text-google-blue">
+                   <Send className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Telegram Community</span>
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-          <p>© 2026 Bharat Gaming League. All rights reserved.</p>
-          <div className="flex gap-6">
-            <p>Built for the next generation of esports</p>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest text-center md:text-left">
+            <p>© 2026 Bharat Gaming League</p>
+            <span className="hidden md:inline opacity-20">•</span>
+            <p>India's Premier Esports Hub</p>
+          </div>
+          
+          <div className="flex items-center gap-4">
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Preferences</p>
+             <ThemeToggle />
           </div>
         </div>
       </div>

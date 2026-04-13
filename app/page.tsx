@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import TournamentCard from "@/components/TournamentCard";
 import { Trophy, TrendingUp, ShieldCheck, Zap, Heart } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -35,37 +36,89 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue text-[10px] font-bold uppercase tracking-widest mb-6">
-             <span className="w-1.5 h-1.5 rounded-full bg-google-blue animate-pulse" />
-             Trusted Esports Platform
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight max-w-4xl mx-auto">
-             Level up your game inIndia's top <span className="text-google-blue">Competitive</span> league
-          </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 font-medium">
-             Enter safe, transparent, and high-payout tournaments. Daily events for BGMI and Free Fire with instant prize distribution.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-             <Link href="/tournaments" className="w-full sm:w-auto px-10 py-4 bg-google-blue text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-all active:scale-95">
-                Join Tournament
-             </Link>
-             <Link href="/winners" className="w-full sm:w-auto px-10 py-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg font-bold hover:bg-slate-50 transition-all">
-                View Winners
-             </Link>
+      <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+           <Image 
+             src="/assets/hero-bg.png" 
+             alt="Background" 
+             fill 
+             className="object-cover opacity-[0.03] dark:opacity-[0.07]"
+             priority
+           />
+           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white dark:via-slate-950/50 dark:to-slate-950" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-google-blue text-[10px] font-bold uppercase tracking-[0.15em] mb-10 transition-transform hover:scale-105 duration-300 cursor-default">
+                 <div className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-google-blue opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-google-blue"></span>
+                 </div>
+                 India's #1 Trusted Esports Platform
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8 leading-[1.1]">
+                 Level up your game in <span className="text-google-blue">India's</span> top league
+              </h1>
+              <p className="text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 mb-10 font-medium leading-relaxed">
+                 Join thousands of players competing in daily safe, transparent, and high-payout tournaments. Experience the next era of competitive gaming.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                 <Link href="/tournaments" className="w-full sm:w-auto px-10 py-4 bg-google-blue text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-all hover:-translate-y-0.5 active:translate-y-0">
+                    Join Tournament
+                 </Link>
+                 <Link href="/winners" className="w-full sm:w-auto px-10 py-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-800 rounded-lg font-bold hover:bg-slate-50 transition-all">
+                    View Winners
+                 </Link>
+              </div>
+            </div>
+
+            {/* Visual Element for Desktop */}
+            <div className="hidden lg:block relative">
+               <div className="absolute -inset-4 bg-gradient-to-tr from-google-blue/10 to-transparent blur-3xl opacity-50" />
+               <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl aspect-[4/3] max-h-[480px]">
+                 <Image 
+                   src="/assets/gaming-hero.png" 
+                   alt="Pro Gaming Setup" 
+                   fill
+                   className="object-cover"
+                   priority
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
+                 <div className="absolute bottom-4 left-4 right-4">
+                    <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+                       <div className="flex items-center gap-2 mb-1">
+                          <div className="w-1.5 h-1.5 rounded-full bg-google-green animate-pulse" />
+                          <p className="text-[10px] font-bold text-white uppercase tracking-widest">Global Championship Live</p>
+                       </div>
+                       <p className="text-sm font-bold text-white">Join 12,400+ Active Players Today</p>
+                    </div>
+                 </div>
+               </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Winners Ticker */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-3 overflow-hidden">
-        <div className="flex gap-12 animate-[marquee_25s_linear_infinite] whitespace-nowrap">
-          {[...winners, ...winners].map((w, i) => (
-            <div key={i} className="flex items-center gap-2 px-4">
-              <span className="text-xs font-bold text-slate-900 dark:text-white">{w.team}</span>
-              <span className="text-[10px] text-slate-400 font-medium">won {w.prize} in</span>
-              <span className="text-[10px] text-google-blue font-bold tracking-tight uppercase">{w.tournament}</span>
+      <div className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 py-4 overflow-hidden backdrop-blur-sm">
+        <div className="flex gap-16 animate-[marquee_40s_linear_infinite] whitespace-nowrap items-center">
+          {[...winners, ...winners, ...winners].map((w, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-google-green shadow-[0_0_8px_rgba(52,168,83,0.5)]" />
+                 <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-tight">{w.team}</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Payout Success</span>
+              <span className="text-xs font-bold text-google-green">+{w.prize}</span>
+              <span className="text-[10px] text-slate-400 font-medium italic">in</span>
+              <span className="text-[10px] text-google-blue font-bold tracking-widest uppercase bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-500/20">{w.tournament}</span>
+              
+              {/* Divider between items */}
+              <div className="w-8 h-px bg-slate-200 dark:bg-slate-800 mx-4 opacity-50" />
             </div>
           ))}
         </div>

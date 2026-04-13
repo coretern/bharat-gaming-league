@@ -19,11 +19,10 @@ export function ThemeToggle() {
   const modes = [
     { value: 'light', icon: Sun },
     { value: 'dark', icon: Moon },
-    { value: 'system', icon: Monitor },
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
+    <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full">
       {modes.map((mode) => (
         <button
           key={mode.value}
@@ -31,8 +30,8 @@ export function ThemeToggle() {
           className={cn(
             "w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300",
             theme === mode.value 
-              ? "bg-neon-cyan text-black shadow-[0_0_10px_rgba(0,242,255,0.5)]" 
-              : "text-slate-400 hover:text-white"
+              ? "bg-white dark:bg-slate-900 text-google-blue shadow-sm ring-1 ring-slate-200 dark:ring-slate-700" 
+              : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           )}
           title={`Switch to ${mode.value} mode`}
         >

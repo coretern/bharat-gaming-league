@@ -88,7 +88,7 @@ export default function Navbar() {
           {status === 'loading' ? null : session ? (
             <div className="flex items-center gap-4">
               <Link href="/dashboard" className="flex items-center gap-2 group">
-                <div className="w-8 h-8 rounded-full border border-slate-200 overflow-hidden transition-all group-hover:border-google-blue">
+                <div className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 overflow-hidden transition-all group-hover:border-google-blue">
                    <img src={session.user?.image || ''} alt="avatar" className="w-full h-full object-cover" />
                 </div>
                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-google-blue transition-colors">Dashboard</span>
@@ -97,7 +97,7 @@ export default function Navbar() {
                 onClick={() => signOut()}
                 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-google-red transition-colors"
               >
-                Logout
+                <LogOut className="w-4 h-4" />
               </button>
             </div>
           ) : (
@@ -120,42 +120,46 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden mt-3 bg-white dark:bg-slate-900 rounded-2xl p-4 flex flex-col gap-2 shadow-2xl border border-slate-200 dark:border-slate-800 mx-4">
+        <div className="md:hidden mt-3 bg-white dark:bg-slate-900 rounded-2xl p-4 flex flex-col gap-2 shadow-2xl border border-slate-200 dark:border-slate-800 mx-4 overflow-hidden">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
               className={cn(
-                "text-sm font-bold p-3 rounded-lg transition-colors flex items-center justify-between",
-                pathname === link.href ? "bg-blue-50 text-google-blue" : "text-slate-500 hover:bg-slate-50"
+                "text-sm font-bold p-3 rounded-lg transition-colors flex items-center gap-3",
+                pathname === link.href ? "bg-blue-50 dark:bg-blue-500/10 text-google-blue font-bold" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
               )}
             >
-              {link.name}
-              <ArrowRight className="w-4 h-4" />
+              <link.icon className={cn("w-4 h-4", pathname === link.href ? "text-google-blue" : "text-slate-400")} />
+              <span className="flex-1">{link.name}</span>
+              <ArrowRight className="w-3 h-3 opacity-30" />
             </Link>
           ))}
           <div className="border-t border-slate-100 dark:border-slate-800 my-2 pt-2">
             {session ? (
               <div className="space-y-2">
                 <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3 p-3 text-sm font-bold text-slate-700 dark:text-white bg-slate-50 dark:bg-slate-800 rounded-lg">
-                   <div className="w-8 h-8 rounded-full border border-slate-200 overflow-hidden">
+                   <div className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 overflow-hidden">
                       <img src={session.user?.image || ''} alt="avatar" className="w-full h-full object-cover" />
                    </div>
-                   Dashboard
+                   <span className="flex-1">Dashboard</span>
+                   <User className="w-4 h-4 text-slate-400" />
                 </Link>
                 <button
                   onClick={() => { signOut(); setIsOpen(false); }}
-                  className="w-full p-3 text-sm font-bold text-google-red text-left"
+                  className="w-full p-3 text-sm font-bold text-google-red text-left flex items-center gap-3"
                 >
+                  <LogOut className="w-4 h-4" />
                   Logout
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => { signIn('google'); setIsOpen(false); }}
-                className="w-full bg-google-blue text-white py-3 rounded-xl text-sm font-bold shadow-md"
+                className="w-full bg-google-blue text-white py-3 rounded-xl text-sm font-bold shadow-md flex items-center justify-center gap-2"
               >
+                <LogIn className="w-4 h-4" />
                 Sign In with Google
               </button>
             )}

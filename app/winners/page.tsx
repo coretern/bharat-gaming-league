@@ -53,7 +53,7 @@ export default function WinnersPage() {
         {/* Header Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-100 dark:border-yellow-500/20 text-yellow-600 text-[10px] font-bold uppercase tracking-widest mb-6">
-             🏆 Hall of Fame
+             🏆 View Winners
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
             Tournament <span className="text-google-blue">Legends</span>
