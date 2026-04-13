@@ -116,6 +116,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const currentCount = await Registration.countDocuments({ tournamentId });
+    const groupNumber = Math.floor(currentCount / 48) + 1;
+    const slotNumber = (currentCount % 48) + 1;
+
     const registration = await Registration.create({
       userId: token.sub || token.email,
       userName: token.name || 'Unknown',
@@ -130,6 +134,8 @@ export async function POST(req: NextRequest) {
       players,
       payoutDetails,
       orderId,
+      groupNumber,
+      slotNumber,
       paymentStatus: orderAmount > 0 ? 'Pending' : 'Paid',
       paymentVerified: orderAmount === 0
     });
@@ -271,7 +277,7 @@ export async function GET() {
   try {
     await connectDB();
     const registrations = await Registration.find().sort({ createdAt: -1 }).lean();
-    console.log('Fetched count:', registrations.length);
+    console.log('Sample Registration:', registrations[0]?.teamName, 'Group:', registrations[0]?.groupNumber);
     return NextResponse.json(registrations);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

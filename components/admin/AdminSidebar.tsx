@@ -1,16 +1,18 @@
 import React from 'react';
-import { Users, Trophy, Medal } from "lucide-react";
+import { Users, Trophy, Medal, Image as ImageIcon } from "lucide-react";
 
 interface AdminSidebarProps {
   user: { name?: string | null; image?: string | null };
   activeTab: string;
   setActiveTab: (tab: any) => void;
+  onTabClick?: (tab: string) => void;
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({
   user,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  onTabClick
 }) => {
   return (
     <aside className="lg:col-span-1 space-y-4">
@@ -27,8 +29,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       </div>
 
       <nav className="bg-white dark:bg-slate-900 rounded-xl py-2 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)]">
-          {(['Registrations', 'Tournaments', 'Users', 'Winners'] as const).map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
+          {(['Registrations', 'Tournaments', 'Users', 'Winners', 'Media'] as const).map((tab) => (
+              <button key={tab} onClick={() => {
+                  if (activeTab === tab && onTabClick) {
+                    onTabClick(tab);
+                  }
+                  setActiveTab(tab);
+              }}
                   className={`w-full h-12 flex items-center gap-4 px-6 transition-all relative ${
                       activeTab === tab 
                         ? 'text-google-blue bg-blue-50/50 dark:bg-blue-500/10' 
@@ -39,6 +46,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   {tab === 'Tournaments' && <Trophy className="w-5 h-5" />}
                   {tab === 'Users' && <Users className="w-5 h-5" />}
                   {tab === 'Winners' && <Medal className="w-5 h-5" />}
+                  {tab === 'Media' && <ImageIcon className="w-5 h-5" />}
                   <span className="text-xs font-bold">{tab}</span>
               </button>
           ))}

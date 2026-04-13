@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Reg, SiteUser, Tournament, Winner } from '@/components/types/admin';
 
@@ -11,9 +12,35 @@ import { useWinnerActions } from './admin/useWinnerActions';
 
 export const useAdminLogic = () => {
   const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState<'Registrations' | 'Users' | 'Tournaments' | 'Winners'>('Registrations');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Initialize from URL or default to Registrations
+  const initialTab = (searchParams.get('tab') as any) || 'Registrations';
+  const [activeTab, setActiveTabState] = useState<'Registrations' | 'Users' | 'Tournaments' | 'Winners' | 'Media'>(initialTab);
+
+  // Wrapper to update URL when tab changes
+  const setActiveTab = (tab: 'Registrations' | 'Users' | 'Tournaments' | 'Winners' | 'Media') => {
+    setActiveTabState(tab);
+    // Update URL without full refresh
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.push(`/admin?${params.toString()}`, { scroll: false });
+  };
   const [registrations, setRegistrations] = useState<Reg[]>([]);
-  const [regFilter, setRegFilter] = useState<'Pending' | 'Approved' | 'Rejected'>('Pending');
+  
+  // Initialize filter from URL or default to Pending
+  const initialFilter = (searchParams.get('filter') as any) || 'Pending';
+  const [regFilter, setRegFilterState] = useState<'Pending' | 'Approved' | 'Rejected'>(initialFilter);
+
+  // Wrapper to update URL when filter changes
+  const setRegFilter = (filter: 'Pending' | 'Approved' | 'Rejected') => {
+    setRegFilterState(filter);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('filter', filter);
+    router.push(`/admin?${params.toString()}`, { scroll: false });
+  };
+
   const [siteUsers, setSiteUsers] = useState<SiteUser[]>([]);
   const [liveTournaments, setLiveTournaments] = useState<Tournament[]>([]);
   const [winners, setWinners] = useState<Winner[]>([]);
@@ -37,6 +64,8 @@ export const useAdminLogic = () => {
   const [tourSearch, setTourSearch] = useState('');
   const [tourGameFilter, setTourGameFilter] = useState('All');
   const [tourStatusFilter, setTourStatusFilter] = useState('All');
+  const [mediaSearch, setMediaSearch] = useState('');
+  const [mediaTypeFilter, setMediaTypeFilter] = useState<'All' | 'Profile' | 'Payout'>('All');
 
   const isAdmin = (session?.user as any)?.isAdmin === true;
 
@@ -94,7 +123,8 @@ export const useAdminLogic = () => {
     confirmBan, setConfirmBan,
     showCreateTour, setShowCreateTour, newTour, setNewTour, showAddWinner, setShowAddWinner, newWinner, setNewWinner,
     regSearch, setRegSearch, regTourFilter, setRegTourFilter, tourSearch, setTourSearch, tourGameFilter, setTourGameFilter,
-    tourStatusFilter, setTourStatusFilter, isAdmin, fetchUsers,
+    tourStatusFilter, setTourStatusFilter, isAdmin, 
+    fetchUsers, fetchRegistrations, fetchTournaments, loadWinnersData,
     handleUpdateStatus: (id: string, update: any) => rActions.handleUpdateStatus(id, update, setViewReg, setRejectingId),
     handleDeleteRegistration: (id: string) => rActions.handleDeleteRegistration(id, setViewReg),
     handleToggleBan: (email: string, currentStatus: boolean) => {
@@ -124,6 +154,52 @@ export const useAdminLogic = () => {
     handleSaveTournament: (e: any) => { e.preventDefault(); tActions.handleSaveTournament(editTour, setEditTour); },
     handleCreateTournament: (e: any) => { e.preventDefault(); tActions.handleCreateTournament(newTour, setShowCreateTour); },
     handleAddWinner: (e: any) => { e.preventDefault(); wActions.handleAddWinner(newWinner, setShowAddWinner); },
-    handleDeleteWinner: wActions.handleDeleteWinner
+    handleDeleteWinner: wActions.handleDeleteWinner,
+    onSyncGroups: async () => {
+      try {
+        const res = await fetch('/api/admin/sync-groups');
+        const data = await res.json();
+        if (data.success) {
+          toast.success(data.message);
+          await fetchRegistrations();
+        } else {
+          toast.error(data.error || 'Sync failed');
+        }
+      } catch {
+        toast.error('Network error during sync');
+      }
+    },
+    mediaList: registrations.flatMap(reg => {
+      const items: any[] = [];
+      if (reg.payoutDetails?.qrCodeUrl) {
+        items.push({ url: reg.payoutDetails.qrCodeUrl, type: 'Payout', regId: reg._id, fieldKey: 'qr', teamName: reg.teamName, createdAt: reg.createdAt });
+      }
+      reg.players.forEach((p, idx) => {
+        if (p.profileScreenshot) {
+          items.push({ url: p.profileScreenshot, type: 'Profile', regId: reg._id, fieldKey: `p${idx}`, teamName: reg.teamName, playerName: p.name, createdAt: reg.createdAt });
+        }
+      });
+      return items;
+    }).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .filter(m => mediaTypeFilter === 'All' || m.type === mediaTypeFilter)
+    .filter(m => !mediaSearch || m.teamName.toLowerCase().includes(mediaSearch.toLowerCase()) || m.playerName?.toLowerCase().includes(mediaSearch.toLowerCase())),
+    mediaSearch, setMediaSearch, mediaTypeFilter, setMediaTypeFilter,
+    handleDeleteMedia: async (regId: string, fieldKey: string) => {
+      if (!confirm('Are you sure you want to delete this photo? User will have to re-upload it.')) return;
+      try {
+        const res = await fetch('/api/admin/media', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ regId, fieldKey })
+        });
+        const data = await res.json();
+        if (data.success) {
+          toast.success('Media deleted successfully');
+          await fetchRegistrations();
+        } else {
+          toast.error(data.error || 'Failed to delete');
+        }
+      } catch { toast.error('Network error'); }
+    }
   };
 };

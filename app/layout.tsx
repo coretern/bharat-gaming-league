@@ -63,6 +63,7 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
         <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
       </body>
     </html>
   );

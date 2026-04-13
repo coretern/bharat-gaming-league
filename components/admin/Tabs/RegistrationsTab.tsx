@@ -16,6 +16,8 @@ interface RegistrationsTabProps {
   setRegTourFilter: (filter: string) => void;
   setViewReg: (reg: Reg) => void;
   handleDeleteRegistration: (id: string) => void;
+  onSync: () => void;
+  loadingRegs: boolean;
 }
 
 const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
@@ -28,8 +30,20 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
   regTourFilter,
   setRegTourFilter,
   setViewReg,
-  handleDeleteRegistration
+  handleDeleteRegistration,
+  onSync,
+  loadingRegs
 }) => {
+  const [syncing, setSyncing] = React.useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      await onSync();
+    } finally {
+      setSyncing(false);
+    }
+  };
   const exportToExcel = (data: any[], fileName: string) => {
     try {
       const ws = XLSX.utils.json_to_sheet(data);
@@ -86,6 +100,8 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                                 'Tournament': r.tournamentName,
                                 'Type': r.matchType,
                                 'Status': r.status,
+                                'Group': r.groupNumber ? `Group ${r.groupNumber}` : 'N/A',
+                                'Slot': r.slotNumber || 'N/A',
                                 'Payment': r.paymentVerified ? 'Verified' : 'Pending',
                                 'Date': new Date(r.createdAt).toLocaleString(),
                                 'Leader': r.players[0]?.name || 'N/A',
@@ -96,6 +112,17 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                     className="h-11 px-5 bg-google-green text-white rounded-xl text-xs font-bold shadow-lg shadow-green-500/10 hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                     <Download className="w-4 h-4" /> <span className="hidden sm:inline">Export</span>
+                </button>
+                
+                <button 
+                    onClick={handleSync}
+                    disabled={syncing || loadingRegs}
+                    className="h-11 px-5 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-lg shadow-slate-900/10 hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    <svg className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Groups'}</span>
                 </button>
               </div>
             </div>

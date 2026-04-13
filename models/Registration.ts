@@ -29,6 +29,8 @@ const RegistrationSchema = new Schema({
    rejectionIndices: [Number],
    previousRejectionReason: { type: String },
   isResubmitted: { type: Boolean, default: false },
+  groupNumber: { type: Number },
+  slotNumber: { type: Number },
   createdAt: { type: Date, default: Date.now },
 });
 

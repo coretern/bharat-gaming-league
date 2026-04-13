@@ -32,9 +32,11 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
       <table className="w-full text-left hidden md:table">
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800">
+            <th className="px-6 py-4 w-12 text-center">#</th>
             <th className="px-6 py-4">Team / Contact</th>
             <th className="px-6 py-4">Leader / UID</th>
             <th className="px-6 py-4">Tournament</th>
+            <th className="px-6 py-4">Group / Slot</th>
             <th className="px-6 py-4">Verification</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
@@ -45,8 +47,13 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
           ) : filteredRegs.length === 0 ? (
             <tr><td colSpan={5} className="py-12 text-center text-slate-400 font-medium text-sm">No registrations found in this view</td></tr>
           ) : (
-            filteredRegs.map((reg) => (
+            filteredRegs.map((reg, index) => (
               <tr key={reg._id} className="hover:bg-blue-50/30 dark:hover:bg-blue-500/5 transition-colors group">
+                <td className="px-6 py-4 text-center">
+                   <span className="text-[10px] font-black text-slate-300 dark:text-slate-600">
+                      {filteredRegs.length - index}
+                   </span>
+                </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <span className="font-bold text-slate-900 dark:text-white text-sm">{reg.teamName}</span>
@@ -69,13 +76,33 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${
-                    reg.paymentVerified 
-                      ? 'bg-green-50 text-google-green border-green-200 dark:bg-green-500/10 dark:border-green-500/20' 
-                      : 'bg-yellow-50 text-google-yellow border-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-500/20'
-                  }`}>
-                    {reg.paymentVerified ? 'Verified' : 'Pending'}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                       {reg.groupNumber ? `Group ${reg.groupNumber}` : 'N/A'}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+                       {reg.slotNumber ? `Slot ${reg.slotNumber}` : 'Pending Slot'}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col gap-1.5">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border w-fit ${
+                      reg.paymentVerified 
+                        ? 'bg-green-50 text-google-green border-green-200 dark:bg-green-500/10 dark:border-green-500/20' 
+                        : 'bg-yellow-50 text-google-yellow border-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-500/20'
+                    }`}>
+                      {reg.paymentVerified ? 'Verified' : 'Pending'}
+                    </span>
+                    <div className="flex flex-col leading-none">
+                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                          {new Date(reg.createdAt).toLocaleDateString('en-GB')}
+                       </span>
+                       <span className="text-[8px] font-medium text-slate-300 uppercase tracking-[0.1em]">
+                          {new Date(reg.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                       </span>
+                    </div>
+                  </div>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -123,18 +150,22 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                   </span>
                </div>
                
-               <div className="flex gap-10">
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Leader</p>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{reg.players[0]?.name || reg.userName}</p>
-                    <p className="text-[10px] text-slate-400 font-mono tracking-tighter mt-0.5">{reg.players[0]?.uid || 'N/A'}</p>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Match</p>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{reg.tournamentName}</p>
-                    <p className="text-[10px] text-google-blue font-bold uppercase tracking-wider mt-0.5">{reg.matchType}</p>
-                  </div>
-               </div>
+                <div className="flex gap-10">
+                   <div className="min-width-0">
+                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Leader</p>
+                     <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{reg.players[0]?.name || reg.userName}</p>
+                     <p className="text-[10px] text-slate-400 font-mono tracking-tighter mt-0.5">{reg.players[0]?.uid || 'N/A'}</p>
+                   </div>
+                   <div className="min-width-0">
+                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Assignment</p>
+                     <p className="text-xs font-bold text-google-blue truncate">
+                        {reg.groupNumber ? `Group ${reg.groupNumber}` : 'N/A'}
+                     </p>
+                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight mt-0.5">
+                        {reg.slotNumber ? `Slot ${reg.slotNumber}` : 'Pending Slot'}
+                     </p>
+                   </div>
+                </div>
 
                <div className="flex gap-2 pt-1">
                   <button onClick={() => setViewReg(reg)} className="flex-1 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-100 text-[10px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10">

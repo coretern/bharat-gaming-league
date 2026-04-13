@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import AuthModal from './AuthModal';
 
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
@@ -24,14 +25,29 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
       setScrollY(window.scrollY);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Auto-show Login prompting for first-time visitors in this session
+    if (status === 'unauthenticated') {
+      const hasShown = sessionStorage.getItem('auth_modal_shown');
+      if (!hasShown) {
+        const timer = setTimeout(() => {
+          setIsAuthModalOpen(true);
+          sessionStorage.setItem('auth_modal_shown', 'true');
+        }, 800);
+        return () => clearTimeout(timer);
+      }
+    }
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [status]);
 
   return (
     <>
@@ -101,12 +117,12 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => signIn('google')}
+            <Link
+              href="/login"
               className="bg-google-blue text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md transition-all active:scale-95"
             >
               Sign In
-            </button>
+            </Link>
           )}
         </div>
 
@@ -155,18 +171,20 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => { signIn('google'); setIsOpen(false); }}
+              <Link
+                href="/login"
+                onClick={() => setIsOpen(false)}
                 className="w-full bg-google-blue text-white py-3 rounded-xl text-sm font-bold shadow-md flex items-center justify-center gap-2"
               >
                 <LogIn className="w-4 h-4" />
                 Sign In with Google
-              </button>
+              </Link>
             )}
           </div>
         </div>
       )}
     </nav>
+    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 }

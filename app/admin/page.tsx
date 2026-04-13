@@ -15,6 +15,7 @@ import AdminModals from '@/components/admin/AdminModals';
 import RegistrationsTab from '@/components/admin/Tabs/RegistrationsTab';
 import TournamentsTab from '@/components/admin/Tabs/TournamentsTab';
 import WinnersTab from '@/components/admin/Tabs/WinnersTab';
+import MediaTab from '@/components/admin/Tabs/MediaTab';
 import UserTable from '@/components/admin/Users/UserTable';
 
 export default function AdminPanel() {
@@ -51,6 +52,12 @@ export default function AdminPanel() {
             user={session.user || {}} 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
+            onTabClick={(tab) => {
+              if (tab === 'Users') adminState.fetchUsers();
+              if (tab === 'Registrations') adminState.fetchRegistrations();
+              if (tab === 'Tournaments') adminState.fetchTournaments();
+              if (tab === 'Winners') adminState.loadWinnersData();
+            }}
           />
 
           <div className="lg:col-span-3 space-y-6">
@@ -66,6 +73,8 @@ export default function AdminPanel() {
                 setRegTourFilter={adminState.setRegTourFilter}
                 setViewReg={adminState.setViewReg}
                 handleDeleteRegistration={adminState.handleDeleteRegistration}
+                onSync={adminState.onSyncGroups}
+                loadingRegs={adminState.loading}
               />
             )}
 
@@ -108,6 +117,18 @@ export default function AdminPanel() {
                 loadingWinners={adminState.loadingWinners}
                 setShowAddWinner={adminState.setShowAddWinner}
                 handleDeleteWinner={adminState.handleDeleteWinner}
+              />
+            )}
+
+            {activeTab === 'Media' && (
+              <MediaTab 
+                mediaList={adminState.mediaList}
+                mediaSearch={adminState.mediaSearch}
+                setMediaSearch={adminState.setMediaSearch}
+                mediaTypeFilter={adminState.mediaTypeFilter}
+                setMediaTypeFilter={adminState.setMediaTypeFilter}
+                setPreviewImg={adminState.setPreviewImg}
+                onDeleteMedia={adminState.handleDeleteMedia}
               />
             )}
           </div>

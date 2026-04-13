@@ -29,6 +29,8 @@ export interface Reg {
   isResubmitted?: boolean;
   paymentVerified: boolean;
   orderId?: string;
+  groupNumber?: number;
+  slotNumber?: number;
   createdAt: string;
 }
 
@@ -37,8 +39,9 @@ export interface SiteUser {
   email: string;
   name: string;
   image: string;
-  createdAt: string;
-  lastLogin?: string;
+  createdAt?: string;
+  firstLoginAt: string;
+  lastLoginAt: string;
   loginCount: number;
   isBanned: boolean;
 }
@@ -65,4 +68,14 @@ export interface Winner {
   teamName: string;
   amount: string;
   date: string;
+}
+
+export interface CloudinaryMedia {
+  url: string;
+  type: 'Profile' | 'Payout';
+  regId: string;
+  fieldKey: string; // e.g., 'qr' or 'p0', 'p1'...
+  teamName: string;
+  playerName?: string;
+  createdAt: string;
 }

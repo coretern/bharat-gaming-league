@@ -68,7 +68,9 @@ const UserTable: React.FC<UserTableProps> = ({
                 <td className="px-6 py-4 text-xs font-medium text-slate-500 tracking-tight">{user.email}</td>
                 <td className="px-6 py-4">
                    <div className="flex flex-col">
-                      <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-tighter">{new Date(user.createdAt).toLocaleDateString()}</p>
+                      <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-tighter">
+                        {user.firstLoginAt ? `${new Date(user.firstLoginAt).toLocaleDateString('en-GB')} ${new Date(user.firstLoginAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : 'N/A'}
+                      </p>
                       <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Registered</p>
                    </div>
                 </td>
@@ -156,7 +158,7 @@ const UserTable: React.FC<UserTableProps> = ({
                <div className="flex items-center justify-between pt-2">
                   <div className="flex flex-col">
                     <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-tighter">
-                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                      {user.firstLoginAt ? `${new Date(user.firstLoginAt).toLocaleDateString()} ${new Date(user.firstLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'N/A'}
                     </p>
                     <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Joined Platform</p>
                   </div>
