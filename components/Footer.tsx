@@ -18,93 +18,80 @@ const supportLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-background border-t border-foreground/5 relative">
-      {/* Top purple gradient line */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
-
-      <div className="container mx-auto px-6 py-14">
-
-        {/* Main 3-col grid: Brand | Support | Contact */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-
-          {/* Col 1: Brand */}
-          <div>
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <Image src="/logo.png" alt="Bharat Gaming League" width={38} height={38} className="rounded-xl" />
-              <span className="text-lg font-black tracking-tighter text-foreground uppercase italic leading-tight">
-                Bharat<span className="text-neon-cyan">Gaming</span>
-                <span className="block text-[10px] font-black tracking-[0.3em] text-foreground/40 normal-case not-italic">League</span>
-              </span>
+    <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="col-span-1 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2 mb-6">
+              <Image src="/logo.png" alt="Bharat Gaming League" width={32} height={32} className="rounded-lg" />
+              <div className="flex flex-col">
+                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                  BHARAT<span className="text-google-blue">GAMING</span>
+                </span>
+                <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">League</span>
+              </div>
             </Link>
-            <p className="text-foreground/50 text-sm leading-relaxed mb-6">
-              India's most trusted esports platform — running since 2021. Fair play, big prizes, timely payouts.
+            <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium">
+              India's leading platform for competitive esports since 2021. Secure, transparent, and built for the serious gamer.
             </p>
-            {/* Social icons */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-4">
               {socials.map(({ icon: Icon, href, label }) => (
-                <a key={label} href={href} aria-label={label}
-                  className="w-9 h-9 rounded-full glass-card flex items-center justify-center text-foreground/50 hover:text-neon-cyan transition-all">
-                  <Icon className="w-4 h-4" />
+                <a key={label} href={href} className="text-slate-400 hover:text-google-blue transition-colors">
+                  <Icon className="w-5 h-5" />
                 </a>
               ))}
-              {/* Telegram */}
-              <a href="https://t.me/freefire_tounamentt" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
-                className="w-9 h-9 rounded-full glass-card flex items-center justify-center text-foreground/50 hover:text-[#29b6f6] transition-all">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.16 13.67l-2.964-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.992.889z"/>
-                </svg>
-              </a>
             </div>
           </div>
 
-          {/* Col 2: Support */}
           <div>
-            <h4 className="text-foreground font-black uppercase tracking-widest text-xs mb-5">Support</h4>
-            <ul className="space-y-3">
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Platform</h4>
+            <ul className="space-y-4">
+              <li><Link href="/tournaments" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Browse Matches</Link></li>
+              <li><Link href="/winners" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Hall of Fame</Link></li>
+              <li><Link href="/rules" className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">Tournament Rules</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Support</h4>
+            <ul className="space-y-4">
               {supportLinks.map(link => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-foreground/50 hover:text-neon-cyan text-sm font-medium transition-colors">
+                  <Link href={link.href} className="text-slate-500 hover:text-google-blue text-sm font-medium transition-colors">
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Col 3: Contact */}
           <div>
-            <h4 className="text-foreground font-black uppercase tracking-widest text-xs mb-5">Contact Us</h4>
-            <ul className="space-y-3 text-sm text-foreground/50 font-medium">
-              <li className="flex items-start gap-2">
-                <span>📧</span>
-                <a href="mailto:worktoearn@gmail.com" className="hover:text-neon-cyan transition-colors">worktoearn@gmail.com</a>
+            <h4 className="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-6">Contact</h4>
+            <ul className="space-y-4 text-sm text-slate-500 font-medium">
+              <li className="flex items-center gap-3">
+                <span className="text-google-blue">📧</span>
+                <a href="mailto:worktoearn@gmail.com" className="hover:text-google-blue">worktoearn@gmail.com</a>
               </li>
-              <li className="flex items-start gap-2">
-                <span>📱</span>
-                <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-colors">WhatsApp: +91 7488168228</a>
+              <li className="flex items-center gap-3">
+                <span className="text-google-green">📱</span>
+                <a href="https://wa.me/917488168228" className="hover:text-google-green">WhatsApp Support</a>
               </li>
-              <li className="flex items-start gap-2">
-                <span>🕐</span>
-                <span>Mon–Sat, 10am – 8pm</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>✈️</span>
-                <a href="https://t.me/freefire_tounamentt" target="_blank" rel="noopener noreferrer"
-                  className="text-[#29b6f6] hover:underline font-bold">
-                  t.me/freefire_tounamentt
-                </a>
+              <li>
+                <div className="mt-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Telegram Community</p>
+                   <a href="https://t.me/freefire_tounamentt" className="text-xs font-bold text-google-blue hover:underline">t.me/freefire_tounamentt</a>
+                </div>
               </li>
             </ul>
           </div>
-
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-6 border-t border-foreground/5 flex flex-col sm:flex-row justify-between items-center gap-2 text-foreground/30 text-xs font-bold uppercase tracking-widest">
-          <p>© 2026 Bharat Gaming League.</p>
-          <p>Designed with ❤️ for Gamers</p>
+        <div className="pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+          <p>© 2026 Bharat Gaming League. All rights reserved.</p>
+          <div className="flex gap-6">
+            <p>Built for the next generation of esports</p>
+          </div>
         </div>
-
       </div>
     </footer>
   );

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, Home, User, Menu, X, LogIn, LogOut, ShieldCheck, Medal } from 'lucide-react';
+import { Trophy, Home, User, Menu, X, LogIn, LogOut, ShieldCheck, Medal, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -49,136 +49,114 @@ export default function Navbar() {
       />
       <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
       <div className={cn(
-        "max-w-7xl mx-auto flex items-center justify-between glass-card px-6 py-3 shadow-lg transition-all duration-300",
-        scrolled
-          ? "bg-background/90 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-          : "bg-background/60 backdrop-blur-md"
+        "max-w-7xl mx-auto flex items-center justify-between bg-white dark:bg-slate-900 px-6 py-2.5 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] rounded-full transition-all duration-300 border border-slate-200 dark:border-slate-800",
+        scrolled && "shadow-lg border-transparent"
       )}>
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.png"
             alt="Bharat Gaming League"
-            width={40}
-            height={40}
-            className="rounded-xl"
+            width={32}
+            height={32}
+            className="rounded-lg"
           />
-          <span className="text-xl font-black tracking-tighter text-foreground uppercase italic leading-tight">
-            Bharat<span className="text-neon-cyan">Gaming</span>
-            <span className="block text-[10px] font-black tracking-[0.3em] text-slate-500 normal-case not-italic">League</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+              BHARAT<span className="text-google-blue">GAMING</span>
+            </span>
+            <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">League</span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               className={cn(
-                "text-sm font-semibold transition-all hover:text-neon-cyan flex items-center gap-1.5",
-                pathname === link.href ? "text-neon-cyan" : "text-slate-500 hover:text-foreground"
+                "text-xs font-bold uppercase tracking-wider transition-all",
+                pathname === link.href ? "text-google-blue" : "text-slate-500 hover:text-google-blue"
               )}
             >
-              <link.icon className="w-4 h-4" />
               {link.name}
             </Link>
           ))}
 
-
-          <ThemeToggle />
+          <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2" />
 
           {status === 'loading' ? null : session ? (
-            <div className="flex items-center gap-3">
-              {/* Profile pic → links to dashboard */}
-              <Link href="/dashboard" title="My Dashboard">
-                {session.user?.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt="avatar"
-                    width={36}
-                    height={36}
-                    className="rounded-full ring-2 ring-neon-cyan/40 hover:ring-neon-cyan transition-all cursor-pointer"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-neon-purple/20 flex items-center justify-center ring-2 ring-neon-purple/40 hover:ring-neon-purple transition-all cursor-pointer">
-                    <User className="w-4 h-4 text-neon-purple" />
-                  </div>
-                )}
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className="flex items-center gap-2 group">
+                <div className="w-8 h-8 rounded-full border border-slate-200 overflow-hidden transition-all group-hover:border-google-blue">
+                   <img src={session.user?.image || ''} alt="avatar" className="w-full h-full object-cover" />
+                </div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-google-blue transition-colors">Dashboard</span>
               </Link>
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-red-500 transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-google-red transition-colors"
               >
-                <LogOut className="w-4 h-4" /> Logout
+                Logout
               </button>
             </div>
           ) : (
             <button
               onClick={() => signIn('google')}
-              className="flex items-center gap-2 btn-neon-purple text-xs uppercase tracking-widest px-5"
+              className="bg-google-blue text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md transition-all active:scale-95"
             >
-              <LogIn className="w-4 h-4" /> Sign In
+              Sign In
             </button>
           )}
         </div>
 
-        {/* Mobile Toggle — only hamburger, no DP */}
+        {/* Mobile Toggle */}
         <div className="md:hidden flex items-center">
-          <button className="text-foreground p-1" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
-            {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+          <button className="text-slate-500 p-1" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden mt-2 glass-card p-5 flex flex-col gap-3 bg-background/95 backdrop-blur-3xl shadow-2xl">
+        <div className="md:hidden mt-3 bg-white dark:bg-slate-900 rounded-2xl p-4 flex flex-col gap-2 shadow-2xl border border-slate-200 dark:border-slate-800 mx-4">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
               className={cn(
-                "text-base font-bold flex items-center gap-3 p-3 rounded-xl transition-colors",
-                pathname === link.href ? "bg-neon-cyan/10 text-neon-cyan" : "text-slate-500 hover:bg-foreground/5 hover:text-foreground"
+                "text-sm font-bold p-3 rounded-lg transition-colors flex items-center justify-between",
+                pathname === link.href ? "bg-blue-50 text-google-blue" : "text-slate-500 hover:bg-slate-50"
               )}
             >
-              <link.icon className="w-5 h-5" />
               {link.name}
+              <ArrowRight className="w-4 h-4" />
             </Link>
           ))}
-          {/* Dashboard link in mobile menu when logged in */}
-          {session && (
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className={cn(
-                "text-base font-bold flex items-center gap-3 p-3 rounded-xl transition-colors",
-                pathname === '/dashboard' ? "bg-neon-cyan/10 text-neon-cyan" : "text-slate-500 hover:bg-foreground/5 hover:text-foreground"
-              )}
-            >
-              <User className="w-5 h-5" />
-              My Dashboard
-            </Link>
-          )}
-          <div className="flex items-center justify-between p-3">
-             <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Theme</span>
-             <ThemeToggle />
-          </div>
-          <div className="pt-2 border-t border-foreground/5">
+          <div className="border-t border-slate-100 dark:border-slate-800 my-2 pt-2">
             {session ? (
-              <button
-                onClick={() => { signOut(); setIsOpen(false); }}
-                className="w-full flex items-center gap-3 p-3 text-base font-bold text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
-              >
-                <LogOut className="w-5 h-5" /> Logout ({session.user?.name?.split(' ')[0]})
-              </button>
+              <div className="space-y-2">
+                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3 p-3 text-sm font-bold text-slate-700 dark:text-white bg-slate-50 dark:bg-slate-800 rounded-lg">
+                   <div className="w-8 h-8 rounded-full border border-slate-200 overflow-hidden">
+                      <img src={session.user?.image || ''} alt="avatar" className="w-full h-full object-cover" />
+                   </div>
+                   Dashboard
+                </Link>
+                <button
+                  onClick={() => { signOut(); setIsOpen(false); }}
+                  className="w-full p-3 text-sm font-bold text-google-red text-left"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => { signIn('google'); setIsOpen(false); }}
-                className="w-full btn-neon-purple py-3 text-sm uppercase tracking-widest flex items-center justify-center gap-2 mt-1"
+                className="w-full bg-google-blue text-white py-3 rounded-xl text-sm font-bold shadow-md"
               >
-                <LogIn className="w-4 h-4" /> Sign In with Google
+                Sign In with Google
               </button>
             )}
           </div>

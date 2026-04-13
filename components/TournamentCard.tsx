@@ -31,79 +31,79 @@ export default function TournamentCard({
   const isBGMI = game === 'BGMI';
 
   return (
-    <div className="glass-card group overflow-hidden border-foreground/5 hover:border-foreground/20 transition-all font-bold">
-      <div className="relative h-48 overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-[0_1px_3px_0_rgba(60,64,67,.30)] hover:shadow-xl transition-all group flex flex-col">
+      <div className="relative h-56 overflow-hidden">
         <Image 
           src={image} 
           alt={title} 
           fill 
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
-          className="object-cover"
+          className="object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-        
         <div className="absolute top-4 left-4 flex gap-2">
           <span className={cn(
-            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-            isBGMI ? "bg-neon-cyan text-black" : "bg-neon-purple text-white"
+            "px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider",
+            isBGMI ? "bg-google-blue text-white" : "bg-google-red text-white"
           )}>
             {game}
           </span>
           <span className={cn(
-            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-background border border-foreground/10",
-            status === 'Open' ? "text-green-500" : "text-amber-500"
+            "px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider bg-white/95 text-slate-900 shadow-sm",
+            status === 'Open' ? "text-google-green" : "text-google-yellow"
           )}>
             {status}
           </span>
         </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-xl font-black mb-4 uppercase tracking-tight italic group-hover:text-neon-cyan transition-colors line-clamp-1 text-foreground">
+      <div className="p-6 flex-1 flex flex-col">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-6 line-clamp-1 group-hover:text-google-blue transition-colors">
           {title}
         </h3>
 
-        <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-6">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-neon-cyan" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase font-black">Prize Pool</span>
-              <span className="text-sm font-black italic text-foreground">{prizePool}</span>
-            </div>
+        {/* Financial Breakdown Section */}
+        <div className="grid grid-cols-2 gap-px bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 mb-8">
+          <div className="bg-white dark:bg-slate-900 p-4">
+             <div className="flex items-center gap-1.5 mb-1">
+                <Trophy className="w-3 h-3 text-google-yellow" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Grand Prize</span>
+             </div>
+             <p className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{prizePool}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-neon-purple" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase font-black">Entry Fee</span>
-              <span className="text-sm font-black italic text-foreground">₹36 - ₹144</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-500" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase font-black">Date & Time</span>
-              <span className="text-sm font-black italic text-foreground">{date}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-slate-500" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase font-black">Remaining</span>
-              <span className="text-sm font-black italic text-foreground">{slots}</span>
-            </div>
+          <div className="bg-white dark:bg-slate-900 p-4 border-l border-slate-100 dark:border-slate-800">
+             <div className="flex items-center gap-1.5 mb-1">
+                <DollarSign className="w-3 h-3 text-google-green" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Entry Fee</span>
+             </div>
+             <p className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">₹36 - 144</p>
           </div>
         </div>
 
-        <Link href={status === 'Open' ? `/register?tournament=${id}` : '#'} className={cn(status !== 'Open' && "pointer-events-none")}>
+        {/* Status & Details Grid */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 mb-8">
+          <div>
+            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5">
+               <Users className="w-3 h-3" /> Availability
+            </p>
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{slots}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5">
+               <Calendar className="w-3 h-3" /> Match Date
+            </p>
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{date}</p>
+          </div>
+        </div>
+
+        <Link href={status === 'Open' ? `/register?tournament=${id}` : '#'} className={cn("mt-auto", status !== 'Open' && "pointer-events-none")}>
           <button className={cn(
-            "w-full h-12 rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-widest text-sm transition-all shadow-md",
+            "w-full py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all",
             status === 'Open' 
-              ? isBGMI ? "bg-neon-cyan text-black" : "bg-neon-purple text-white"
-              : "bg-foreground/5 text-slate-500 cursor-not-allowed border border-foreground/10"
+              ? "bg-google-blue text-white shadow-md hover:bg-blue-600"
+              : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
           )}>
-            {status === 'Open' ? 'Register' : status}
-            {status === 'Open' && <ArrowRight className="w-4 h-4" />}
+            {status === 'Open' ? 'Join Now' : status}
           </button>
         </Link>
       </div>

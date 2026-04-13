@@ -10,82 +10,78 @@ export const metadata: Metadata = {
 
 export default function RulesPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-40 pb-24">
       <Navbar />
-      <div className="container mx-auto px-6 pt-36 pb-24 max-w-3xl">
-        <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter mb-2">
-          Rules & <span className="text-neon-red">Regulations</span>
-        </h1>
-        <p className="text-foreground/40 text-sm mb-12">Effective: Season 5 · April 2026</p>
+      <div className="container mx-auto px-6 max-w-3xl">
+        <header className="mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+              Rules & <span className="text-google-red">Regulations</span>
+            </h1>
+            <p className="text-slate-500 font-medium text-sm">Last Updated: Season 5 · April 2026</p>
+        </header>
 
-        <div className="space-y-10 text-foreground/70 text-[15px] leading-relaxed">
-
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">1. Team Requirements</h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Each team must have a minimum of 4 active players (BGMI) or the required squad size for the respective game</li>
-              <li>All player UIDs must match in-game profiles — fake UIDs result in disqualification</li>
-              <li>Teams must register under a unique team name — duplicate names are not allowed</li>
-              <li>A player may only be registered with one team per tournament</li>
+        <div className="space-y-10">
+          <section className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h2 className="text-slate-900 dark:text-white font-bold text-base mb-4 flex items-center gap-2">
+               <div className="w-1.5 h-6 bg-google-blue rounded-full" />
+               1. Team Integrity
+            </h2>
+            <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-blue">•</span>
+                 Min 4 players (BGMI) or game-specific squad size.
+              </li>
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-blue">•</span>
+                 Verified In-Game IDs (UID) only. Fake IDs lead to immediate disqualification.
+              </li>
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-blue">•</span>
+                 One player, one team. Registration across multiple teams per tournament is banned.
+              </li>
             </ul>
           </section>
 
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">2. Registration Rules</h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Entry fee must be paid before the registration deadline</li>
-              <li>Payment screenshot must clearly show the transaction ID and amount</li>
-              <li>Registrations are only confirmed after admin verification</li>
-              <li>Entry fees are non-refundable unless the tournament is cancelled by BGL</li>
+          <section className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h2 className="text-slate-900 dark:text-white font-bold text-base mb-4 flex items-center gap-2">
+               <div className="w-1.5 h-6 bg-google-green rounded-full" />
+               2. Match Protocols
+            </h2>
+            <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-green">•</span>
+                 Room details shared 15 mins prior via official channels.
+              </li>
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-green">•</span>
+                 5-minute arrival window after room creation.
+              </li>
+              <li className="flex gap-3 leading-relaxed">
+                 <span className="text-google-green">•</span>
+                 Zero tolerance for toxic behavior or abusive language.
+              </li>
             </ul>
           </section>
 
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">3. Match Rules</h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Lobby codes are shared via WhatsApp/Telegram 15 minutes before match time</li>
-              <li>Teams must join the lobby within 5 minutes of room creation or forfeit their slot</li>
-              <li>Disconnection during a match is not grounds for a rematch unless server issues are confirmed</li>
-              <li>All participants must follow in-game etiquette and not abuse other players</li>
+          <section className="bg-slate-900 dark:bg-slate-800 p-8 rounded-2xl border border-slate-800 text-white shadow-xl">
+            <h2 className="text-google-red font-bold text-base mb-4 flex items-center gap-2 uppercase tracking-widest">
+               ⚠️ Prohibited Actions
+            </h2>
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">The following actions result in a permanent ban across all Bharat Gaming League events:</p>
+            <ul className="grid sm:grid-cols-2 gap-4 text-xs font-bold uppercase tracking-wide">
+               <li className="bg-slate-800 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-700">Third-Party Scripts</li>
+               <li className="bg-slate-800 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-700">Account Sharing</li>
+               <li className="bg-slate-800 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-700">Secret Teaming</li>
+               <li className="bg-slate-800 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-700">Admin Disregard</li>
             </ul>
           </section>
 
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">4. Prohibited Actions</h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Use of hacks, mods, scripts, or any third-party software that modifies gameplay</li>
-              <li>Account sharing or playing on behalf of another registered player</li>
-              <li>Teaming up with opponents outside of official team rosters</li>
-              <li>Threatening, harassing, or abusing admins or other players</li>
-              <li>Publishing lobby codes or match details on social media before the match</li>
-            </ul>
+          <section className="p-8">
+            <h2 className="text-slate-900 dark:text-white font-bold text-base mb-4">Official Verification</h2>
+            <p className="text-sm text-slate-500 leading-relaxed font-medium">
+              Bharat Gaming League administrators reserve the final right to all match decisions. Appeals can be filed within 24 hours of match completion via our WhatsApp support.
+            </p>
           </section>
-
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">5. Anti-Cheat Policy</h2>
-            <p>BGL admins spectate and record all matches. Any player found using unauthorized software will be permanently banned from all future tournaments. Evidence (screenshots/recordings) will be collected before any ban is issued. Ban appeals can be submitted to our support email within 48 hours.</p>
-          </section>
-
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">6. Prize Distribution</h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Winners are announced within 1 hour of the final match</li>
-              <li>Prize money is transferred within 24 hours via UPI/bank transfer</li>
-              <li>Winners must provide valid payment details within 12 hours of announcement</li>
-              <li>Unclaimed prizes after 72 hours are forfeited</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">7. Admin Decisions</h2>
-            <p>All decisions made by BGL admins during a tournament are final and binding. Disputes must be raised within 30 minutes of the relevant match via WhatsApp or Telegram. BGL reserves the right to modify tournament brackets, formats, or rules at any time for operational reasons.</p>
-          </section>
-
-          <section>
-            <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">8. Contact for Disputes</h2>
-            <p>Raise disputes via WhatsApp: <a href="https://wa.me/917488168228" target="_blank" rel="noopener noreferrer" className="text-neon-cyan hover:underline">+91 7488168228</a>, Telegram: <a href="https://t.me/freefire_tounamentt" className="text-neon-cyan hover:underline">t.me/freefire_tounamentt</a> or email: <a href="mailto:worktoearn@gmail.com" className="text-neon-cyan hover:underline">worktoearn@gmail.com</a></p>
-          </section>
-
         </div>
       </div>
       <Footer />
