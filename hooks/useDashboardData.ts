@@ -1,0 +1,73 @@
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+export interface MyReg {
+  _id: string;
+  tournamentName: string;
+  matchType: string;
+  teamName: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  rejectionReason?: string;
+  paymentVerified: boolean;
+  createdAt: string;
+}
+
+export const useDashboardData = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState('Profile');
+  const [myRegs, setMyRegs] = useState<MyReg[]>([]);
+  const [loadingRegs, setLoadingRegs] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') router.push('/login');
+  }, [status, router]);
+
+  const fetchMyRegs = async () => {
+    if (!session?.user?.email) return;
+    setLoadingRegs(true);
+    try {
+      const res = await fetch(`/api/my-registrations?t=${Date.now()}`, { cache: 'no-store' });
+      const data = await res.json();
+      setMyRegs(Array.isArray(data) ? data : []);
+    } catch {
+      setMyRegs([]);
+    } finally {
+      setLoadingRegs(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchMyRegs();
+
+      const orderId = searchParams.get('order_id');
+      if (orderId) {
+        fetch(`/api/payment/verify?order_id=${orderId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.status === 'PAID') {
+              import('react-hot-toast').then(t => t.default.success('Payment Verified! Registration Confirmed.'));
+              fetchMyRegs();
+            } else if (data.status === 'ACTIVE' || data.status === 'PENDING') {
+              import('react-hot-toast').then(t => t.default.error('Payment is still pending.'));
+            } else {
+              import('react-hot-toast').then(t => t.default.error(`Payment Status: ${data.status || 'Failed'}`));
+            }
+          });
+      }
+    }
+  }, [session, searchParams]);
+
+  return {
+    session,
+    status,
+    activeTab,
+    setActiveTab,
+    myRegs,
+    loadingRegs,
+    router
+  };
+};

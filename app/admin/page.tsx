@@ -11,77 +11,15 @@ import { useAdminLogic } from '@/hooks/useAdminLogic';
 // Components
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminStats from '@/components/admin/AdminStats';
+import AdminModals from '@/components/admin/AdminModals';
 import RegistrationsTab from '@/components/admin/Tabs/RegistrationsTab';
 import TournamentsTab from '@/components/admin/Tabs/TournamentsTab';
 import WinnersTab from '@/components/admin/Tabs/WinnersTab';
 import UserTable from '@/components/admin/Users/UserTable';
 
-// Modals
-import RegistrationDetailsModal from '@/components/admin/Registrations/RegistrationDetailsModal';
-import RejectionModal from '@/components/admin/Registrations/RejectionModal';
-import TournamentEditorModal from '@/components/admin/Tournaments/TournamentEditorModal';
-import TournamentCreateModal from '@/components/admin/Tournaments/TournamentCreateModal';
-import WinnerAddModal from '@/components/admin/Winners/WinnerAddModal';
-import ScreenshotModal from '@/components/admin/Shared/ScreenshotModal';
-
 export default function AdminPanel() {
-  const {
-    session,
-    status,
-    activeTab,
-    setActiveTab,
-    registrations,
-    regFilter,
-    setRegFilter,
-    siteUsers,
-    liveTournaments,
-    winners,
-    loading,
-    loadingUsers,
-    loadingTours,
-    loadingWinners,
-    previewImg,
-    setPreviewImg,
-    rejectingId,
-    setRejectingId,
-    rejectionOptions,
-    setRejectionOptions,
-    viewReg,
-    setViewReg,
-    editTour,
-    setEditTour,
-    updating,
-    confirmDelete,
-    setConfirmDelete,
-    showCreateTour,
-    setShowCreateTour,
-    newTour,
-    setNewTour,
-    showAddWinner,
-    setShowAddWinner,
-    newWinner,
-    setNewWinner,
-    regSearch,
-    setRegSearch,
-    regTourFilter,
-    setRegTourFilter,
-    tourSearch,
-    setTourSearch,
-    tourGameFilter,
-    setTourGameFilter,
-    tourStatusFilter,
-    setTourStatusFilter,
-    isAdmin,
-    fetchUsers,
-    handleUpdateStatus,
-    handleDeleteRegistration,
-    handleToggleBan,
-    handleDeleteUser,
-    handleSaveTournament,
-    handleCreateTournament,
-    handleAddWinner,
-    handleDeleteWinner
-  } = useAdminLogic();
+  const adminState = useAdminLogic();
+  const { session, status, activeTab, setActiveTab, isAdmin } = adminState;
 
   if (status === 'loading') return <div className="min-h-screen flex items-center justify-center font-black italic uppercase text-lg animate-pulse">Checking credentials...</div>;
   
@@ -102,10 +40,10 @@ export default function AdminPanel() {
       
       <div className="container mx-auto px-6 pt-32">
         <AdminStats 
-          registrations={registrations} 
-          siteUsers={siteUsers} 
-          liveTournaments={liveTournaments} 
-          winners={winners} 
+          registrations={adminState.registrations} 
+          siteUsers={adminState.siteUsers} 
+          liveTournaments={adminState.liveTournaments} 
+          winners={adminState.winners} 
         />
 
         <div className="grid lg:grid-cols-4 gap-8">
@@ -118,122 +56,70 @@ export default function AdminPanel() {
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'Registrations' && (
               <RegistrationsTab 
-                registrations={registrations}
-                loading={loading}
-                regFilter={regFilter}
-                setRegFilter={setRegFilter}
-                regSearch={regSearch}
-                setRegSearch={setRegSearch}
-                regTourFilter={regTourFilter}
-                setRegTourFilter={setRegTourFilter}
-                setViewReg={setViewReg}
-                handleDeleteRegistration={handleDeleteRegistration}
+                registrations={adminState.registrations}
+                loading={adminState.loading}
+                regFilter={adminState.regFilter}
+                setRegFilter={adminState.setRegFilter}
+                regSearch={adminState.regSearch}
+                setRegSearch={adminState.setRegSearch}
+                regTourFilter={adminState.regTourFilter}
+                setRegTourFilter={adminState.setRegTourFilter}
+                setViewReg={adminState.setViewReg}
+                handleDeleteRegistration={adminState.handleDeleteRegistration}
               />
             )}
 
             {activeTab === 'Users' && (
               <UserTable 
-                users={siteUsers} 
-                loading={loadingUsers} 
-                updating={updating} 
+                users={adminState.siteUsers} 
+                loading={adminState.loadingUsers} 
+                updating={adminState.updating} 
                 adminEmail={session.user?.email || undefined} 
-                confirmDelete={confirmDelete} 
-                onRefresh={fetchUsers} 
-                onToggleBan={handleToggleBan} 
-                onDeleteRequest={(email) => setConfirmDelete({ email, stage: 1 })} 
-                onDeleteCancel={() => setConfirmDelete(null)} 
+                confirmDelete={adminState.confirmDelete} 
+                onRefresh={adminState.fetchUsers} 
+                onToggleBan={adminState.handleToggleBan} 
+                onDeleteRequest={(email) => adminState.setConfirmDelete({ email, stage: 1 })} 
+                onDeleteCancel={() => adminState.setConfirmDelete(null)} 
                 onDeleteConfirm={(email, stage) => {
-                  if (stage === 1) setConfirmDelete({ email, stage: 2 });
-                  else handleDeleteUser(email);
+                  if (stage === 1) adminState.setConfirmDelete({ email, stage: 2 });
+                  else adminState.handleDeleteUser(email);
                 }} 
               />
             )}
 
             {activeTab === 'Tournaments' && (
               <TournamentsTab 
-                liveTournaments={liveTournaments}
-                loadingTours={loadingTours}
-                tourSearch={tourSearch}
-                setTourSearch={setTourSearch}
-                tourGameFilter={tourGameFilter}
-                setTourGameFilter={setTourGameFilter}
-                tourStatusFilter={tourStatusFilter}
-                setTourStatusFilter={setTourStatusFilter}
-                setShowCreateTour={setShowCreateTour}
-                setEditTour={setEditTour}
+                liveTournaments={adminState.liveTournaments}
+                loadingTours={adminState.loadingTours}
+                tourSearch={adminState.tourSearch}
+                setTourSearch={adminState.setTourSearch}
+                tourGameFilter={adminState.tourGameFilter}
+                setTourGameFilter={adminState.setTourGameFilter}
+                tourStatusFilter={adminState.tourStatusFilter}
+                setTourStatusFilter={adminState.setTourStatusFilter}
+                setShowCreateTour={adminState.setShowCreateTour}
+                setEditTour={adminState.setEditTour}
               />
             )}
 
             {activeTab === 'Winners' && (
               <WinnersTab 
-                winners={winners}
-                loadingWinners={loadingWinners}
-                setShowAddWinner={setShowAddWinner}
-                handleDeleteWinner={handleDeleteWinner}
+                winners={adminState.winners}
+                loadingWinners={adminState.loadingWinners}
+                setShowAddWinner={adminState.setShowAddWinner}
+                handleDeleteWinner={adminState.handleDeleteWinner}
               />
             )}
           </div>
         </div>
       </div>
 
-      {/* Modals */}
-      {previewImg && <ScreenshotModal url={previewImg} onClose={() => setPreviewImg(null)} />}
-      
-      {editTour && (
-        <TournamentEditorModal 
-          editTour={editTour} 
-          setEditTour={setEditTour} 
-          updating={updating} 
-          onClose={() => setEditTour(null)} 
-          onSave={handleSaveTournament} 
-        />
-      )}
-
-      {showCreateTour && (
-        <TournamentCreateModal 
-          newTour={newTour} 
-          setNewTour={setNewTour} 
-          updating={updating} 
-          onClose={() => setShowCreateTour(false)} 
-          onSubmit={handleCreateTournament} 
-        />
-      )}
-
-      {showAddWinner && (
-        <WinnerAddModal 
-          newWinner={newWinner} 
-          setNewWinner={setNewWinner} 
-          liveTournaments={liveTournaments} 
-          updating={updating} 
-          onClose={() => setShowAddWinner(false)} 
-          onSubmit={handleAddWinner} 
-        />
-      )}
-
-      {viewReg && (
-          <RegistrationDetailsModal 
-            viewReg={viewReg} 
-            updating={updating} 
-            onClose={() => setViewReg(null)} 
-            onDelete={handleDeleteRegistration} 
-            onApprove={(id) => handleUpdateStatus(id, { status: 'Approved' })} 
-            onRejectRequest={(id) => {
-              setRejectingId(id);
-              setRejectionOptions({ qr: false, profiles: false, playerIndices: [], msg: "" });
-            }} 
-            onPreviewImage={setPreviewImg} 
-          />
-      )}
-
-      {rejectingId && viewReg && (
-          <RejectionModal 
-            viewReg={viewReg} 
-            rejectionOptions={rejectionOptions} 
-            setRejectionOptions={setRejectionOptions} 
-            onCancel={() => setRejectingId(null)} 
-            onConfirm={(finalMsg, targets) => handleUpdateStatus(rejectingId, { status: 'Rejected', rejectionReason: finalMsg, rejectionTargets: targets, rejectionIndices: rejectionOptions.playerIndices, previousRejectionReason: viewReg.rejectionReason })} 
-          />
-      )}
+      <AdminModals 
+        {...adminState} 
+        handleSaveTournament={adminState.handleSaveTournament} 
+        handleCreateTournament={adminState.handleCreateTournament} 
+        handleAddWinner={adminState.handleAddWinner} 
+      />
       
       <Footer />
     </main>

@@ -1,405 +1,64 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Link from 'next/link';
-import {
-  User, Trophy, LogOut,
-  CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Plus
-} from 'lucide-react';
-import Image from 'next/image';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { User, Trophy } from 'lucide-react';
 
-interface MyReg {
-  _id: string;
-  tournamentName: string;
-  matchType: string;
-  teamName: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
-  rejectionReason?: string;
-  paymentVerified: boolean;
-  createdAt: string;
-}
+// Hook
+import { useDashboardData } from '@/hooks/useDashboardData';
+
+// Components
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import MobileDashboardHeader from '@/components/dashboard/MobileDashboardHeader';
+import ProfileTab from '@/components/dashboard/ProfileTab';
+import RegistrationsTab from '@/components/dashboard/RegistrationsTab';
 
 const navItems = [
   { name: 'Profile', icon: User },
   { name: 'My Registrations', icon: Trophy },
 ];
 
-function StatusBadge({ status }: { status: string }) {
-  if (status === 'Approved') return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-green-500/10 text-green-500 border border-green-500/20">
-      <CheckCircle2 className="w-3 h-3" /> Approved
-    </span>
-  );
-  if (status === 'Rejected') return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/10 text-red-500 border border-red-500/20">
-      <XCircle className="w-3 h-3" /> Rejected
-    </span>
-  );
+function DashboardContent() {
+  const { session, status, activeTab, setActiveTab, myRegs, loadingRegs } = useDashboardData();
+
+  if (status === 'loading') return <div className="min-h-screen bg-background flex items-center justify-center font-bold text-slate-500 uppercase italic animate-pulse">Checking Profile...</div>;
+  if (!session) return null;
+
   return (
-    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">
-      <Clock className="w-3 h-3" /> Pending
-    </span>
+    <div className="container mx-auto px-4 mt-6">
+      <MobileDashboardHeader 
+        user={session.user || {}} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        navItems={navItems} 
+      />
+
+      <div className="grid lg:grid-cols-4 gap-8">
+        <DashboardSidebar 
+          user={session.user || {}} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          navItems={navItems} 
+        />
+
+        <div className="lg:col-span-3 space-y-5">
+          {activeTab === 'Profile' && <ProfileTab user={session.user || {}} />}
+          {activeTab === 'My Registrations' && <RegistrationsTab myRegs={myRegs} loadingRegs={loadingRegs} />}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function DashboardPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState('Profile');
-  const [myRegs, setMyRegs] = useState<MyReg[]>([]);
-  const [loadingRegs, setLoadingRegs] = useState(false);
-
-  useEffect(() => {
-    if (status === 'unauthenticated') router.push('/login');
-  }, [status, router]);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      setLoadingRegs(true);
-      fetch(`/api/my-registrations?t=${Date.now()}`, { cache: 'no-store' })
-        .then(r => r.json())
-        .then(data => setMyRegs(Array.isArray(data) ? data : []))
-        .catch(() => setMyRegs([]))
-        .finally(() => setLoadingRegs(false));
-
-      // Handle payment verification if order_id is present
-      const orderId = searchParams.get('order_id');
-      if (orderId) {
-        fetch(`/api/payment/verify?order_id=${orderId}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.success && data.status === 'PAID') {
-              import('react-hot-toast').then(t => t.default.success('Payment Verified! Registration Confirmed.'));
-              // Refresh registrations to show updated status
-              fetch(`/api/my-registrations?t=${Date.now()}`, { cache: 'no-store' })
-                .then(r => r.json())
-                .then(d => setMyRegs(Array.isArray(d) ? d : []));
-            } else if (data.status === 'ACTIVE' || data.status === 'PENDING') {
-              import('react-hot-toast').then(t => t.default.error('Payment is still pending.'));
-            } else {
-              import('react-hot-toast').then(t => t.default.error(`Payment Status: ${data.status || 'Failed'}`));
-            }
-          })
-          .catch(err => {
-            console.error('Verification error:', err);
-          });
-      }
-    }
-  }, [session, searchParams]);
-
-  if (status === 'loading') {
-    return (
-      <main className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-slate-500 font-bold">Loading...</p>
-      </main>
-    );
-  }
-
-  if (!session) return null;
-
-  const user = session.user!;
-
+export default function DashboardPage() {
   return (
     <main className="min-h-screen pt-24 pb-24 bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 mt-6">
-
-        {/* ── MOBILE HEADER (hidden on lg) ── */}
-        <div className="lg:hidden space-y-3 mb-5">
-
-          {/* Profile card with theme toggle in corner */}
-          <div className="glass-card p-4 flex items-center gap-4 relative">
-
-
-            {user.image ? (
-              <Image src={user.image} alt="avatar" width={56} height={56}
-                className="rounded-full ring-2 ring-neon-cyan/30 shrink-0" />
-            ) : (
-              <div className="w-14 h-14 rounded-full bg-neon-purple/10 flex items-center justify-center shrink-0">
-                <User className="w-7 h-7 text-neon-purple" />
-              </div>
-            )}
-            <div className="min-w-0 flex-1 pr-24">
-              <p className="font-black italic uppercase tracking-tight text-foreground text-sm leading-tight truncate">{user.name}</p>
-              <p className="text-foreground/40 text-[11px] mt-0.5 truncate">{user.email}</p>
-              <span className="inline-block mt-1.5 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
-                Player
-              </span>
-            </div>
-          </div>
-
-          {/* Horizontal tab pills */}
-          <div className="glass-card p-1.5 flex gap-1.5">
-            {navItems.map(item => (
-              <button
-                key={item.name}
-                onClick={() => setActiveTab(item.name)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all ${
-                  activeTab === item.name
-                    ? 'bg-neon-purple/10 text-neon-purple border border-neon-purple/20'
-                    : 'text-foreground/40 hover:text-foreground hover:bg-foreground/5'
-                }`}
-              >
-                <item.icon className="w-3.5 h-3.5 shrink-0" />
-                {item.name === 'My Registrations' ? 'Registrations' : item.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Logout button */}
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black text-red-500 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5" /> Sign Out
-          </button>
-        </div>
-
-        {/* ── DESKTOP GRID (hidden on mobile) ── */}
-        <div className="grid lg:grid-cols-4 gap-8">
-
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:block lg:col-span-1 space-y-4">
-            <div className="glass-card p-6 text-center">
-              {user.image ? (
-                <Image src={user.image} alt="avatar" width={80} height={80}
-                  className="rounded-full mx-auto mb-3 ring-4 ring-neon-cyan/20" />
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-neon-purple/10 flex items-center justify-center mx-auto mb-3">
-                  <User className="w-10 h-10 text-neon-purple" />
-                </div>
-              )}
-              <h2 className="font-black italic uppercase tracking-tight text-foreground text-lg leading-tight">{user.name}</h2>
-              <p className="text-foreground/40 text-xs mt-1 break-all">{user.email}</p>
-              <span className="inline-block mt-3 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
-                Player
-              </span>
-            </div>
-
-            <div className="glass-card p-3">
-              {navItems.map(item => (
-                <button key={item.name} onClick={() => setActiveTab(item.name)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === item.name
-                      ? 'bg-neon-purple/10 text-neon-purple border border-neon-purple/20'
-                      : 'text-foreground/50 hover:bg-foreground/5 hover:text-foreground'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.name}
-                </button>
-              ))}
-              <button onClick={() => signOut({ callbackUrl: '/' })}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all mt-1">
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
-            </div>
-
-
-          </div>
-
-          {/* Main Content — full width on mobile, 3-cols on desktop */}
-          <div className="lg:col-span-3 space-y-5">
-
-            {activeTab === 'Profile' && (
-              <div className="space-y-5">
-                <div className="glass-card p-6">
-                  <h2 className="font-black italic uppercase tracking-tight text-xl text-foreground mb-5">
-                    Profile <span className="text-neon-purple">Info</span>
-                  </h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {[
-                      { label: 'Full Name', value: user.name || '—' },
-                      { label: 'Email Address', value: user.email || '—' },
-                      { label: 'Account Type', value: 'Google' },
-                      { label: 'Status', value: 'Active Player' },
-                    ].map(f => (
-                      <div key={f.label} className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">{f.label}</p>
-                        <p className="font-bold text-foreground text-sm break-all">{f.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <p className="font-black italic uppercase text-foreground text-sm">Ready to compete?</p>
-                    <p className="text-foreground/50 text-xs mt-0.5">Browse and register for upcoming tournaments.</p>
-                  </div>
-                  <Link href="/tournaments" className="btn-neon-purple whitespace-nowrap flex items-center gap-2 text-xs shrink-0">
-                    <Plus className="w-4 h-4" /> Browse Tournaments
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'My Registrations' && (
-              <div className="glass-card overflow-hidden">
-                {/* Header */}
-                <div className="px-5 py-4 border-b border-foreground/5 flex items-center justify-between gap-2">
-                  <h2 className="font-black italic uppercase tracking-tight text-foreground text-sm">
-                    My Registrations
-                    <span className="ml-2 text-foreground/40 font-bold">({myRegs.length})</span>
-                  </h2>
-                  <Link href="/tournaments" className="text-xs font-bold text-neon-cyan hover:text-neon-purple transition-colors whitespace-nowrap shrink-0">
-                    + Register More
-                  </Link>
-                </div>
-
-                {loadingRegs ? (
-                  <div className="py-16 text-center text-foreground/40 font-bold text-sm">Loading your registrations...</div>
-                ) : myRegs.length === 0 ? (
-                  <div className="py-16 text-center">
-                    <Trophy className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
-                    <p className="font-bold text-foreground/40 text-sm">No registrations yet.</p>
-                    <p className="text-xs text-foreground/30 mt-1">Register for a tournament to get started.</p>
-                    <Link href="/tournaments" className="inline-block mt-4 btn-neon-purple text-xs">Browse Tournaments</Link>
-                  </div>
-                ) : (
-                  <>
-                    {/* Mobile cards (hidden on md+) */}
-                    <div className="md:hidden divide-y divide-foreground/5">
-                      {myRegs.map(reg => {
-                        const statusColor =
-                          reg.status === 'Approved' ? 'border-green-500 bg-green-500/5' :
-                          reg.status === 'Rejected' ? 'border-red-500 bg-red-500/5' :
-                          'border-amber-400 bg-amber-400/5';
-
-                        return (
-                          <div key={reg._id} className={`mx-4 my-3 rounded-xl border-l-4 p-4 ${statusColor}`}>
-                            {/* Tournament name + status */}
-                            <div className="flex items-start justify-between gap-2 mb-3">
-                              <div className="flex items-start gap-2">
-                                <Trophy className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-black italic uppercase text-sm text-foreground leading-tight">{reg.tournamentName}</p>
-                                    <span className="text-[9px] font-black uppercase text-neon-purple mt-0.5 inline-block">{reg.matchType}</span>
-                                </div>
-                              </div>
-                              <StatusBadge status={reg.status} />
-                            </div>
-
-                            {reg.status === 'Rejected' && (
-                                <div className="mb-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
-                                    <p className="text-[10px] font-black uppercase text-red-500 mb-1">Reason for Rejection:</p>
-                                    <p className="text-xs font-bold text-red-600 dark:text-red-400 italic">
-                                        "{reg.rejectionReason || 'No reason specified by admin'}"
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Info row */}
-                            <div className="grid grid-cols-3 gap-3 text-xs mb-4">
-                              <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Team</p>
-                                <p className="font-bold text-foreground truncate">{reg.teamName}</p>
-                              </div>
-                              <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Payment</p>
-                                {reg.paymentVerified
-                                  ? <span className="flex items-center gap-0.5 font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Done</span>
-                                  : <span className="flex items-center gap-0.5 font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
-                                }
-                              </div>
-                              <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Registered</p>
-                                <p className="font-bold text-foreground/60">
-                                  {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                                </p>
-                              </div>
-                            </div>
-
-                            {reg.status === 'Rejected' && (
-                                <Link 
-                                    href={`/register?tournament=${reg._id}&edit=true`}
-                                    className="block w-full text-center py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                                >
-                                    Edit & Resubmit
-                                </Link>
-                            )}
-                          </div>
-                        );
-                      })}
-                      <div className="h-3" /> {/* bottom spacer */}
-                    </div>
-
-                    {/* Desktop table (hidden on mobile) */}
-                    <div className="hidden md:block overflow-x-auto">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="bg-foreground/5 border-b border-foreground/5 text-foreground/40 text-[10px] font-black uppercase tracking-widest">
-                            <th className="px-4 py-3">Tournament</th>
-                            <th className="px-4 py-3">Match</th>
-                            <th className="px-4 py-3">Team</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Payment</th>
-                            <th className="px-4 py-3">Date</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-foreground/5 text-sm text-foreground">
-                          {myRegs.map(reg => (
-                            <tr key={reg._id} className="hover:bg-foreground/5 transition-colors">
-                              <td className="px-4 py-3 font-black italic uppercase text-xs">{reg.tournamentName}</td>
-                              <td className="px-4 py-3 text-[10px] font-black uppercase text-neon-purple">{reg.matchType}</td>
-                              <td className="px-4 py-3 font-bold text-foreground/50 text-xs">{reg.teamName}</td>
-                              <td className="px-4 py-3">
-                                <div className="space-y-1.5 mt-1 min-w-[140px]">
-                                    <div className="flex items-center gap-2">
-                                        <StatusBadge status={reg.status} />
-                                        <span className="text-[8px] font-mono text-slate-400">ID: ...{reg._id.slice(-4)}</span>
-                                    </div>
-                                    {reg.status === 'Rejected' && (
-                                        <div className="flex flex-col gap-1.5">
-                                            <div className="bg-red-50 dark:bg-red-500/5 p-3 rounded-2xl border border-red-500/10 shadow-sm">
-                                                <p className="text-[9px] font-black uppercase text-red-500/50 mb-1 tracking-widest">Reason for Rejection</p>
-                                                <p className="text-[11px] font-bold text-red-600 dark:text-red-400 leading-snug">
-                                                    {reg.rejectionReason ? `"${reg.rejectionReason}"` : 'No reason specified by admin'}
-                                                </p>
-                                            </div>
-                                            <Link href={`/register?tournament=${reg._id}&edit=true`} className="px-3 py-1.5 rounded-xl bg-neon-cyan/10 text-[10px] font-black uppercase text-neon-cyan hover:bg-neon-cyan hover:text-white transition-all text-center">
-                                                Edit & Resubmit
-                                            </Link>
-                                        </div>
-                                    )}
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                {reg.paymentVerified
-                                  ? <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Verified</span>
-                                  : <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
-                                }
-                              </td>
-                              <td className="px-4 py-3 text-[10px] text-foreground/40 font-bold">
-                                {new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold uppercase italic">Syncing Data...</div>}>
+        <DashboardContent />
+      </Suspense>
       <Footer />
     </main>
-  );
-}
-
-export default function DashboardPageWrapper() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold">Loading...</div>}>
-      <DashboardPage />
-    </Suspense>
   );
 }
