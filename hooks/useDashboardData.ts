@@ -17,9 +17,17 @@ export const useDashboardData = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState('Profile');
+  const initialTab = searchParams.get('tab') || 'Profile';
+  const [activeTab, setActiveTabState] = useState(initialTab);
   const [myRegs, setMyRegs] = useState<MyReg[]>([]);
   const [loadingRegs, setLoadingRegs] = useState(false);
+
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.push(`/dashboard?${params.toString()}`, { scroll: false });
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login');
