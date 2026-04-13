@@ -205,6 +205,24 @@ function RegistrationForm() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      {/* Premium Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full border-4 border-white/10 border-t-neon-purple animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl flex items-center justify-center border border-white/10 shadow-2xl">
+                <Loader2 className="w-8 h-8 text-neon-purple animate-spin" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 text-center space-y-2">
+            <h3 className="text-xl font-black italic uppercase text-white tracking-widest animate-pulse">Processing...</h3>
+            <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em]">Uploading assets and securing your slot</p>
+          </div>
+        </div>
+      )}
+
       {tournament && (
         <div className="bg-slate-900 text-white rounded-2xl p-6 relative overflow-hidden shadow-xl">
            <div className="absolute -right-4 -top-4 w-32 h-32 bg-neon-purple/20 blur-3xl rounded-full" />
@@ -320,13 +338,13 @@ function RegistrationForm() {
                 <div className={`relative h-14 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 flex items-center gap-3 overflow-hidden group transition-colors ${isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx) ? 'opacity-50' : 'hover:border-neon-purple/50'}`}>
                     <Upload className="w-4 h-4 text-slate-400 group-hover:text-neon-purple transition-colors" />
                     <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300">
-                        {(isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx)) ? 'Locked (Verified)' : player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
+                        {(isEdit && !(rejectionTargets.includes('profiles') && rejectionIndices.includes(idx))) ? 'Locked (Verified)' : player.file ? player.file.name : player.existingUrl ? '(Already Uploaded) Change image...' : 'Choose image for proof...'}
                     </span>
                     <input 
-                      disabled={isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx)}
+                      disabled={isEdit && !(rejectionTargets.includes('profiles') && rejectionIndices.includes(idx))}
                       required={!isEdit || (rejectionTargets.includes('profiles') && rejectionIndices.includes(idx))} 
                       type="file" accept="image/*" onChange={e => updatePlayer(idx, 'file', e.target.files?.[0] || null)}
-                      className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && rejectionTargets.includes('profiles') && !rejectionIndices.includes(idx) ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
+                      className={`absolute inset-0 w-full h-full opacity-0 ${isEdit && !(rejectionTargets.includes('profiles') && rejectionIndices.includes(idx)) ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
                 </div>
               </div>
             </div>
@@ -340,7 +358,7 @@ function RegistrationForm() {
             Please upload your PhonePe/GPay QR code. If you win, we will use this to send your prize money.
           </div>
 
-          <div className={`relative h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center group transition-colors ${isEdit && !rejectionTargets.includes('qr') ? 'bg-slate-100 opacity-60' : 'hover:border-neon-purple/50 bg-slate-50/50 dark:bg-slate-900 cursor-pointer'}`}>
+          <div className={`relative h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center group transition-colors ${isEdit && !rejectionTargets.includes('qr') ? 'bg-slate-100 dark:bg-slate-900/50 opacity-60' : 'hover:border-neon-purple/50 bg-slate-50/50 dark:bg-slate-900 cursor-pointer'}`}>
             <input 
               disabled={isEdit && !rejectionTargets.includes('qr')}
               required={!isEdit || rejectionTargets.includes('qr')} 
@@ -354,9 +372,23 @@ function RegistrationForm() {
           </div>
         </div>
 
-        <button disabled={loading} type="submit"
-          className="w-full h-16 bg-slate-900 border-2 border-slate-900 dark:bg-neon-purple dark:border-neon-purple text-white font-black italic uppercase rounded-3xl hover:bg-transparent hover:text-slate-900 dark:hover:text-white transition-all disabled:opacity-50 text-base shadow-xl active:scale-[0.98]">
-          {loading ? 'Processing...' : isPaid ? 'Confirm & Resubmit' : `Confirm Registration · ₹${getEntryFee()}`}
+        <button 
+          type="submit" 
+          disabled={loading}
+          className={`w-full h-16 rounded-3xl font-black italic uppercase text-lg tracking-widest transition-all ${
+            loading 
+              ? 'bg-slate-400 cursor-not-allowed' 
+              : 'bg-neon-purple text-white shadow-xl shadow-neon-purple/30 hover:shadow-neon-purple/50 active:scale-95'
+          } flex items-center justify-center gap-3`}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            isEdit ? 'Update Registration' : `Confirm Registration · ₹${getEntryFee()}`
+          )}
         </button>
       </form>
     </div>
