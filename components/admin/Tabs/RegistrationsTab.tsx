@@ -44,20 +44,21 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl w-fit">
+      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2">
           {(['Pending', 'Approved', 'Rejected'] as const).map(f => (
               <button key={f} onClick={() => setRegFilter(f)} 
-                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${regFilter === f ? 'bg-white dark:bg-slate-700 text-neon-purple shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                  className={`px-4 py-2 text-sm font-medium transition-all relative ${regFilter === f ? 'text-google-blue' : 'text-slate-500 hover:text-slate-700'}`}>
                   {f}
+                  {regFilter === f && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-google-blue rounded-t-full" />}
               </button>
           ))}
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">{regFilter} Registrations</h2>
-              <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Manage and track all tournament entries</p>
+              <h2 className="text-lg font-medium text-slate-900 dark:text-white">{regFilter} Registrations</h2>
+              <p className="text-xs text-slate-500 font-normal mt-0.5">Manage tournament applications and track verification status.</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="relative flex-1 md:w-64">
@@ -88,7 +89,7 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                           }));
                       exportToExcel(filtered, 'Registrations');
                   }}
-                  className="h-10 px-4 flex items-center gap-2 bg-green-500 text-white rounded-xl text-xs font-black uppercase shadow-lg active:scale-95"
+                  className="h-9 px-4 flex items-center gap-2 bg-google-green text-white rounded-lg text-xs font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
               >
                   <Download className="w-4 h-4" /> Export
               </button>

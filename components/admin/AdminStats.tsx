@@ -16,21 +16,21 @@ const AdminStats: React.FC<AdminStatsProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Registrations</p>
-          <p className="text-4xl font-black italic tracking-tighter text-neon-purple leading-none">{registrations.length}</p>
+      <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] hover:shadow-[0_1px_3px_1px_rgba(60,64,67,.15)] transition-shadow">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Total Registrations</p>
+          <p className="text-3xl font-medium text-google-blue">{registrations.length}</p>
       </div>
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Users</p>
-          <p className="text-4xl font-black italic tracking-tighter text-neon-cyan leading-none">{siteUsers.length}</p>
+      <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] hover:shadow-[0_1px_3px_1px_rgba(60,64,67,.15)] transition-shadow">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Active Users</p>
+          <p className="text-3xl font-medium text-google-green">{siteUsers.length}</p>
       </div>
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Events</p>
-          <p className="text-4xl font-black italic tracking-tighter text-green-500 leading-none">{liveTournaments.length}</p>
+      <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] hover:shadow-[0_1px_3px_1px_rgba(60,64,67,.15)] transition-shadow">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Live Tournaments</p>
+          <p className="text-3xl font-medium text-google-red">{liveTournaments.length}</p>
       </div>
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Champions</p>
-          <p className="text-4xl font-black italic tracking-tighter text-amber-500 leading-none">{winners.length}</p>
+      <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] hover:shadow-[0_1px_3px_1px_rgba(60,64,67,.15)] transition-shadow">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Hall of Fame</p>
+          <p className="text-3xl font-medium text-google-yellow">{winners.length}</p>
       </div>
     </div>
   );

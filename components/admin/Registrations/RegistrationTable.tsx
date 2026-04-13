@@ -30,49 +30,55 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest text-slate-500">
-            <th className="px-6 py-4">Team / Phone</th>
-            <th className="px-6 py-4">Leader / UID</th>
-            <th className="px-6 py-4">Tournament</th>
-            <th className="px-6 py-4 text-center">Payment</th>
-            <th className="px-6 py-4 text-right">Action</th>
+          <tr className="bg-slate-50 dark:bg-slate-800/50 text-xs font-medium text-slate-500 border-b border-slate-200">
+            <th className="px-6 py-3">Team / Contact</th>
+            <th className="px-6 py-3">Leader / UID</th>
+            <th className="px-6 py-3">Tournament</th>
+            <th className="px-6 py-3">Verification</th>
+            <th className="px-6 py-3 text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
           {loading ? (
-            <tr><td colSpan={5} className="py-24 text-center text-slate-400 text-xs font-black uppercase tracking-widest">Loading...</td></tr>
+            <tr><td colSpan={5} className="py-20 text-center text-slate-400 text-sm">Synchronizing with server...</td></tr>
           ) : filteredRegs.length === 0 ? (
-            <tr><td colSpan={5} className="py-12 text-center text-slate-400 font-bold uppercase text-[10px]">No matches found</td></tr>
+            <tr><td colSpan={5} className="py-12 text-center text-slate-400 font-medium text-sm">No registrations found in this view</td></tr>
           ) : (
             filteredRegs.map((reg) => (
-              <tr key={reg._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                <td className="px-6 py-5">
-                  <div>
-                    <p className="font-black italic uppercase text-foreground leading-none mb-1">{reg.teamName}</p>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{reg.whatsapp}</p>
+              <tr key={reg._id} className="hover:bg-blue-50/30 dark:hover:bg-blue-500/5 transition-colors group">
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-slate-900 dark:text-white text-sm">{reg.teamName}</span>
+                    <span className="text-xs text-slate-500">{reg.whatsapp}</span>
                     {reg.isResubmitted && (
-                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded-md bg-neon-purple text-white text-[7px] font-black uppercase animate-pulse">Resubmitted</span>
+                      <span className="mt-1 text-[8px] font-bold text-google-blue uppercase tracking-tighter">Resubmitted</span>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-5">
-                  <p className="text-xs font-black uppercase italic text-foreground leading-none mb-1">{reg.players[0]?.name || reg.userName}</p>
-                  <p className="text-[10px] text-neon-cyan font-bold uppercase tracking-tighter">{reg.players[0]?.uid || 'N/A'}</p>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{reg.players[0]?.name || reg.userName}</span>
+                    <span className="text-xs text-slate-400 font-mono">{reg.players[0]?.uid || 'N/A'}</span>
+                  </div>
                 </td>
-                <td className="px-6 py-5">
-                  <p className="text-xs text-foreground font-bold leading-none mb-1">{reg.tournamentName}</p>
-                  <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{reg.matchType}</span>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-slate-700 dark:text-slate-300">{reg.tournamentName}</span>
+                    <span className="text-[10px] text-google-blue font-bold uppercase">{reg.matchType}</span>
+                  </div>
                 </td>
-                <td className="px-6 py-5 text-center">
-                  <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase ${
-                    reg.paymentVerified ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'
+                <td className="px-6 py-4">
+                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold ${
+                    reg.paymentVerified 
+                      ? 'bg-green-50 text-google-green border border-green-200' 
+                      : 'bg-yellow-50 text-google-yellow border border-yellow-200'
                   }`}>
                     {reg.paymentVerified ? 'Verified' : 'Pending'}
                   </span>
                 </td>
-                <td className="px-6 py-5 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => setViewReg(reg)} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-neon-purple transition-all" title="View Details">
+                <td className="px-6 py-4 text-right">
+                  <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => setViewReg(reg)} className="p-1.5 rounded-lg text-slate-400 hover:text-google-blue hover:bg-blue-50 transition-all" title="View">
                       <Eye className="w-4 h-4" />
                     </button>
                     <button 
@@ -80,8 +86,8 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                         e.stopPropagation();
                         deleteRegistration(reg._id);
                       }} 
-                      className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                      title="Delete Permanent"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-google-red hover:bg-red-50 transition-all"
+                      title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
