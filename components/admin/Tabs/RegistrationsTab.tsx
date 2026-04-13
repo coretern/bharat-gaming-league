@@ -54,45 +54,50 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
           ))}
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+        <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex flex-col gap-6">
             <div>
-              <h2 className="text-lg font-medium text-slate-900 dark:text-white">{regFilter} Registrations</h2>
-              <p className="text-xs text-slate-500 font-normal mt-0.5">Manage tournament applications and track verification status.</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-none">{regFilter}</h2>
+              <p className="text-xs text-slate-400 font-medium mt-1.5 uppercase tracking-widest">Registrations Management</p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              <div className="relative flex-1 md:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" placeholder="Search by Team or Player..." value={regSearch} onChange={(e) => setRegSearch(e.target.value)}
-                      className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none" />
+            
+            <div className="flex flex-col gap-3">
+              <div className="relative w-full">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input type="text" placeholder="Search team or player..." value={regSearch} onChange={(e) => setRegSearch(e.target.value)}
+                      className="w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none ring-google-blue/5 focus:ring-4 transition-all" />
               </div>
-              <select value={regTourFilter} onChange={(e) => setRegTourFilter(e.target.value)} className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none">
-                  <option value="All">All Tournaments</option>
-                  {Array.from(new Set(registrations.map(r => r.tournamentName))).map(name => <option key={name} value={name}>{name}</option>)}
-              </select>
-              <button 
-                  onClick={() => {
-                      const filtered = registrations
-                          .filter(r => r.status === regFilter)
-                          .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
-                          .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
-                          .map(r => ({
-                              'Team Name': r.teamName,
-                              'WhatsApp': r.whatsapp,
-                              'Tournament': r.tournamentName,
-                              'Type': r.matchType,
-                              'Status': r.status,
-                              'Payment': r.paymentVerified ? 'Verified' : 'Pending',
-                              'Date': new Date(r.createdAt).toLocaleString(),
-                              'Leader': r.players[0]?.name || 'N/A',
-                              'Leader UID': r.players[0]?.uid || 'N/A'
-                          }));
-                      exportToExcel(filtered, 'Registrations');
-                  }}
-                  className="h-9 px-4 flex items-center gap-2 bg-google-green text-white rounded-lg text-xs font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
-              >
-                  <Download className="w-4 h-4" /> Export
-              </button>
+              
+              <div className="flex items-center gap-2">
+                <select value={regTourFilter} onChange={(e) => setRegTourFilter(e.target.value)} className="flex-1 h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none appearance-none">
+                    <option value="All">All Tournaments</option>
+                    {Array.from(new Set(registrations.map(r => r.tournamentName))).map(name => <option key={name} value={name}>{name}</option>)}
+                </select>
+                
+                <button 
+                    onClick={() => {
+                        const filtered = registrations
+                            .filter(r => r.status === regFilter)
+                            .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
+                            .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
+                            .map(r => ({
+                                'Team Name': r.teamName,
+                                'WhatsApp': r.whatsapp,
+                                'Tournament': r.tournamentName,
+                                'Type': r.matchType,
+                                'Status': r.status,
+                                'Payment': r.paymentVerified ? 'Verified' : 'Pending',
+                                'Date': new Date(r.createdAt).toLocaleString(),
+                                'Leader': r.players[0]?.name || 'N/A',
+                                'Leader UID': r.players[0]?.uid || 'N/A'
+                            }));
+                        exportToExcel(filtered, 'Registrations');
+                    }}
+                    className="h-11 px-5 bg-google-green text-white rounded-xl text-xs font-bold shadow-lg shadow-green-500/10 hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <Download className="w-4 h-4" /> <span className="hidden sm:inline">Export</span>
+                </button>
+              </div>
             </div>
         </div>
         <RegistrationTable 

@@ -17,10 +17,13 @@ const WinnersTab: React.FC<WinnersTabProps> = ({
   handleDeleteWinner
 }) => {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-          <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">Tournament Winners ({winners.length})</h2>
-          <button onClick={() => setShowAddWinner(true)} className="flex items-center gap-2 px-4 py-2 bg-neon-cyan text-white rounded-xl text-xs font-black uppercase shadow-lg active:scale-95">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+      <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 leading-none mb-1">Hall of Fame</h2>
+            <p className="text-xs font-bold text-slate-900 dark:text-white">{winners.length} Tournament Winners</p>
+          </div>
+          <button onClick={() => setShowAddWinner(true)} className="flex items-center gap-2 px-5 py-2.5 bg-google-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
               <Plus className="w-4 h-4" /> Add Winner
           </button>
       </div>
