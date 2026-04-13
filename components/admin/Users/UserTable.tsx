@@ -9,6 +9,8 @@ interface UserTableProps {
   updating: string | null;
   adminEmail: string | undefined;
   confirmDelete: { email: string, stage: number } | null;
+  confirmBan: { email: string, stage: number } | null;
+  setConfirmBan: (v: { email: string, stage: number } | null) => void;
   onRefresh: () => void;
   onToggleBan: (email: string, currentStatus: boolean) => void;
   onDeleteRequest: (email: string) => void;
@@ -22,6 +24,8 @@ const UserTable: React.FC<UserTableProps> = ({
   updating,
   adminEmail,
   confirmDelete,
+  confirmBan,
+  setConfirmBan,
   onRefresh,
   onToggleBan,
   onDeleteRequest,
@@ -77,18 +81,29 @@ const UserTable: React.FC<UserTableProps> = ({
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => onToggleBan(user.email, user.isBanned)}
-                      disabled={updating === user.email || adminEmail === user.email}
-                      className={`p-2 rounded-lg transition-all ${
-                        user.isBanned 
-                          ? 'text-google-green hover:bg-green-50 dark:hover:bg-green-500/10' 
-                          : 'text-google-yellow hover:bg-yellow-50 dark:hover:bg-yellow-500/10'
-                      } disabled:opacity-0`}
-                      title={user.isBanned ? 'Unban User' : 'Ban User'}
-                    >
-                      {user.isBanned ? <ShieldCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}
-                    </button>
+                    {confirmBan?.email === user.email ? (
+                       <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setConfirmBan(null)} className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase">Cancel</button>
+                          <button onClick={() => onToggleBan(user.email, user.isBanned)} className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${
+                            confirmBan.stage === 1 ? 'bg-yellow-50 text-google-yellow border border-yellow-200' : 'bg-google-yellow text-white shadow-lg'
+                          }`}>
+                            {confirmBan.stage === 1 ? 'Confirm?' : 'Final Ban!'}
+                          </button>
+                       </div>
+                    ) : (
+                      <button
+                        onClick={() => onToggleBan(user.email, user.isBanned)}
+                        disabled={updating === user.email || adminEmail === user.email}
+                        className={`p-2 rounded-lg transition-all ${
+                          user.isBanned 
+                            ? 'text-google-green hover:bg-green-50 dark:hover:bg-green-500/10' 
+                            : 'text-google-yellow hover:bg-yellow-50 dark:hover:bg-yellow-500/10'
+                        } disabled:opacity-0`}
+                        title={user.isBanned ? 'Unban User' : 'Ban User'}
+                      >
+                        {user.isBanned ? <ShieldCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}
+                      </button>
+                    )}
 
                     {confirmDelete?.email === user.email ? (
                       <div className="flex items-center justify-end gap-2">
@@ -147,18 +162,27 @@ const UserTable: React.FC<UserTableProps> = ({
                   </div>
                   
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => onToggleBan(user.email, user.isBanned)}
-                      disabled={updating === user.email || adminEmail === user.email}
-                      className={`h-9 px-3 rounded-xl transition-all flex items-center gap-2 border ${
-                        user.isBanned 
-                          ? 'border-green-100 text-google-green bg-green-50' 
-                          : 'border-yellow-100 text-google-yellow bg-yellow-50'
-                      } disabled:opacity-0`}
-                    >
-                      {user.isBanned ? <ShieldCheck className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-                      <span className="text-[10px] font-bold uppercase tracking-widest">{user.isBanned ? 'Unban' : 'Ban'}</span>
-                    </button>
+                    {confirmBan?.email === user.email ? (
+                       <div className="flex items-center gap-2">
+                          <button onClick={() => setConfirmBan(null)} className="text-[10px] font-bold text-slate-400 uppercase">Cancel</button>
+                          <button onClick={() => onToggleBan(user.email, user.isBanned)} className="h-9 px-3 rounded-xl bg-google-yellow text-white text-[10px] font-bold uppercase shadow-lg">
+                             {confirmBan.stage === 1 ? 'Confirm?' : 'Final!'}
+                          </button>
+                       </div>
+                    ) : (
+                      <button
+                        onClick={() => onToggleBan(user.email, user.isBanned)}
+                        disabled={updating === user.email || adminEmail === user.email}
+                        className={`h-9 px-3 rounded-xl transition-all flex items-center gap-2 border ${
+                          user.isBanned 
+                            ? 'border-green-100 text-google-green bg-green-50' 
+                            : 'border-yellow-100 text-google-yellow bg-yellow-50'
+                        } disabled:opacity-0`}
+                      >
+                        {user.isBanned ? <ShieldCheck className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{user.isBanned ? 'Unban' : 'Ban'}</span>
+                      </button>
+                    )}
 
                     <button 
                       onClick={() => onDeleteRequest(user.email)}
