@@ -5,7 +5,7 @@ import { Tournament } from '@/models/Tournament';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id: slug } = await params;
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!(token as any)?.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -14,11 +14,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json();
     await connectDB();
 
-    const updated = await Tournament.findOneAndUpdate(
-      { id },
-      { $set: body },
-      { returnDocument: 'after' }
-    );
+    const { _id, id: bodySlug, allowedMatchTypes, ...rest } = body;
+    
+    // Explicitly build update object to avoid any missing fields
+    const updateData: any = { ...rest };
+    if (allowedMatchTypes) updateData.allowedMatchTypes = allowedMatchTypes;
+
+    let updated;
+    if (_id) {
+      updated = await Tournament.findByIdAndUpdate(_id, { $set: updateData }, { new: true });
+    } else {
+      updated = await Tournament.findOneAndUpdate(
+        { id: slug },
+        { $set: updateData },
+        { new: true }
+      );
+    }
 
     if (!updated) {
       return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });

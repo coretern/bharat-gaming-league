@@ -10,7 +10,13 @@ const TournamentSchema = new Schema({
   slots: { type: String, required: true },
   image: { type: String, required: true },
   status: { type: String, enum: ['Open', 'Closed', 'Coming Soon'], default: 'Open' },
+  allowedMatchTypes: { type: [String], default: ['Solo', 'Duo', 'Squad'] },
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Tournament = models.Tournament || model('Tournament', TournamentSchema);
+// Force schema update in development
+if (mongoose.models.Tournament) {
+  delete mongoose.models.Tournament;
+}
+
+export const Tournament = model('Tournament', TournamentSchema);

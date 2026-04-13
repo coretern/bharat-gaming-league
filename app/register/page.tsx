@@ -59,12 +59,22 @@ function RegistrationForm() {
                     const tData = await tRes.json();
                     const tFound = tData.find((t: any) => t.id === reg.tournamentId);
                     setTournament(tFound);
+                    
+                    // If not editing, set default match type to first allowed
+                    if (!isEdit && tFound?.allowedMatchTypes?.length > 0) {
+                        setMatchType(tFound.allowedMatchTypes[0]);
+                    }
                 }
             } else {
                 const res = await fetch('/api/tournaments');
                 const data = await res.json();
                 const found = Array.isArray(data) ? data.find((t: any) => t.id === tournamentId) : null;
                 setTournament(found);
+                if (found?.allowedMatchTypes?.length > 0) {
+                    setMatchType(found.allowedMatchTypes[0]);
+                    const defCount = found.allowedMatchTypes[0] === 'Solo' ? 1 : found.allowedMatchTypes[0] === 'Duo' ? 2 : 4;
+                    setPlayers(Array(defCount).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
+                }
             }
         } catch (err) {
             console.error('Init error:', err);
@@ -229,7 +239,7 @@ function RegistrationForm() {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
           <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-slate-400">1. Tournament Format</h3>
           <div className="grid grid-cols-3 gap-3">
-            {(['Solo', 'Duo', 'Squad'] as const).map(type => (
+            {(tournament?.allowedMatchTypes || ['Solo', 'Duo', 'Squad']).map((type: any) => (
               <button
                 key={type}
                 type="button"

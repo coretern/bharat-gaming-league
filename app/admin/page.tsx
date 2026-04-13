@@ -86,7 +86,8 @@ export default function AdminPanel() {
     time: '08:00 PM',
     slots: '0/100',
     image: '/bgmi-thumb.png',
-    status: 'Open'
+    status: 'Open',
+    allowedMatchTypes: ['Solo', 'Duo', 'Squad']
   });
 
   const [showAddWinner, setShowAddWinner] = useState(false);
@@ -111,7 +112,7 @@ export default function AdminPanel() {
   const fetchRegistrations = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/register');
+      const res = await fetch('/api/register', { cache: 'no-store' });
       const data = await res.json();
       setRegistrations(Array.isArray(data) ? data : []);
     } catch {
@@ -137,7 +138,7 @@ export default function AdminPanel() {
   const fetchTournaments = async () => {
     setLoadingTours(true);
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch('/api/tournaments', { cache: 'no-store' });
       const data = await res.json();
       setLiveTournaments(Array.isArray(data) ? data : []);
     } catch {
@@ -844,6 +845,29 @@ export default function AdminPanel() {
                             <input required value={editTour.time} onChange={e => setEditTour({...editTour, time: e.target.value})} className="w-full h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none" />
                         </div>
                     </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Allowed Match Types</label>
+                        <div className="flex gap-4">
+                            {['Solo', 'Duo', 'Squad'].map(type => (
+                                <label key={type} className="flex items-center gap-2 cursor-pointer group">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={(editTour.allowedMatchTypes || ['Solo', 'Duo', 'Squad']).includes(type)}
+                                        onChange={e => {
+                                            const current = editTour.allowedMatchTypes || ['Solo', 'Duo', 'Squad'];
+                                            const updated = e.target.checked 
+                                                ? [...current, type]
+                                                : current.filter((t: string) => t !== type);
+                                            setEditTour({...editTour, allowedMatchTypes: updated});
+                                        }}
+                                        className="w-4 h-4 accent-neon-purple"
+                                    />
+                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase group-hover:text-neon-purple transition-colors">{type}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                     
                     <button type="submit" disabled={updating === editTour.id}
                         className="w-full h-12 rounded-xl bg-neon-purple text-white font-black uppercase text-xs hover:bg-neon-purple/90 disabled:opacity-50 transition-all shadow-lg active:scale-95">
@@ -1252,6 +1276,29 @@ export default function AdminPanel() {
                         <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Thumbnail URL</label>
                         <input required placeholder="/bgmi-thumb.png" value={newTour.image} onChange={e => setNewTour({...newTour, image: e.target.value})} className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold" />
                         <p className="text-[8px] text-slate-400 mt-1 italic uppercase">Default thumbnails: /bgmi-thumb.png or /ff-thumb.png</p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Allowed Match Types</label>
+                        <div className="flex gap-4">
+                            {['Solo', 'Duo', 'Squad'].map(type => (
+                                <label key={type} className="flex items-center gap-2 cursor-pointer group">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={newTour.allowedMatchTypes.includes(type)}
+                                        onChange={e => {
+                                            const current = newTour.allowedMatchTypes;
+                                            const updated = e.target.checked 
+                                                ? [...current, type]
+                                                : current.filter(t => t !== type);
+                                            setNewTour({...newTour, allowedMatchTypes: updated});
+                                        }}
+                                        className="w-4 h-4 accent-neon-purple"
+                                    />
+                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase group-hover:text-neon-purple transition-colors">{type}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
 
                     <button type="submit" disabled={updating === 'new-tour'}

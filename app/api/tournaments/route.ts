@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Tournament } from '@/models/Tournament';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
@@ -20,6 +21,7 @@ export async function GET() {
           slots: '12/48',
           image: '/bgmi-thumb.png',
           status: 'Open',
+          allowedMatchTypes: ['Solo', 'Duo', 'Squad'],
         },
         {
           id: 'ff-alpha-cups',
@@ -31,6 +33,7 @@ export async function GET() {
           slots: '24/100',
           image: '/ff-thumb.png',
           status: 'Open',
+          allowedMatchTypes: ['Solo', 'Duo', 'Squad'],
         },
       ];
       await Tournament.insertMany(defaults);
