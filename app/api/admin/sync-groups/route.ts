@@ -32,11 +32,18 @@ export async function GET(req: NextRequest) {
       const regs = await Registration.find({ tournamentId: tId }).sort({ createdAt: 1 });
       
       for (let i = 0; i < regs.length; i++) {
+        const updateData: any = {
+          groupNumber: Math.floor(i / groupSize) + 1,
+          slotNumber: (i % groupSize) + 1
+        };
+
+        // Also sync the tournament name if tournament was found
+        if (tournament?.title) {
+          updateData.tournamentName = tournament.title;
+        }
+
         await Registration.findByIdAndUpdate(regs[i]._id, {
-          $set: {
-            groupNumber: Math.floor(i / groupSize) + 1,
-            slotNumber: (i % groupSize) + 1
-          }
+          $set: updateData
         });
         totalUpdated++;
       }

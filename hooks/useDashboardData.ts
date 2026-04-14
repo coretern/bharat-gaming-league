@@ -10,6 +10,12 @@ export interface MyReg {
   status: 'Pending' | 'Approved' | 'Rejected';
   rejectionReason?: string;
   paymentVerified: boolean;
+  matchDate?: string;
+  matchTime?: string;
+  groupNumber?: number;
+  slotNumber?: number;
+  resultStatus?: 'Playing' | 'Won' | 'Lost';
+  prizeAmount?: number;
   createdAt: string;
 }
 
@@ -17,7 +23,7 @@ export const useDashboardData = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'Profile';
+  const initialTab = searchParams.get('tab') || (searchParams.get('order_id') ? 'My Registrations' : 'Profile');
   const [activeTab, setActiveTabState] = useState(initialTab);
   const [myRegs, setMyRegs] = useState<MyReg[]>([]);
   const [loadingRegs, setLoadingRegs] = useState(false);
@@ -71,6 +77,17 @@ export const useDashboardData = () => {
             } else {
               import('react-hot-toast').then(t => t.default.error(`Payment Status: ${data.status || 'Failed'}`));
             }
+            
+            // Clean up URL to prevent repeated toasts on refresh
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete('order_id');
+            const newUrl = `/dashboard?${newParams.toString()}`;
+            router.replace(newUrl, { scroll: false });
+          })
+          .catch(() => {
+             const newParams = new URLSearchParams(searchParams.toString());
+             newParams.delete('order_id');
+             router.replace(`/dashboard?${newParams.toString()}`, { scroll: false });
           });
       }
     }

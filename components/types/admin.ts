@@ -32,6 +32,10 @@ export interface Reg {
   orderId?: string;
   groupNumber?: number;
   slotNumber?: number;
+  resultStatus?: 'Playing' | 'Won' | 'Lost';
+  prizeAmount?: number;
+  matchDate?: string;
+  matchTime?: string;
   createdAt: string;
 }
 

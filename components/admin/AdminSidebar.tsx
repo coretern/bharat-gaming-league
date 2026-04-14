@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Trophy, Medal, Image as ImageIcon } from "lucide-react";
+import { Users, Trophy, Medal, Image as ImageIcon, Calendar } from "lucide-react";
 
 interface AdminSidebarProps {
   user: { name?: string | null; image?: string | null };
@@ -29,7 +29,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       </div>
 
       <nav className="bg-white dark:bg-slate-900 rounded-xl py-2 border border-slate-200 dark:border-slate-800 shadow-[0_1px_2px_0_rgba(60,64,67,.30)]">
-          {(['Registrations', 'Tournaments', 'Users', 'Winners', 'Media'] as const).map((tab) => (
+          {(['Registrations', 'Schedules', 'Tournaments', 'Users', 'Winners', 'Media'] as const).map((tab) => (
               <button key={tab} onClick={() => {
                   if (activeTab === tab && onTabClick) {
                     onTabClick(tab);
@@ -43,6 +43,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   }`}>
                   {activeTab === tab && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-google-blue rounded-r-full" />}
                   {tab === 'Registrations' && <Users className="w-5 h-5" />}
+                  {tab === 'Schedules' && <Calendar className="w-5 h-5" />}
                   {tab === 'Tournaments' && <Trophy className="w-5 h-5" />}
                   {tab === 'Users' && <Users className="w-5 h-5" />}
                   {tab === 'Winners' && <Medal className="w-5 h-5" />}

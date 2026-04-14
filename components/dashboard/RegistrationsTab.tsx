@@ -12,6 +12,10 @@ interface MyReg {
   paymentVerified: boolean;
   groupNumber?: number;
   slotNumber?: number;
+  resultStatus?: 'Playing' | 'Won' | 'Lost';
+  prizeAmount?: number;
+  matchDate?: string;
+  matchTime?: string;
   createdAt: string;
 }
 
@@ -89,7 +93,7 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                       </div>
                   )}
 
-                  <div className="grid grid-cols-3 gap-3 text-xs mb-4">
+                  <div className="grid grid-cols-2 gap-3 text-xs mb-4">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Team</p>
                       <p className="font-bold text-foreground truncate">{reg.teamName}</p>
@@ -106,10 +110,39 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                       <p className="font-bold text-google-blue">G{reg.groupNumber} : S{reg.slotNumber}</p>
                     </div>
                     <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Final Match Info</p>
+                      {reg.matchDate ? (
+                          <p className="font-bold text-google-blue">{reg.matchDate} @ {reg.matchTime || 'TBA'}</p>
+                      ) : (
+                          <p className="font-bold text-slate-400 italic">Awaiting Schedule</p>
+                      )}
+                    </div>
+                    <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Registered</p>
                       <p className="font-bold text-foreground/60">{new Date(reg.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
+
+                  {/* Outcome View */}
+                  {reg.resultStatus === 'Won' && (
+                    <div className="p-3 rounded-xl bg-google-green text-white shadow-lg shadow-green-500/20 flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <Trophy className="w-5 h-5" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">VICTORY DETECTED</span>
+                        </div>
+                        <span className="text-sm font-black italic">₹{reg.prizeAmount} Won!</span>
+                    </div>
+                  )}
+
+                  {reg.resultStatus === 'Lost' && (
+                    <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col gap-1 mb-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Match Outcome</span>
+                            <span className="text-[10px] font-black text-slate-500 uppercase">Eliminated</span>
+                        </div>
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Winner: <span className="text-google-blue">{reg.winnerTeamName || 'Unknown'}</span></p>
+                    </div>
+                  )}
 
                   {reg.status === 'Rejected' && (
                       <Link href={`/register?tournament=${reg._id}&edit=true`}
@@ -132,6 +165,8 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                   <th className="px-6 py-4">Team</th>
                   <th className="px-6 py-4">Assignment</th>
                   <th className="px-6 py-4">Payment</th>
+                  <th className="px-6 py-4">Result</th>
+                  <th className="px-6 py-4">Final Schedule</th>
                   <th className="px-6 py-4">Date</th>
                 </tr>
               </thead>
@@ -167,6 +202,34 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                         ? <span className="flex items-center gap-1 text-[10px] font-bold text-google-green"><ShieldCheck className="w-4 h-4" />Verified</span>
                         : <span className="flex items-center gap-1 text-[10px] font-bold text-google-yellow"><ShieldAlert className="w-4 h-4" />Pending</span>
                       }
+                    </td>
+                    <td className="px-6 py-4">
+                        {reg.resultStatus === 'Won' ? (
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-google-green to-emerald-600 text-white shadow-lg shadow-green-500/20 flex flex-col items-center justify-center text-center">
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] mb-1 opacity-80">You Won!</span>
+                                <span className="text-base font-black italic tabular-nums leading-none">₹{reg.prizeAmount}</span>
+                            </div>
+                        ) : reg.resultStatus === 'Lost' ? (
+                            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col text-center">
+                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Result: Lost</span>
+                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">Winner: {reg.winnerTeamName || 'Unknown'}</span>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center p-3 text-center">
+                                <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.2em] mb-1 italic">Match Pending</span>
+                                <Clock className="w-4 h-4 text-slate-200" />
+                            </div>
+                        )}
+                    </td>
+                    <td className="px-6 py-4">
+                        {reg.matchDate ? (
+                            <div className="flex flex-col">
+                                <span className="text-xs font-black text-google-blue uppercase">{reg.matchDate}</span>
+                                <span className="text-[10px] text-slate-400 font-bold">{reg.matchTime || 'TBA'}</span>
+                            </div>
+                        ) : (
+                            <span className="text-[10px] font-black text-slate-300 italic uppercase">Awaiting Schedule</span>
+                        )}
                     </td>
                     <td className="px-6 py-4 text-xs text-slate-500">{new Date(reg.createdAt).toLocaleDateString()}</td>
                   </tr>

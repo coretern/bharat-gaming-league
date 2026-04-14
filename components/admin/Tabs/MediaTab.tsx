@@ -23,28 +23,35 @@ const MediaTab: React.FC<MediaTabProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <div>
-            <h2 className="text-xl font-black text-slate-900 dark:text-white leading-none">Media Gallery</h2>
-            <p className="text-[10px] text-google-blue font-bold uppercase tracking-[0.2em] mt-2">Centralized Asset Verification</p>
-          </div>
-          
-          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
-            {(['All', 'Profile', 'Payout'] as const).map(f => (
-              <button key={f} onClick={() => setMediaTypeFilter(f)} 
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all ${mediaTypeFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
-                {f}s
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Management Header */}
+      <div className="flex flex-col gap-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-1">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      Asset Repository
+                      <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[10px] font-black uppercase tracking-widest">{mediaList.length} Files</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Centralized Verification & Storage</p>
+              </div>
 
-        <div className="relative w-full">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-           <input type="text" placeholder="Search team or player..." value={mediaSearch} onChange={(e) => setMediaSearch(e.target.value)}
-             className="w-full h-12 pl-12 pr-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none focus:ring-4 focus:ring-google-blue/10 transition-all" />
-        </div>
+              <div className="flex p-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 w-fit shrink-0">
+                  {(['All', 'Profile', 'Payout'] as const).map(f => (
+                      <button key={f} onClick={() => setMediaTypeFilter(f)} 
+                          className={`px-6 py-2 text-[10px] font-black uppercase transition-all rounded-lg ${mediaTypeFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                          {f}s
+                      </button>
+                  ))}
+              </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-50 dark:border-slate-800">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-2">Search Assets</label>
+              <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input type="text" placeholder="Search by Team, Player or Verification Tag..." value={mediaSearch} onChange={(e) => setMediaSearch(e.target.value)}
+                      className="w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none focus:ring-4 focus:ring-google-blue/10 transition-all" />
+              </div>
+          </div>
       </div>
 
       {mediaList.length === 0 ? (

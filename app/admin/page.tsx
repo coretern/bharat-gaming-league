@@ -16,6 +16,7 @@ import RegistrationsTab from '@/components/admin/Tabs/RegistrationsTab';
 import TournamentsTab from '@/components/admin/Tabs/TournamentsTab';
 import WinnersTab from '@/components/admin/Tabs/WinnersTab';
 import MediaTab from '@/components/admin/Tabs/MediaTab';
+import SchedulesTab from '@/components/admin/Tabs/SchedulesTab';
 import UserTable from '@/components/admin/Users/UserTable';
 
 export default function AdminPanel() {
@@ -80,7 +81,17 @@ export default function AdminPanel() {
                 setViewReg={adminState.setViewReg}
                 handleDeleteRegistration={adminState.handleDeleteRegistration}
                 onSync={adminState.onSyncGroups}
+                onRefresh={adminState.fetchRegistrations}
                 loadingRegs={adminState.loading}
+                liveTournaments={adminState.liveTournaments}
+              />
+            )}
+            
+            {activeTab === 'Schedules' && (
+              <SchedulesTab 
+                registrations={adminState.registrations}
+                loading={adminState.loading}
+                setViewReg={adminState.setViewReg}
               />
             )}
 

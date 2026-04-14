@@ -32,6 +32,11 @@ const RegistrationSchema = new Schema({
   isResubmitted: { type: Boolean, default: false },
   groupNumber: { type: Number },
   slotNumber: { type: Number },
+  resultStatus: { type: String, enum: ['Playing', 'Won', 'Lost'], default: 'Playing' },
+  prizeAmount: { type: Number, default: 0 },
+  winnerTeamName: { type: String },
+  matchDate: { type: String },
+  matchTime: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 

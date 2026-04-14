@@ -30,6 +30,21 @@ export async function PATCH(
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
     }
 
+    // Special logic for marking a winner
+    if (body.resultStatus === 'Won' && reg.tournamentId && reg.groupNumber) {
+        // Mark all others in the same tournament and same group as "Lost"
+        await Registration.updateMany(
+            { 
+              _id: { $ne: reg._id },
+              tournamentId: reg.tournamentId,
+              groupNumber: reg.groupNumber,
+              status: 'Approved'
+            },
+            { $set: { resultStatus: 'Lost', prizeAmount: 0, winnerTeamName: reg.teamName } }
+        );
+        console.log(`🏆 Group Winner set: ${reg.teamName} in G${reg.groupNumber} T:${reg.tournamentId}`);
+    }
+
     console.log(`✅ Admin updated registration ${id}:`, body);
     return NextResponse.json(reg);
   } catch (err: any) {

@@ -35,6 +35,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
     }
 
+    // Sync registrations if title has changed
+    if (updateData.title) {
+        const { Registration } = await import('@/models/Registration');
+        await Registration.updateMany(
+            { tournamentId: updated.id },
+            { $set: { tournamentName: updated.title } }
+        );
+    }
+
     return NextResponse.json(updated);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

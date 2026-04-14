@@ -19,6 +19,8 @@ export async function GET(req: NextRequest) {
     // Explicitly verify fields are present
     const sanitized = registrations.map((r: any) => ({
         ...r,
+        matchDate: r.matchDate || '',
+        matchTime: r.matchTime || '',
         rejectionReason: r.rejectionReason || '',
         rejectionTargets: r.rejectionTargets || []
     }));

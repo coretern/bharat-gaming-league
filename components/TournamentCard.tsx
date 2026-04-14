@@ -30,6 +30,12 @@ export default function TournamentCard({
   image,
   status
 }: TournamentCardProps) {
+  const totalSlots = slots.split('/').pop() || '0';
+  const registered = slots.split('/')[0] || '0';
+  const remaining = parseInt(totalSlots) - parseInt(registered);
+  const percent = (parseInt(registered) / parseInt(totalSlots)) * 100;
+  const isFillingFast = remaining > 0 && remaining <= 10;
+
   const isBGMI = game === 'BGMI';
   const { status: sessionStatus } = useSession();
   const router = useRouter();
@@ -65,6 +71,11 @@ export default function TournamentCard({
           )}>
             {status}
           </span>
+          {isFillingFast && (
+             <span className="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider bg-google-red text-white animate-pulse shadow-lg shadow-red-500/20">
+                Filling Fast
+             </span>
+          )}
         </div>
       </div>
 
@@ -92,18 +103,34 @@ export default function TournamentCard({
         </div>
 
         {/* Status & Details Grid */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-6 mb-8">
-          <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5">
-               <Users className="w-3 h-3" /> Availability
-            </p>
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{slots}</p>
+        <div className="grid grid-cols-2 gap-4 items-start mb-6">
+          <div className="min-w-0">
+             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5 whitespace-nowrap">
+                <Users className="w-3 h-3 shrink-0" /> Availability
+             </p>
+             <div className="flex flex-col gap-1.5 min-w-0">
+                 <div className="flex items-end justify-between gap-2">
+                     <span className="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 tabular-nums shrink-0">{slots}</span>
+                     {remaining <= 0 && <span className="text-[8px] font-black uppercase text-google-red bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded leading-none shrink-0 border border-red-100/50">Full</span>}
+                 </div>
+                 <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className={cn(
+                        "h-full transition-all duration-1000",
+                        remaining <= 0 ? "bg-google-red" : percent > 80 ? "bg-google-yellow" : "bg-google-green"
+                      )}
+                      style={{ width: `${Math.min(percent, 100)}%` }}
+                    />
+                 </div>
+             </div>
           </div>
-          <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5">
-               <Calendar className="w-3 h-3" /> Match Date
+          <div className="min-w-0">
+            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5 whitespace-nowrap">
+               <Calendar className="w-3 h-3 shrink-0" /> Schedule Range
             </p>
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{date}</p>
+            <p className="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight line-clamp-2" title={date}>
+                {date.replace(' to ', ' - ').replace(' - ', ' \u2013 ')}
+            </p>
           </div>
         </div>
 

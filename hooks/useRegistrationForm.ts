@@ -136,7 +136,7 @@ export const useRegistrationForm = () => {
         setIsSubmitted(true);
         toast.success(isEdit ? 'Registration updated!' : 'Registration submitted!');
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/dashboard?tab=My Registrations');
         }, 2000);
       }
     } catch (err: any) {

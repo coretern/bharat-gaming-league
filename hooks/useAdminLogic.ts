@@ -17,10 +17,10 @@ export const useAdminLogic = () => {
   
   // Initialize from URL or default to Registrations
   const initialTab = (searchParams.get('tab') as any) || 'Registrations';
-  const [activeTab, setActiveTabState] = useState<'Registrations' | 'Users' | 'Tournaments' | 'Winners' | 'Media'>(initialTab);
+  const [activeTab, setActiveTabState] = useState<'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media'>(initialTab);
 
   // Wrapper to update URL when tab changes
-  const setActiveTab = (tab: 'Registrations' | 'Users' | 'Tournaments' | 'Winners' | 'Media') => {
+  const setActiveTab = (tab: 'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media') => {
     setActiveTabState(tab);
     // Update URL without full refresh
     const params = new URLSearchParams(searchParams.toString());
@@ -141,7 +141,7 @@ export const useAdminLogic = () => {
     regSearch, setRegSearch, regTourFilter, setRegTourFilter, regGameFilter, setRegGameFilter, 
     regGroupFilter, setRegGroupFilter, regMatchTypeFilter, setRegMatchTypeFilter,
     tourSearch, setTourSearch, tourGameFilter, setTourGameFilter,
-    tourStatusFilter, setStatusFilter: setTourStatusFilter, isAdmin, 
+    tourStatusFilter, setTourStatusFilter, isAdmin, 
     fetchUsers, fetchRegistrations, fetchTournaments, loadWinnersData,
     handleUpdateStatus: (id: string, update: any) => rActions.handleUpdateStatus(id, update, setViewReg, setRejectingId),
     handleDeleteRegistration: (id: string) => rActions.handleDeleteRegistration(id, setViewReg),
@@ -171,6 +171,7 @@ export const useAdminLogic = () => {
     handleDeleteUser: (email: string) => uActions.handleDeleteUser(email, setConfirmDelete),
     handleSaveTournament: (e: any) => { e.preventDefault(); tActions.handleSaveTournament(editTour, setEditTour); },
     handleCreateTournament: (e: any) => { e.preventDefault(); tActions.handleCreateTournament(newTour, setShowCreateTour); },
+    handleDeleteTournament: tActions.handleDeleteTournament,
     handleAddWinner: (e: any) => { e.preventDefault(); wActions.handleAddWinner(newWinner, setShowAddWinner); },
     handleDeleteWinner: wActions.handleDeleteWinner,
     onSyncGroups: async () => {

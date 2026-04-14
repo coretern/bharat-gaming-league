@@ -28,6 +28,7 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
   deleteRegistration
 }) => {
   const filteredRegs = registrations
+    .filter(r => !r.matchDate) // Hide scheduled registrations (they moved to Schedules tab)
     .filter(r => r.status === regFilter)
     .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
     .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
@@ -94,9 +95,16 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
                        {reg.groupNumber ? `Group ${reg.groupNumber}` : 'N/A'}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
-                       {reg.slotNumber ? `Slot ${reg.slotNumber}` : 'Pending Slot'}
-                    </span>
+                    <div className="flex flex-col">
+                       <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+                          {reg.slotNumber ? `Slot ${reg.slotNumber}` : 'Pending Slot'}
+                       </span>
+                       {reg.matchDate && (
+                          <span className="text-[9px] text-google-blue font-black uppercase mt-0.5">
+                             {reg.matchDate} @ {reg.matchTime || 'TBA'}
+                          </span>
+                       )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">

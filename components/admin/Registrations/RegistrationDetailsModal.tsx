@@ -7,7 +7,7 @@ interface RegistrationDetailsModalProps {
   updating: string | null;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onApprove: (id: string) => void;
+  onApprove: (id: string, data?: any) => void;
   onRejectRequest: (id: string) => void;
   onPreviewImage: (url: string) => void;
 }
@@ -105,6 +105,12 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
                     {viewReg.paymentVerified ? 'VERIFIED' : 'PENDING'}
                   </span>
                 </div>
+                {viewReg.matchDate && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-google-blue uppercase tracking-widest">Match Schedule</span>
+                    <span className="text-xs font-black text-google-blue uppercase italic tabular-nums">{viewReg.matchDate} @ {viewReg.matchTime || 'TBA'}</span>
+                  </div>
+                )}
                 {viewReg.orderId && (
                   <div className="pt-3 border-t border-slate-50 dark:border-slate-800">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1 block">Transaction ID</span>
@@ -136,9 +142,45 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
               </div>
             )}
 
-            <div className="flex gap-3 pt-4">
+            {viewReg.status === 'Approved' && (
+              <div className="space-y-6 pt-6 border-t border-slate-50 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                {/* Winner Outcome */}
+                <div>
+                  <h4 className="text-[10px] font-black uppercase text-google-green mb-3 tracking-[0.2em]">Match Outcome Management</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-1 group">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">₹</span>
+                      <input 
+                        type="number" 
+                        placeholder="Prize Amount" 
+                        className="w-full h-11 pl-7 pr-4 rounded-xl bg-green-50/30 dark:bg-green-500/5 border border-green-100 dark:border-green-500/20 text-xs font-bold text-google-green outline-none focus:ring-4 focus:ring-google-green/10 transition-all placeholder:text-google-green/30"
+                        id="prizeInput"
+                        defaultValue={viewReg.prizeAmount || 0}
+                      />
+                    </div>
+                    <button 
+                      disabled={updating === viewReg._id}
+                      onClick={() => {
+                        const amt = (document.getElementById('prizeInput') as HTMLInputElement).value;
+                        onApprove(viewReg._id, { resultStatus: 'Won', prizeAmount: Number(amt) });
+                      }}
+                      className={`h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 shadow-lg ${
+                        viewReg.resultStatus === 'Won' 
+                          ? 'bg-google-green text-white shadow-green-500/20' 
+                          : 'bg-white dark:bg-slate-900 text-google-green border border-green-200 dark:border-green-900/30 hover:bg-google-green hover:text-white'
+                      }`}
+                    >
+                      {viewReg.resultStatus === 'Won' ? 'Winner Declared' : 'Set as Winner'}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-[9px] font-black text-slate-400 uppercase tracking-tighter">Setting a winner will automatically mark other players in Group {viewReg.groupNumber} as losers.</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-6 border-t border-slate-50 dark:border-slate-800">
               <button disabled={updating === viewReg._id || viewReg.status === 'Approved'}
-                onClick={() => onApprove(viewReg._id)}
+                onClick={() => onApprove(viewReg._id, { status: 'Approved' })}
                 className="flex-[2] h-12 rounded-xl bg-google-blue text-white font-bold uppercase text-xs hover:bg-blue-600 disabled:opacity-50 shadow-lg shadow-blue-500/20 active:scale-95 transition-all tracking-[0.1em]">
                 Approve
               </button>
