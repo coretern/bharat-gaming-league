@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Tournament } from '@/models/Tournament';
+import { Registration } from '@/models/Registration';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -40,7 +41,29 @@ export async function GET() {
       list = await Tournament.find().sort({ createdAt: -1 });
     }
 
-    return NextResponse.json(list);
+    // Dynamic Slot Calculation
+    const tournamentsWithSlots = await Promise.all(list.map(async (t: any) => {
+      const currentCount = await Registration.countDocuments({ tournamentId: t.id });
+      
+      // Dynamically determine group size from tournament.slots
+      let groupSize = (t.game === 'BGMI') ? 94 : 48;
+      if (t.slots) {
+        const parts = t.slots.split('/');
+        const totalPart = parts[parts.length - 1].trim();
+        const parsed = parseInt(totalPart);
+        if (!isNaN(parsed) && parsed > 0) groupSize = parsed;
+      }
+      
+      // Calculate current group's progress
+      const filledInCurrentGroup = currentCount % groupSize;
+      const displaySlots = `${filledInCurrentGroup}/${groupSize}`;
+      
+      const obj = t.toObject();
+      obj.slots = displaySlots;
+      return obj;
+    }));
+
+    return NextResponse.json(tournamentsWithSlots);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

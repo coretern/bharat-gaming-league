@@ -8,6 +8,8 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const winners = [
   { team: 'Team Alpha', prize: '₹1,000', tournament: 'Pro League S15' },
@@ -21,6 +23,15 @@ const winners = [
 export default function Home() {
   const [liveTournaments, setLiveTournaments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { status } = useSession();
+  const router = useRouter();
+
+  const handleHeroJoinClick = (e: React.MouseEvent) => {
+    if (status !== 'authenticated') {
+      e.preventDefault();
+      router.push('/login');
+    }
+  };
 
   useEffect(() => {
     fetch('/api/tournaments')
@@ -103,9 +114,13 @@ export default function Home() {
               
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto px-6 sm:px-0">
-                 <Link href="/tournaments" className="w-full sm:w-auto px-10 py-4 bg-google-blue text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-all hover:scale-[1.02] active:scale-100 text-center">
-                    Join Tournament
-                 </Link>
+                  <Link 
+                    href="/tournaments" 
+                    onClick={handleHeroJoinClick}
+                    className="w-full sm:w-auto px-10 py-4 bg-google-blue text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-all hover:scale-[1.02] active:scale-100 text-center"
+                  >
+                     Join Tournament
+                  </Link>
                  <Link href="/winners" className="w-full sm:w-auto px-10 py-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-800 rounded-xl font-bold hover:bg-slate-50/80 transition-all text-center">
                     View Winners
                  </Link>

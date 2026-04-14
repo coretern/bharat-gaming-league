@@ -61,6 +61,22 @@ export const useAdminLogic = () => {
   const [newWinner, setNewWinner] = useState({ tournamentId: '', tournamentName: '', playerName: '', teamName: '', amount: '', date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) });
   const [regSearch, setRegSearch] = useState('');
   const [regTourFilter, setRegTourFilter] = useState('All');
+  
+  // Initialize game filter from URL or default to All
+  const initialGameFilter = searchParams.get('game') || 'All';
+  const [regGameFilter, setRegGameFilterState] = useState<string>(initialGameFilter);
+
+  // Wrapper to update URL when game filter changes
+  const setRegGameFilter = (game: string) => {
+    setRegGameFilterState(game);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('game', game);
+    router.push(`/admin?${params.toString()}`, { scroll: false });
+  };
+
+  const [regGroupFilter, setRegGroupFilter] = useState('All');
+  const [regMatchTypeFilter, setRegMatchTypeFilter] = useState('All');
+
   const [tourSearch, setTourSearch] = useState('');
   const [tourGameFilter, setTourGameFilter] = useState('All');
   const [tourStatusFilter, setTourStatusFilter] = useState('All');
@@ -122,8 +138,10 @@ export const useAdminLogic = () => {
     rejectionOptions, setRejectionOptions, viewReg, setViewReg, editTour, setEditTour, updating, confirmDelete, setConfirmDelete,
     confirmBan, setConfirmBan,
     showCreateTour, setShowCreateTour, newTour, setNewTour, showAddWinner, setShowAddWinner, newWinner, setNewWinner,
-    regSearch, setRegSearch, regTourFilter, setRegTourFilter, tourSearch, setTourSearch, tourGameFilter, setTourGameFilter,
-    tourStatusFilter, setTourStatusFilter, isAdmin, 
+    regSearch, setRegSearch, regTourFilter, setRegTourFilter, regGameFilter, setRegGameFilter, 
+    regGroupFilter, setRegGroupFilter, regMatchTypeFilter, setRegMatchTypeFilter,
+    tourSearch, setTourSearch, tourGameFilter, setTourGameFilter,
+    tourStatusFilter, setStatusFilter: setTourStatusFilter, isAdmin, 
     fetchUsers, fetchRegistrations, fetchTournaments, loadWinnersData,
     handleUpdateStatus: (id: string, update: any) => rActions.handleUpdateStatus(id, update, setViewReg, setRejectingId),
     handleDeleteRegistration: (id: string) => rActions.handleDeleteRegistration(id, setViewReg),

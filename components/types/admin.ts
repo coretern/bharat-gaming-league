@@ -8,6 +8,7 @@ export interface Player {
 export interface Reg {
   _id: string;
   tournamentName: string;
+  game?: string;
   tournamentId: string;
   matchType: string;
   teamName: string;

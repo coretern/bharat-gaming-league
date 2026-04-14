@@ -2,6 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
+import { Tournament } from '@/models/Tournament';
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
@@ -78,6 +79,26 @@ export async function POST(req: NextRequest) {
     const payoutDetails = { qrCodeUrl };
 
     await connectDB();
+    
+    // Fetch tournament to get game type for group size
+    const tournament = await Tournament.findOne({ id: tournamentId });
+    
+    // Dynamically determine group size from tournament.slots
+    // If slots is "0/48" or just "48", we want the 48.
+    let groupSize = (tournament?.game === 'BGMI') ? 94 : 48;
+    if (tournament?.slots) {
+      const parts = tournament.slots.split('/');
+      const totalPart = parts[parts.length - 1].trim(); // Get the last part (denominator)
+      const parsed = parseInt(totalPart);
+      if (!isNaN(parsed) && parsed > 0) {
+        groupSize = parsed;
+      }
+    }
+    
+    const currentCount = await Registration.countDocuments({ tournamentId });
+    const groupNumber = Math.floor(currentCount / groupSize) + 1;
+    const slotNumber = (currentCount % groupSize) + 1;
+
     const orderId = `BGL_ORD_${Date.now()}`;
 
     // Create Cashfree Order
@@ -116,10 +137,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const currentCount = await Registration.countDocuments({ tournamentId });
-    const groupNumber = Math.floor(currentCount / 48) + 1;
-    const slotNumber = (currentCount % 48) + 1;
-
     const registration = await Registration.create({
       userId: token.sub || token.email,
       userName: token.name || 'Unknown',
@@ -127,6 +144,7 @@ export async function POST(req: NextRequest) {
       userImage: token.picture || '',
       tournamentId,
       tournamentName,
+      game: tournament?.game,
       matchType,
       teamName,
       whatsapp,

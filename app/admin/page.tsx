@@ -71,6 +71,12 @@ export default function AdminPanel() {
                 setRegSearch={adminState.setRegSearch}
                 regTourFilter={adminState.regTourFilter}
                 setRegTourFilter={adminState.setRegTourFilter}
+                regGameFilter={adminState.regGameFilter}
+                setRegGameFilter={adminState.setRegGameFilter}
+                regGroupFilter={adminState.regGroupFilter}
+                setRegGroupFilter={adminState.setRegGroupFilter}
+                regMatchTypeFilter={adminState.regMatchTypeFilter}
+                setRegMatchTypeFilter={adminState.setRegMatchTypeFilter}
                 setViewReg={adminState.setViewReg}
                 handleDeleteRegistration={adminState.handleDeleteRegistration}
                 onSync={adminState.onSyncGroups}
@@ -108,6 +114,7 @@ export default function AdminPanel() {
                 setTourStatusFilter={adminState.setTourStatusFilter}
                 setShowCreateTour={adminState.setShowCreateTour}
                 setEditTour={adminState.setEditTour}
+                onDeleteTournament={adminState.handleDeleteTournament}
               />
             )}
 

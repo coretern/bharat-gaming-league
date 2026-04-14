@@ -2,7 +2,7 @@
 
 import { useSession, signIn } from 'next-auth/react';
 import Image from 'next/image';
-import { Chrome, ShieldAlert, ShieldCheck, Sparkles, Mail, Lock } from 'lucide-react';
+import { Chrome, ShieldAlert, ShieldCheck, Sparkles, Mail, Lock, Facebook } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -30,12 +30,7 @@ function LoginContent() {
           cancel_on_tap_outside: false
         });
         
-        // This triggers the native "Continue as [Account]" UI at the top
-        window.google.accounts.id.prompt((notification: any) => {
-           if (notification.isNotDisplayed()) {
-             console.log('One tap could not be displayed:', notification.getNotDisplayedReason());
-           }
-        });
+        // window.google.accounts.id.prompt() has been removed to stop automatic popups
       }
     };
 
@@ -78,25 +73,41 @@ function LoginContent() {
 
           <div className="space-y-4">
              {/* The Button now looks like a 'Continue as' prompt */}
-             <button
-               onClick={() => signIn('google', { callbackUrl: '/' })}
-               className="group w-full flex items-center justify-between px-6 h-16 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-md active:scale-95 text-left"
-             >
-               <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
-                    <img 
-                      src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" 
-                      alt="Google" 
-                      className="w-5 h-5 group-hover:scale-110 transition-transform" 
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                     <span className="text-[11px] uppercase tracking-wider">Continue with Google</span>
-                     <span className="text-[9px] text-slate-400 font-medium">Auto-detecting account...</span>
-                  </div>
-               </div>
-               <Mail className="w-4 h-4 text-slate-300 group-hover:text-google-blue transition-colors" />
-             </button>
+              <button
+                onClick={() => signIn('google', { callbackUrl: '/' })}
+                className="group w-full flex items-center justify-between px-6 h-16 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-md active:scale-95 text-left"
+              >
+                <div className="flex items-center gap-4">
+                   <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
+                     <img 
+                       src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" 
+                       alt="Google" 
+                       className="w-5 h-5 group-hover:scale-110 transition-transform" 
+                     />
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[11px] uppercase tracking-wider">Continue with Google</span>
+                      <span className="text-[9px] text-slate-400 font-medium">Auto-detecting account...</span>
+                   </div>
+                </div>
+                <Mail className="w-4 h-4 text-slate-300 group-hover:text-google-blue transition-colors" />
+              </button>
+
+              <button
+                onClick={() => signIn('facebook', { callbackUrl: '/' })}
+                className="group w-full flex items-center justify-between px-6 h-16 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-md active:scale-95 text-left"
+              >
+                <div className="flex items-center gap-4">
+                   <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
+                     <Facebook className="w-5 h-5 text-[#1877F2] group-hover:scale-110 transition-transform" />
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[11px] uppercase tracking-wider">Continue with Facebook</span>
+                      <span className="text-[9px] text-slate-400 font-medium">Secure login via Facebook</span>
+                   </div>
+                </div>
+                <Facebook className="w-4 h-4 text-slate-300 group-hover:text-blue-600 transition-colors" />
+              </button>
 
              {/* Terms Agreement - WITH ACTIVE LINKS */}
              <div className="pt-8 border-t border-slate-50 dark:border-slate-800/50">

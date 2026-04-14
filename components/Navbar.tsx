@@ -34,20 +34,8 @@ export default function Navbar() {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    // Auto-show Login prompting for first-time visitors in this session
-    if (status === 'unauthenticated') {
-      const hasShown = sessionStorage.getItem('auth_modal_shown');
-      if (!hasShown) {
-        const timer = setTimeout(() => {
-          setIsAuthModalOpen(true);
-          sessionStorage.setItem('auth_modal_shown', 'true');
-        }, 800);
-        return () => clearTimeout(timer);
-      }
-    }
-
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [status]);
+  }, []);
 
   return (
     <>
@@ -184,7 +172,6 @@ export default function Navbar() {
         </div>
       )}
     </nav>
-    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 }

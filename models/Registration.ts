@@ -7,6 +7,7 @@ const RegistrationSchema = new Schema({
   userImage: { type: String },
   tournamentId: { type: String, required: true },
   tournamentName: { type: String, required: true },
+  game: { type: String, enum: ['BGMI', 'Free Fire'] },
   matchType: { type: String, enum: ['Solo', 'Duo', 'Squad'], default: 'Solo' },
   teamName: { type: String, required: true },
   whatsapp: { type: String, required: true },

@@ -43,5 +43,21 @@ export const useTournamentActions = (fetchTournaments: () => void) => {
     }
   };
 
-  return { updating, handleSaveTournament, handleCreateTournament };
+  const handleDeleteTournament = async (id: string) => {
+    setUpdating(id);
+    try {
+      const res = await fetch(`/api/admin/tournaments/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      toast.success('Tournament deleted!');
+      fetchTournaments();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  return { updating, handleSaveTournament, handleCreateTournament, handleDeleteTournament };
 };

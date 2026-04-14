@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2 } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { Tournament } from '../../types/admin';
 
 interface TournamentTableProps {
@@ -9,6 +9,7 @@ interface TournamentTableProps {
   tourGameFilter: string;
   tourStatusFilter: string;
   onEdit: (tournament: Tournament) => void;
+  onDelete: (id: string) => void;
 }
 
 const TournamentTable: React.FC<TournamentTableProps> = ({
@@ -17,12 +18,28 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
   tourSearch,
   tourGameFilter,
   tourStatusFilter,
-  onEdit
+  onEdit,
+  onDelete
 }) => {
+  const [confirmDelete, setConfirmDelete] = React.useState<{ id: string; stage: number } | null>(null);
+
   const filteredTours = tournaments
     .filter(t => t.title.toLowerCase().includes(tourSearch.toLowerCase()))
     .filter(t => tourGameFilter === 'All' || t.game === tourGameFilter)
     .filter(t => tourStatusFilter === 'All' || t.status === tourStatusFilter);
+
+  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirmDelete || confirmDelete.id !== id) {
+      setConfirmDelete({ id, stage: 1 });
+      return;
+    }
+
+    if (confirmDelete.stage === 1) {
+      onDelete(id);
+      setConfirmDelete(null);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -34,7 +51,7 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
             <th className="px-6 py-4">Game</th>
             <th className="px-6 py-4">Status</th>
             <th className="px-6 py-4">Prize Pool</th>
-            <th className="px-6 py-4 text-right">Actions</th>
+            <th className="px-6 py-4 text-center">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -60,10 +77,18 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
                   }`}>{t.status}</span>
                 </td>
                 <td className="px-6 py-4 text-xs font-bold text-google-blue tracking-widest">{t.prizePool}</td>
-                <td className="px-6 py-4 text-right">
-                  <button onClick={() => onEdit(t)} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-400 hover:text-google-blue transition-all">
-                    <Edit2 className="w-4 h-4" />
-                  </button>
+                <td className="px-6 py-4 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <button 
+                        onClick={(e) => handleDeleteClick(t.id, e)} 
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${confirmDelete?.id === t.id ? 'bg-red-600 text-white animate-pulse' : 'bg-red-50 text-google-red border border-red-100'}`}
+                    >
+                        {confirmDelete?.id === t.id ? 'Click to Confirm' : 'Delete'}
+                    </button>
+                    <button onClick={() => onEdit(t)} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-400 hover:text-google-blue transition-all">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
@@ -101,9 +126,17 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
                        <span className="text-[10px] font-bold text-slate-500">{t.date}</span>
                     </div>
                   </div>
-                  <button onClick={() => onEdit(t)} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-google-blue flex items-center justify-center">
-                    <Edit2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button 
+                        onClick={(e) => handleDeleteClick(t.id, e)} 
+                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${confirmDelete?.id === t.id ? 'bg-red-600 text-white' : 'text-google-red bg-red-50 border border-red-100'}`}
+                    >
+                        {confirmDelete?.id === t.id ? 'Confirm?' : 'Delete'}
+                    </button>
+                    <button onClick={() => onEdit(t)} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-google-blue flex items-center justify-center">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
                </div>
             </div>
           ))

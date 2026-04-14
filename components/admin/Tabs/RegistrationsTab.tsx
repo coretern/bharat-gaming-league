@@ -14,6 +14,12 @@ interface RegistrationsTabProps {
   setRegSearch: (search: string) => void;
   regTourFilter: string;
   setRegTourFilter: (filter: string) => void;
+  regGameFilter: string;
+  setRegGameFilter: (filter: string) => void;
+  regGroupFilter: string;
+  setRegGroupFilter: (filter: string) => void;
+  regMatchTypeFilter: string;
+  setRegMatchTypeFilter: (filter: string) => void;
   setViewReg: (reg: Reg) => void;
   handleDeleteRegistration: (id: string) => void;
   onSync: () => void;
@@ -29,6 +35,12 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
   setRegSearch,
   regTourFilter,
   setRegTourFilter,
+  regGameFilter,
+  setRegGameFilter,
+  regGroupFilter,
+  setRegGroupFilter,
+  regMatchTypeFilter,
+  setRegMatchTypeFilter,
   setViewReg,
   handleDeleteRegistration,
   onSync,
@@ -44,6 +56,31 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
       setSyncing(false);
     }
   };
+  const filteredRegs = registrations
+    .filter(r => r.status === regFilter)
+    .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
+    .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
+    .filter(r => {
+      if (regGameFilter === 'All') return true;
+      if (r.game) return r.game === regGameFilter;
+      return r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
+    })
+    .filter(r => regGroupFilter === 'All' || r.groupNumber?.toString() === regGroupFilter)
+    .filter(r => regMatchTypeFilter === 'All' || r.matchType === regMatchTypeFilter);
+
+  // Get unique group numbers for the current selection to show in filter
+  const availableGroups = Array.from(new Set(
+    registrations
+      .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
+      .filter(r => {
+        if (regGameFilter === 'All') return true;
+        if (r.game) return r.game === regGameFilter;
+        return r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
+      })
+      .map(r => r.groupNumber)
+      .filter(Boolean)
+  )).sort((a, b) => (a || 0) - (b || 0));
+
   const exportToExcel = (data: any[], fileName: string) => {
     try {
       const ws = XLSX.utils.json_to_sheet(data);
@@ -58,14 +95,51 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2">
-          {(['Pending', 'Approved', 'Rejected'] as const).map(f => (
-              <button key={f} onClick={() => setRegFilter(f)} 
-                  className={`px-4 py-2 text-sm font-medium transition-all relative ${regFilter === f ? 'text-google-blue' : 'text-slate-500 hover:text-slate-700'}`}>
-                  {f}
-                  {regFilter === f && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-google-blue rounded-t-full" />}
-              </button>
-          ))}
+      <div className="flex flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800 pb-2">
+          <div className="flex items-center gap-1 mr-4">
+             <span className="text-[10px] font-bold uppercase text-slate-400">Status</span>
+             {(['Pending', 'Approved', 'Rejected'] as const).map(f => (
+                 <button key={f} onClick={() => setRegFilter(f)} 
+                     className={`px-3 py-1.5 text-[11px] font-bold uppercase transition-all relative ${regFilter === f ? 'text-google-blue' : 'text-slate-500 hover:text-slate-700'}`}>
+                     {f}
+                     {regFilter === f && <div className="absolute bottom-[-9px] left-0 w-full h-[2px] bg-google-blue rounded-t-full" />}
+                 </button>
+             ))}
+          </div>
+
+          <div className="flex items-center gap-1">
+             <span className="text-[10px] font-bold uppercase text-slate-400">Platform</span>
+             {(['All', 'BGMI', 'Free Fire'] as const).map(f => (
+                 <button key={f} onClick={() => setRegGameFilter(f)} 
+                     className={`px-3 py-1.5 text-[11px] font-bold uppercase transition-all relative ${regGameFilter === f ? 'text-google-blue' : 'text-slate-500 hover:text-slate-700'}`}>
+                     {f}
+                     {regGameFilter === f && <div className="absolute bottom-[-9px] left-0 w-full h-[2px] bg-google-blue rounded-t-full" />}
+                 </button>
+             ))}
+          </div>
+
+          <div className="flex items-center gap-3 ml-auto">
+              <div className="flex flex-col">
+                  <span className="text-[9px] font-bold uppercase text-slate-400 mb-1 ml-1">Group</span>
+                  <select value={regGroupFilter} onChange={(e) => setRegGroupFilter(e.target.value)}
+                      className="h-8 px-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[10px] font-bold outline-none">
+                      <option value="All">All Groups</option>
+                      {availableGroups.map(g => (
+                          <option key={g} value={g?.toString()}>Group {g}</option>
+                      ))}
+                  </select>
+              </div>
+              <div className="flex flex-col">
+                  <span className="text-[9px] font-bold uppercase text-slate-400 mb-1 ml-1">Type</span>
+                  <select value={regMatchTypeFilter} onChange={(e) => setRegMatchTypeFilter(e.target.value)}
+                      className="h-8 px-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-[10px] font-bold outline-none">
+                      <option value="All">All Types</option>
+                      <option value="Solo">Solo</option>
+                      <option value="Duo">Duo</option>
+                      <option value="Squad">Squad</option>
+                  </select>
+              </div>
+          </div>
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
@@ -90,12 +164,9 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                 
                 <button 
                     onClick={() => {
-                        const filtered = registrations
-                            .filter(r => r.status === regFilter)
-                            .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
-                            .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
-                            .map(r => ({
+                        const dataToExport = filteredRegs.map(r => ({
                                 'Team Name': r.teamName,
+                                'Game': r.game || (r.tournamentName.toLowerCase().includes('bgmi') ? 'BGMI' : 'Free Fire'),
                                 'WhatsApp': r.whatsapp,
                                 'Tournament': r.tournamentName,
                                 'Type': r.matchType,
@@ -107,7 +178,7 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                                 'Leader': r.players[0]?.name || 'N/A',
                                 'Leader UID': r.players[0]?.uid || 'N/A'
                             }));
-                        exportToExcel(filtered, 'Registrations');
+                        exportToExcel(dataToExport, 'Registrations');
                     }}
                     className="h-11 px-5 bg-google-green text-white rounded-xl text-xs font-bold shadow-lg shadow-green-500/10 hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
@@ -133,6 +204,9 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
           regFilter={regFilter} 
           regSearch={regSearch} 
           regTourFilter={regTourFilter} 
+          regGameFilter={regGameFilter} 
+          regGroupFilter={regGroupFilter}
+          regMatchTypeFilter={regMatchTypeFilter}
           setViewReg={setViewReg} 
           deleteRegistration={handleDeleteRegistration} 
         />

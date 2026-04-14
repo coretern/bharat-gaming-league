@@ -10,6 +10,8 @@ interface MyReg {
   status: 'Pending' | 'Approved' | 'Rejected';
   rejectionReason?: string;
   paymentVerified: boolean;
+  groupNumber?: number;
+  slotNumber?: number;
   createdAt: string;
 }
 
@@ -100,6 +102,10 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                       }
                     </div>
                     <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Assignment</p>
+                      <p className="font-bold text-google-blue">G{reg.groupNumber} : S{reg.slotNumber}</p>
+                    </div>
+                    <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Registered</p>
                       <p className="font-bold text-foreground/60">{new Date(reg.createdAt).toLocaleDateString()}</p>
                     </div>
@@ -124,6 +130,7 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                   <th className="px-6 py-4">Tournament</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Team</th>
+                  <th className="px-6 py-4">Assignment</th>
                   <th className="px-6 py-4">Payment</th>
                   <th className="px-6 py-4">Date</th>
                 </tr>
@@ -149,6 +156,12 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600 font-medium">{reg.teamName}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                         <span className="text-xs font-bold text-google-blue">Group {reg.groupNumber}</span>
+                         <span className="text-[10px] text-slate-400 font-medium">Slot {reg.slotNumber}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       {reg.paymentVerified
                         ? <span className="flex items-center gap-1 text-[10px] font-bold text-google-green"><ShieldCheck className="w-4 h-4" />Verified</span>

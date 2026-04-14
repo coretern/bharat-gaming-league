@@ -14,6 +14,7 @@ interface TournamentsTabProps {
   setTourStatusFilter: (filter: string) => void;
   setShowCreateTour: (show: boolean) => void;
   setEditTour: (tour: Tournament) => void;
+  onDeleteTournament: (id: string) => void;
 }
 
 const TournamentsTab: React.FC<TournamentsTabProps> = ({
@@ -26,7 +27,8 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
   tourStatusFilter,
   setTourStatusFilter,
   setShowCreateTour,
-  setEditTour
+  setEditTour,
+  onDeleteTournament
 }) => {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
@@ -69,6 +71,7 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
         tourGameFilter={tourGameFilter} 
         tourStatusFilter={tourStatusFilter} 
         onEdit={setEditTour} 
+        onDelete={onDeleteTournament}
       />
     </div>
   );

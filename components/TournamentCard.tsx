@@ -4,6 +4,8 @@ import { Calendar, Users, Trophy, DollarSign, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface TournamentCardProps {
   id: string;
@@ -29,6 +31,15 @@ export default function TournamentCard({
   status
 }: TournamentCardProps) {
   const isBGMI = game === 'BGMI';
+  const { status: sessionStatus } = useSession();
+  const router = useRouter();
+
+  const handleJoinClick = (e: React.MouseEvent) => {
+    if (sessionStatus !== 'authenticated') {
+      e.preventDefault();
+      router.push('/login');
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-[0_1px_3px_0_rgba(60,64,67,.30)] hover:shadow-xl transition-all group flex flex-col">
@@ -96,7 +107,11 @@ export default function TournamentCard({
           </div>
         </div>
 
-        <Link href={status === 'Open' ? `/register?tournament=${id}` : '#'} className={cn("mt-auto", status !== 'Open' && "pointer-events-none")}>
+        <Link 
+          href={status === 'Open' ? `/register?tournament=${id}` : '#'} 
+          onClick={handleJoinClick}
+          className={cn("mt-auto", (status !== 'Open') && "pointer-events-none")}
+        >
           <button className={cn(
             "w-full py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all",
             status === 'Open' 

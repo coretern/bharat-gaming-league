@@ -8,6 +8,9 @@ interface RegistrationTableProps {
   regFilter: string;
   regSearch: string;
   regTourFilter: string;
+  regGameFilter: string;
+  regGroupFilter: string;
+  regMatchTypeFilter: string;
   setViewReg: (reg: Reg) => void;
   deleteRegistration: (id: string) => void;
 }
@@ -18,13 +21,24 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
   regFilter,
   regSearch,
   regTourFilter,
+  regGameFilter,
+  regGroupFilter,
+  regMatchTypeFilter,
   setViewReg,
   deleteRegistration
 }) => {
   const filteredRegs = registrations
     .filter(r => r.status === regFilter)
     .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
-    .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter);
+    .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
+    .filter(r => {
+      if (regGameFilter === 'All') return true;
+      if (r.game) return r.game === regGameFilter;
+      // Fallback for older registrations without 'game' field
+      return r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
+    })
+    .filter(r => regGroupFilter === 'All' || r.groupNumber?.toString() === regGroupFilter)
+    .filter(r => regMatchTypeFilter === 'All' || r.matchType === regMatchTypeFilter);
 
   return (
     <div className="overflow-x-auto">

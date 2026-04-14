@@ -40,3 +40,24 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+      const { id: slug } = await params;
+      const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+      if (!(token as any)?.isAdmin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+  
+      await connectDB();
+      const deleted = await Tournament.findOneAndDelete({ id: slug });
+  
+      if (!deleted) {
+        return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+      }
+  
+      return NextResponse.json({ success: true });
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}

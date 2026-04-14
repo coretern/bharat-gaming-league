@@ -16,14 +16,26 @@ export async function GET(req: NextRequest) {
     let totalUpdated = 0;
 
     for (const tId of tournamentIds) {
+      // Find the tournament to get its slots configuration
+      const { Tournament } = await import('@/models/Tournament');
+      const tournament = await Tournament.findOne({ id: tId });
+      
+      // Determine group size (fallback to game-specific defaults if parsing fails)
+      let groupSize = (tournament?.game === 'BGMI') ? 94 : 48;
+      if (tournament?.slots) {
+        const parts = tournament.slots.split('/');
+        const totalPart = parts[parts.length - 1].trim();
+        const parsed = parseInt(totalPart);
+        if (!isNaN(parsed) && parsed > 0) groupSize = parsed;
+      }
+
       const regs = await Registration.find({ tournamentId: tId }).sort({ createdAt: 1 });
       
       for (let i = 0; i < regs.length; i++) {
         await Registration.findByIdAndUpdate(regs[i]._id, {
           $set: {
-            itemNumber: i + 1, // Store absolute serial number too
-            groupNumber: Math.floor(i / 48) + 1,
-            slotNumber: (i % 48) + 1
+            groupNumber: Math.floor(i / groupSize) + 1,
+            slotNumber: (i % groupSize) + 1
           }
         });
         totalUpdated++;
