@@ -16,6 +16,8 @@ export interface MyReg {
   slotNumber?: number;
   resultStatus?: 'Playing' | 'Won' | 'Lost';
   prizeAmount?: number;
+  winnerTeamName?: string;
+  winnerScreenshot?: string;
   createdAt: string;
 }
 

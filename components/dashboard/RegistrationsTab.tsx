@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Trophy, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Trophy, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Eye } from 'lucide-react';
+import MobileRegCard from './MobileRegCard';
 
 interface MyReg {
   _id: string;
@@ -14,6 +15,8 @@ interface MyReg {
   slotNumber?: number;
   resultStatus?: 'Playing' | 'Won' | 'Lost';
   prizeAmount?: number;
+  winnerTeamName?: string;
+  winnerScreenshot?: string;
   matchDate?: string;
   matchTime?: string;
   createdAt: string;
@@ -66,93 +69,10 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
       ) : (
         <>
           {/* Mobile cards */}
-          <div className="md:hidden divide-y divide-foreground/5">
-            {myRegs.map(reg => {
-              const statusColor =
-                reg.status === 'Approved' ? 'border-green-500 bg-green-500/5' :
-                reg.status === 'Rejected' ? 'border-red-500 bg-red-500/5' :
-                'border-amber-400 bg-amber-400/5';
-
-              return (
-                <div key={reg._id} className={`mx-4 my-3 rounded-xl border-l-4 p-4 ${statusColor}`}>
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="flex items-start gap-2">
-                      <Trophy className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                          <p className="font-black italic uppercase text-sm text-foreground leading-tight">{reg.tournamentName}</p>
-                          <span className="text-[9px] font-black uppercase text-neon-purple mt-0.5 inline-block">{reg.matchType}</span>
-                      </div>
-                    </div>
-                    <StatusBadge status={reg.status} />
-                  </div>
-
-                  {reg.status === 'Rejected' && (
-                      <div className="mb-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
-                          <p className="text-[10px] font-black uppercase text-red-500 mb-1">Reason:</p>
-                          <p className="text-xs font-bold text-red-600 dark:text-red-400 italic">"{reg.rejectionReason || 'No reason specified'}"</p>
-                      </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-3 text-xs mb-4">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Team</p>
-                      <p className="font-bold text-foreground truncate">{reg.teamName}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Payment</p>
-                      {reg.paymentVerified
-                        ? <span className="flex items-center gap-0.5 font-bold text-green-500"><ShieldCheck className="w-3 h-3" />Done</span>
-                        : <span className="flex items-center gap-0.5 font-bold text-amber-500"><ShieldAlert className="w-3 h-3" />Pending</span>
-                      }
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Assignment</p>
-                      <p className="font-bold text-google-blue">G{reg.groupNumber} : S{reg.slotNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Final Match Info</p>
-                      {reg.matchDate ? (
-                          <p className="font-bold text-google-blue">{reg.matchDate} @ {reg.matchTime || 'TBA'}</p>
-                      ) : (
-                          <p className="font-bold text-slate-400 italic">Awaiting Schedule</p>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Registered</p>
-                      <p className="font-bold text-foreground/60">{new Date(reg.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-
-                  {/* Outcome View */}
-                  {reg.resultStatus === 'Won' && (
-                    <div className="p-3 rounded-xl bg-google-green text-white shadow-lg shadow-green-500/20 flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                            <Trophy className="w-5 h-5" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">VICTORY DETECTED</span>
-                        </div>
-                        <span className="text-sm font-black italic">₹{reg.prizeAmount} Won!</span>
-                    </div>
-                  )}
-
-                  {reg.resultStatus === 'Lost' && (
-                    <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col gap-1 mb-2">
-                        <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Match Outcome</span>
-                            <span className="text-[10px] font-black text-slate-500 uppercase">Eliminated</span>
-                        </div>
-                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Winner: <span className="text-google-blue">{reg.winnerTeamName || 'Unknown'}</span></p>
-                    </div>
-                  )}
-
-                  {reg.status === 'Rejected' && (
-                      <Link href={`/register?tournament=${reg._id}&edit=true`}
-                          className="block w-full text-center py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-[10px] font-black uppercase tracking-widest transition-all">
-                          Edit & Resubmit
-                      </Link>
-                  )}
-                </div>
-              );
-            })}
+          <div className="md:hidden divide-y divide-foreground/5 py-1">
+            {myRegs.map(reg => (
+              <MobileRegCard key={reg._id} reg={reg} />
+            ))}
           </div>
 
           {/* Desktop table */}
@@ -205,14 +125,32 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
                     </td>
                     <td className="px-6 py-4">
                         {reg.resultStatus === 'Won' ? (
-                            <div className="p-3 rounded-xl bg-gradient-to-br from-google-green to-emerald-600 text-white shadow-lg shadow-green-500/20 flex flex-col items-center justify-center text-center">
+                            <div className="rounded-xl overflow-hidden bg-gradient-to-br from-google-green to-emerald-600 text-white shadow-lg shadow-green-500/20">
+                              <div className="p-3 flex flex-col items-center justify-center text-center">
                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] mb-1 opacity-80">You Won!</span>
                                 <span className="text-base font-black italic tabular-nums leading-none">₹{reg.prizeAmount}</span>
+                              </div>
+                              {reg.winnerScreenshot && (
+                                <a href={reg.winnerScreenshot} target="_blank" rel="noopener noreferrer"
+                                  className="flex items-center justify-center gap-1.5 py-2 bg-white/10 hover:bg-white/20 transition-colors border-t border-white/20">
+                                  <Eye className="w-3 h-3" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest">View Proof</span>
+                                </a>
+                              )}
                             </div>
                         ) : reg.resultStatus === 'Lost' ? (
-                            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col text-center">
+                            <div className="rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+                              <div className="p-3 bg-slate-50 dark:bg-slate-800/50 flex flex-col text-center">
                                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Result: Lost</span>
                                 <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">Winner: {reg.winnerTeamName || 'Unknown'}</span>
+                              </div>
+                              {reg.winnerScreenshot && (
+                                <a href={reg.winnerScreenshot} target="_blank" rel="noopener noreferrer"
+                                  className="flex items-center justify-center gap-1.5 py-2 bg-slate-50 dark:bg-slate-800/30 text-google-blue hover:bg-blue-50 transition-colors border-t border-slate-100 dark:border-slate-800">
+                                  <Eye className="w-3 h-3" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest">View Winner</span>
+                                </a>
+                              )}
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center p-3 text-center">

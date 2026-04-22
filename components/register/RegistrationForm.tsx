@@ -33,6 +33,8 @@ export default function RegistrationForm() {
     isPaid,
     rejectionTargets,
     rejectionIndices,
+    savedQrUrl,
+    savedScreenshotUrl,
     isSubmitted,
     loading,
     status,
@@ -136,7 +138,8 @@ export default function RegistrationForm() {
               isEdit={isEdit} 
               rejectionTargets={rejectionTargets} 
               rejectionIndices={rejectionIndices} 
-              onUpdate={updatePlayer} 
+              onUpdate={updatePlayer}
+              savedScreenshotUrl={idx === 0 ? savedScreenshotUrl : ''}
             />
           ))}
         </div>
@@ -146,7 +149,8 @@ export default function RegistrationForm() {
           setQrFile={setQrFile} 
           existingQrUrl={existingQrUrl} 
           isEdit={isEdit} 
-          rejectionTargets={rejectionTargets} 
+          rejectionTargets={rejectionTargets}
+          savedQrUrl={savedQrUrl}
         />
 
         <div className="pt-8 border-t border-slate-100 dark:border-slate-800">

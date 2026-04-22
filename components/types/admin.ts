@@ -36,6 +36,7 @@ export interface Reg {
   prizeAmount?: number;
   matchDate?: string;
   matchTime?: string;
+  winnerScreenshot?: string;
   createdAt: string;
 }
 

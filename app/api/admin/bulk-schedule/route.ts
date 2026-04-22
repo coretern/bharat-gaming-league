@@ -2,6 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
+import { addLog } from '@/lib/logger';
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -21,38 +22,58 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Flexible query matching for both string and number group numbers
-    const query: any = { 
-      groupNumber: { $in: [Number(groupNumber), groupNumber.toString()] }
-    };
+    // Build a very loose query to ensure we find the teams
+    const tournamentNameClean = tournamentName?.trim() || '';
     
-    // Improved tournament validation
-    if (tournamentId && tournamentId.trim() !== '' && tournamentId !== 'undefined' && tournamentId !== 'null') {
-      query.tournamentId = tournamentId;
-    } else if (tournamentName && tournamentName.trim() !== '') {
-      query.tournamentName = { $regex: new RegExp(`^${tournamentName.trim()}$`, 'i') };
+    // We'll use a loose filter for the tournament to avoid character encoding or space issues
+    const query: any = { 
+      groupNumber: { $in: [Number(groupNumber), String(groupNumber)] }
+    };
+
+    const tournamentFilters = [];
+    if (tournamentId && tournamentId !== 'undefined' && tournamentId !== 'null') {
+      tournamentFilters.push({ tournamentId: tournamentId });
+    }
+    if (tournamentNameClean !== '') {
+      // Loose regex match for the tournament name
+      tournamentFilters.push({ tournamentName: { $regex: new RegExp(tournamentNameClean, 'i') } });
     }
 
-    console.log('[BulkSchedule] Query:', JSON.stringify(query));
-    console.log('[BulkSchedule] Payload:', { matchDate, matchTime });
+    if (tournamentFilters.length > 0) {
+      query.$or = tournamentFilters;
+    }
+
+    console.log('[BulkSchedule] DEBUG Query:', JSON.stringify(query));
 
     const result = await Registration.updateMany(
       query,
       { $set: { matchDate, matchTime } }
     );
 
+    if (result.matchedCount === 0) {
+      // Find what DOES exist for this tournament to help debug
+      const similar = await Registration.findOne({ 
+        tournamentName: { $regex: new RegExp(tournamentNameClean, 'i') } 
+      }).select('groupNumber tournamentName tournamentId');
+
+      return NextResponse.json({ 
+        success: false, 
+        error: `No teams found for Group ${groupNumber} in "${tournamentNameClean}". ` + 
+               (similar ? `Found teams in this tournament with Group Number: ${similar.groupNumber}.` : `No teams found for this tournament name at all.`),
+        debug: { query, foundSimilar: similar }
+      }, { status: 404 });
+    }
+
     // Fetch the updated registrations to confirm and show names
     const updatedTeams = await Registration.find(query, 'teamName').lean();
     const teamNames = updatedTeams.map(t => t.teamName);
-
-    console.log('[BulkSchedule] Updated Teams:', teamNames);
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'No matching registrations found to update.',
-        debug: { query }
-      }, { status: 404 });
-    }
+    
+    await addLog({
+      action: 'Scheduled group', category: 'schedule',
+      details: `Group ${groupNumber} of ${tournamentNameClean} → ${matchDate} @ ${matchTime || 'TBA'} (${result.matchedCount} teams)`,
+      performedBy: userEmail,
+      targetName: `G${groupNumber} - ${tournamentNameClean}`,
+    });
 
     return NextResponse.json({ 
       success: true, 

@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Upload, User2, CheckCircle2 } from "lucide-react";
 
 interface PayoutQRUploadProps {
   qrFile: File | null;
@@ -6,10 +6,13 @@ interface PayoutQRUploadProps {
   existingQrUrl: string;
   isEdit: boolean;
   rejectionTargets: string[];
+  savedQrUrl?: string;
 }
 
-export default function PayoutQRUpload({ qrFile, setQrFile, existingQrUrl, isEdit, rejectionTargets }: PayoutQRUploadProps) {
+export default function PayoutQRUpload({ qrFile, setQrFile, existingQrUrl, isEdit, rejectionTargets, savedQrUrl }: PayoutQRUploadProps) {
   const isLocked = isEdit && !rejectionTargets.includes('qr');
+  const hasSavedQr = !!savedQrUrl && !isEdit;
+  const showSavedBadge = hasSavedQr && !qrFile && existingQrUrl === savedQrUrl;
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6">
@@ -19,15 +22,29 @@ export default function PayoutQRUpload({ qrFile, setQrFile, existingQrUrl, isEdi
         Please upload your PhonePe/GPay QR code. If you win, we will use this to send your prize money.
       </div>
 
+      {/* Profile QR badge */}
+      {showSavedBadge && (
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-google-green/5 border border-google-green/20">
+          <div className="flex items-center gap-2 flex-1">
+            <CheckCircle2 className="w-4 h-4 text-google-green shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[10px] font-black text-google-green uppercase tracking-widest">Using Profile QR</p>
+              <p className="text-[9px] text-slate-400 font-bold">Auto-filled from your saved profile</p>
+            </div>
+          </div>
+          <img src={savedQrUrl} alt="Saved QR" className="w-12 h-12 rounded-lg object-cover border border-slate-200" />
+        </div>
+      )}
+
       <div className={`relative h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center group transition-colors ${isLocked ? 'bg-slate-100 dark:bg-slate-900/50 opacity-60' : 'hover:border-neon-purple/50 bg-slate-50/50 dark:bg-slate-900 cursor-pointer'}`}>
         <input 
           disabled={isLocked}
-          required={!isEdit || rejectionTargets.includes('qr')} 
+          required={!isEdit && !existingQrUrl && !savedQrUrl || (isEdit && rejectionTargets.includes('qr'))} 
           type="file" accept="image/*" onChange={e => setQrFile(e.target.files?.[0] || null)}
           className={`absolute inset-0 w-full h-full opacity-0 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
         <Upload className="w-6 h-6 text-slate-400 group-hover:text-neon-purple mb-2" />
         <p className="text-xs font-black uppercase text-slate-500 text-center px-4">
-            {isLocked ? 'QR Locked (Already Received)' : qrFile ? qrFile.name : existingQrUrl ? '(Already Uploaded) Change QR' : 'Upload Payment QR'}
+            {isLocked ? 'QR Locked (Already Received)' : qrFile ? qrFile.name : existingQrUrl ? '(Already Uploaded) Change QR' : showSavedBadge ? 'Upload Different QR (optional)' : 'Upload Payment QR'}
         </p>
         <p className="text-[10px] text-slate-400 mt-1">PNG, JPG or JPEG</p>
       </div>

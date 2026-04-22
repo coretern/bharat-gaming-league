@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Download, Calendar, Settings2 } from 'lucide-react';
 import RegistrationTable from '../Registrations/RegistrationTable';
-import { Reg } from '../../types/admin';
+import { Reg, Tournament } from '../../types/admin';
 import GroupScheduleModal from '../Registrations/GroupScheduleModal';
 import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
@@ -27,6 +27,7 @@ interface RegistrationsTabProps {
   onRefresh: () => void;
   loadingRegs: boolean;
   liveTournaments: any[];
+  setActiveTab: (tab: any) => void;
 }
 
 const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
@@ -49,7 +50,8 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
   onSync,
   onRefresh,
   loadingRegs,
-  liveTournaments
+  liveTournaments,
+  setActiveTab
 }) => {
   const [syncing, setSyncing] = React.useState(false);
   const [editingGroup, setEditingGroup] = useState<{ number: number, tourName: string, tourId?: string } | null>(null);
@@ -211,20 +213,21 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                 </div>
 
                 {(() => {
-                   // Group registrations by Tournament -> Group Number
-                   const tournamentGroups: Record<string, number[]> = {};
-                   registrations.forEach(r => {
-                      if (!r.tournamentName || !r.groupNumber) return;
-                      // Respect current platform filter if selected
-                      if (regGameFilter !== 'All') {
-                         const isMatch = r.game === regGameFilter || r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
-                         if (!isMatch) return;
-                      }
-                      if (!tournamentGroups[r.tournamentName]) tournamentGroups[r.tournamentName] = [];
-                      if (!tournamentGroups[r.tournamentName].includes(r.groupNumber)) {
-                        tournamentGroups[r.tournamentName].push(r.groupNumber);
-                      }
-                   });
+                   // Group registrations by Tournament -> Group Number (exclude scheduled)
+                    const unscheduledRegs = registrations.filter(r => !r.matchDate);
+                    const tournamentGroups: Record<string, number[]> = {};
+                    unscheduledRegs.forEach(r => {
+                       if (!r.tournamentName || !r.groupNumber) return;
+                       // Respect current platform filter if selected
+                       if (regGameFilter !== 'All') {
+                          const isMatch = r.game === regGameFilter || r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
+                          if (!isMatch) return;
+                       }
+                       if (!tournamentGroups[r.tournamentName]) tournamentGroups[r.tournamentName] = [];
+                       if (!tournamentGroups[r.tournamentName].includes(r.groupNumber)) {
+                         tournamentGroups[r.tournamentName].push(r.groupNumber);
+                       }
+                    });
 
                    const tourList = Object.keys(tournamentGroups).sort();
                    if (tourList.length === 0) return <p className="text-[10px] italic text-slate-400 font-medium">No active registrations found...</p>;
@@ -235,12 +238,10 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                       const gameType = tournament?.game || (tourName.toLowerCase().includes('bgmi') ? 'BGMI' : 'Free Fire');
                       
                         return groups.map(gNum => {
-                           const teamsInGroup = registrations.filter(r => r.tournamentName === tourName && r.groupNumber === gNum);
+                           const teamsInGroup = unscheduledRegs.filter(r => r.tournamentName === tourName && r.groupNumber === gNum);
                            const approvedTeams = teamsInGroup.filter(r => r.status === 'Approved');
                            const approvedCount = approvedTeams.length;
                            const totalCount = teamsInGroup.length;
-                           
-                           const isScheduled = teamsInGroup.some(r => !!r.matchDate);
                            
                            let target = 48; // Default
                            if (tournament?.slots) {
@@ -261,9 +262,7 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                                     setRegGroupFilter(gNum.toString());
                                  }}
                                  className={`px-4 py-3 rounded-2xl border flex flex-col gap-1 cursor-pointer transition-colors min-w-[140px] group/pulse relative ${
-                                   isScheduled
-                                     ? 'bg-google-blue/10 border-google-blue/30'
-                                     : isFullyApproved 
+                                   isFullyApproved 
                                        ? 'bg-google-green/10 border-google-green/30' 
                                        : isFull
                                             ? 'bg-google-blue/5 border-google-blue/20'
@@ -289,11 +288,10 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
                                        {gameType}
                                    </span>
                                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${
-                                       isScheduled ? 'bg-google-blue text-white animate-pulse' :
                                        isFullyApproved ? 'bg-google-green text-white' : 
                                        isFull ? 'bg-google-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
                                    }`}>
-                                       {isScheduled ? 'SCHEDULED' : isFullyApproved ? 'APPROVED' : isFull ? 'FULL' : 'Filling'}
+                                       {isFullyApproved ? 'APPROVED' : isFull ? 'FULL' : 'Filling'}
                                    </span>
                                 </div>
                                 <p className="text-[11px] font-black italic uppercase text-slate-800 dark:text-white truncate max-w-[140px] relative z-10 mt-1">
@@ -313,6 +311,7 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
              </div>
           </div>
       </div>
+
 
       {/* Tab Content Area */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
@@ -354,7 +353,10 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
            tournamentName={editingGroup.tourName}
            tournamentId={editingGroup.tourId}
            onClose={() => setEditingGroup(null)}
-           onSuccess={onRefresh}
+           onSuccess={() => {
+             onRefresh();
+             setActiveTab('Schedules');
+           }}
          />
        )}
     </div>

@@ -4,6 +4,7 @@ import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
 import { Tournament } from '@/models/Tournament';
 import { v2 as cloudinary } from 'cloudinary';
+import { addLog } from '@/lib/logger';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -60,20 +61,28 @@ export async function POST(req: NextRequest) {
         const pUid = formData.get(`playerUid_${i}`) as string;
         const pInstagram = formData.get(`playerInstagram_${i}`) as string;
         const pFile = formData.get(`playerScreenshot_${i}`) as File;
+        const pExistingUrl = formData.get(`playerExistingUrl_${i}`) as string || '';
         
         let pScreenshotUrl = '';
         if (pFile && pFile.size > 0) {
             pScreenshotUrl = await uploadToCloudinary(pFile, 'arenax/profiles');
+        } else if (pExistingUrl) {
+            // Use saved profile screenshot URL
+            pScreenshotUrl = pExistingUrl;
         }
         players.push({ name: pName, uid: pUid, instagram: pInstagram, profileScreenshot: pScreenshotUrl });
     }
 
     // Handle Payout Details
     const qrFile = formData.get('qrFile') as File;
+    const profileQrUrl = formData.get('profileQrUrl') as string || '';
 
     let qrCodeUrl = '';
     if (qrFile && qrFile.size > 0) {
         qrCodeUrl = await uploadToCloudinary(qrFile, 'arenax/payouts');
+    } else if (profileQrUrl) {
+        // Use saved profile QR URL
+        qrCodeUrl = profileQrUrl;
     }
 
     const payoutDetails = { qrCodeUrl };
@@ -156,6 +165,13 @@ export async function POST(req: NextRequest) {
       slotNumber,
       paymentStatus: orderAmount > 0 ? 'Pending' : 'Paid',
       paymentVerified: orderAmount === 0
+    });
+
+    await addLog({
+      action: 'New registration', category: 'registration',
+      details: `${teamName} registered for ${tournamentName} (${matchType})`,
+      performedBy: token.email as string,
+      targetName: teamName,
     });
 
     return NextResponse.json({ success: true, paymentSessionId, orderId });

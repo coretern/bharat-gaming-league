@@ -17,6 +17,7 @@ import TournamentsTab from '@/components/admin/Tabs/TournamentsTab';
 import WinnersTab from '@/components/admin/Tabs/WinnersTab';
 import MediaTab from '@/components/admin/Tabs/MediaTab';
 import SchedulesTab from '@/components/admin/Tabs/SchedulesTab';
+import LogsTab from '@/components/admin/Tabs/LogsTab';
 import UserTable from '@/components/admin/Users/UserTable';
 
 export default function AdminPanel() {
@@ -84,6 +85,7 @@ export default function AdminPanel() {
                 onRefresh={adminState.fetchRegistrations}
                 loadingRegs={adminState.loading}
                 liveTournaments={adminState.liveTournaments}
+                setActiveTab={setActiveTab}
               />
             )}
             
@@ -149,6 +151,8 @@ export default function AdminPanel() {
                 onDeleteMedia={adminState.handleDeleteMedia}
               />
             )}
+
+            {activeTab === 'Logs' && <LogsTab />}
           </div>
         </div>
       </div>

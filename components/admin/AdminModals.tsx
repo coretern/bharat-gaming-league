@@ -84,7 +84,7 @@ const AdminModals: React.FC<AdminModalsProps> = ({
             updating={updating} 
             onClose={() => setViewReg(null)} 
             onDelete={handleDeleteRegistration} 
-            onApprove={(id) => handleUpdateStatus(id, { status: 'Approved' })} 
+            onApprove={(id, data) => handleUpdateStatus(id, data || { status: 'Approved' })} 
             onRejectRequest={(id) => {
               setRejectingId(id);
               setRejectionOptions({ qr: false, profiles: false, playerIndices: [], msg: "" });

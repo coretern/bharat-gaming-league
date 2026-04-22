@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
         matchDate: r.matchDate || '',
         matchTime: r.matchTime || '',
         rejectionReason: r.rejectionReason || '',
-        rejectionTargets: r.rejectionTargets || []
+        rejectionTargets: r.rejectionTargets || [],
+        winnerTeamName: r.winnerTeamName || '',
+        winnerScreenshot: r.winnerScreenshot || ''
     }));
 
     return NextResponse.json(sanitized);

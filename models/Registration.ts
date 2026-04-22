@@ -37,7 +37,13 @@ const RegistrationSchema = new Schema({
   winnerTeamName: { type: String },
   matchDate: { type: String },
   matchTime: { type: String },
+  winnerScreenshot: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Registration = models.Registration || model('Registration', RegistrationSchema);
+// Force schema update in development (ensures new fields are picked up)
+if (mongoose.models.Registration) {
+  delete mongoose.models.Registration;
+}
+
+export const Registration = model('Registration', RegistrationSchema);

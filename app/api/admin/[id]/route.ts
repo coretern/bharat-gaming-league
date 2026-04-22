@@ -2,6 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
+import { addLog } from '@/lib/logger';
 
 export async function PATCH(
   req: NextRequest,
@@ -46,6 +47,20 @@ export async function PATCH(
     }
 
     console.log(`✅ Admin updated registration ${id}:`, body);
+
+    // Log activity
+    const action = body.status === 'Approved' ? 'Approved registration' 
+      : body.status === 'Rejected' ? 'Rejected registration'
+      : body.resultStatus === 'Won' ? 'Set winner'
+      : 'Updated registration';
+    await addLog({
+      action, category: body.resultStatus ? 'winner' : 'registration',
+      details: JSON.stringify(body),
+      performedBy: userEmail,
+      targetId: id,
+      targetName: reg.teamName,
+    });
+
     return NextResponse.json(reg);
   } catch (err: any) {
     console.error('Admin PATCH error:', err.message);
@@ -75,6 +90,11 @@ export async function DELETE(
     }
 
     console.log(`🗑️ Admin deleted registration ${id}`);
+    await addLog({
+      action: 'Deleted registration', category: 'registration',
+      details: `Team: ${deleted.teamName}`,
+      performedBy: userEmail, targetId: id, targetName: deleted.teamName,
+    });
     return NextResponse.json({ success: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

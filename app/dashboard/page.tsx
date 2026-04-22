@@ -1,12 +1,13 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User, Trophy } from 'lucide-react';
 
-// Hook
+// Hooks
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { useProfile } from '@/hooks/useProfile';
 
 // Components
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
@@ -21,9 +22,19 @@ const navItems = [
 
 function DashboardContent() {
   const { session, status, activeTab, setActiveTab, myRegs, loadingRegs, isImpersonating, viewEmail } = useDashboardData();
+  const { profile } = useProfile();
+  const [mounted, setMounted] = useState(false);
 
-  if (status === 'loading') return <div className="min-h-screen bg-background flex items-center justify-center font-bold text-slate-500 uppercase italic animate-pulse">Checking Profile...</div>;
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted || status === 'loading') return <div className="min-h-screen bg-background flex items-center justify-center font-bold text-slate-500 uppercase italic animate-pulse">Checking Profile...</div>;
   if (!session) return null;
+
+  // Merge session user with profile name so sidebar updates when name is edited
+  const mergedUser = {
+    ...session.user,
+    name: profile.name || session.user?.name || '',
+  };
 
   return (
     <div className="container mx-auto px-4 mt-6">
@@ -42,7 +53,7 @@ function DashboardContent() {
       )}
 
       <MobileDashboardHeader 
-        user={session.user || {}} 
+        user={mergedUser} 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         navItems={navItems} 
@@ -50,14 +61,14 @@ function DashboardContent() {
 
       <div className="grid lg:grid-cols-4 gap-8">
         <DashboardSidebar 
-          user={session.user || {}} 
+          user={mergedUser} 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
           navItems={navItems} 
         />
 
         <div className="lg:col-span-3 space-y-5">
-          {activeTab === 'Profile' && <ProfileTab user={session.user || {}} />}
+          {activeTab === 'Profile' && <ProfileTab user={mergedUser} />}
           {activeTab === 'My Registrations' && <RegistrationsTab myRegs={myRegs} loadingRegs={loadingRegs} />}
         </div>
       </div>

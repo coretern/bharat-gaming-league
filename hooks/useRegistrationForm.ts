@@ -22,6 +22,10 @@ export const useRegistrationForm = () => {
   const [isPaid, setIsPaid] = useState(false);
   const [rejectionTargets, setRejectionTargets] = useState<string[]>([]);
   const [rejectionIndices, setRejectionIndices] = useState<number[]>([]);
+  const [savedQrUrl, setSavedQrUrl] = useState('');
+  const [savedScreenshotUrl, setSavedScreenshotUrl] = useState('');
+  const [useProfileQr, setUseProfileQr] = useState(false);
+  const [useProfileSs, setUseProfileSs] = useState(false);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,15 +63,58 @@ export const useRegistrationForm = () => {
                     }
                 }
             } else {
+                // Fetch tournament info
                 const res = await fetch('/api/tournaments');
                 const data = await res.json();
                 const found = Array.isArray(data) ? data.find((t: any) => t.id === tournamentId) : null;
                 setTournament(found);
+
+                let defCount = 1;
                 if (found?.allowedMatchTypes?.length > 0) {
                     setMatchType(found.allowedMatchTypes[0]);
-                    const defCount = found.allowedMatchTypes[0] === 'Solo' ? 1 : found.allowedMatchTypes[0] === 'Duo' ? 2 : 4;
-                    setPlayers(Array(defCount).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
+                    defCount = found.allowedMatchTypes[0] === 'Solo' ? 1 : found.allowedMatchTypes[0] === 'Duo' ? 2 : 4;
                 }
+
+                // Auto-fill from user profile
+                try {
+                    const profileRes = await fetch('/api/profile');
+                    if (profileRes.ok) {
+                        const p = await profileRes.json();
+                        if (p.teamName) setTeamName(p.teamName);
+                        if (p.whatsapp) setWhatsapp(p.whatsapp);
+                        if (p.paymentQrUrl) { setSavedQrUrl(p.paymentQrUrl); setExistingQrUrl(p.paymentQrUrl); setUseProfileQr(true); }
+                        if (p.profileScreenshotUrl) setSavedScreenshotUrl(p.profileScreenshotUrl);
+
+                        const savedTeam: any[] = p.savedPlayers || [];
+
+                        // Pre-fill players: leader from profile, teammates from savedPlayers
+                        const defaultPlayers = Array(defCount).fill(0).map((_, i) => {
+                            if (i === 0) {
+                                return {
+                                    name: '',
+                                    uid: p.gameIGN || '',
+                                    instagram: p.instagram || '',
+                                    file: null as File | null,
+                                    existingUrl: p.profileScreenshotUrl || ''
+                                };
+                            }
+                            // Fill teammates from saved team (offset by 1 since leader is slot 0)
+                            const teammate = savedTeam[i - 1];
+                            return {
+                                name: teammate?.name || '',
+                                uid: teammate?.uid || '',
+                                instagram: teammate?.instagram || '',
+                                file: null as File | null,
+                                existingUrl: ''
+                            };
+                        });
+                        setPlayers(defaultPlayers);
+                        if (p.profileScreenshotUrl) setUseProfileSs(true);
+                        return; // skip default player init below
+                    }
+                } catch { /* profile fetch optional */ }
+
+                setPlayers(Array(defCount).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
             }
         } catch (err) {
             console.error('Init error:', err);
@@ -111,12 +158,17 @@ export const useRegistrationForm = () => {
       fd.append('tournamentId', isEdit ? tournament?.id : tournamentId);
       fd.append('tournamentName', tournament?.title || '');
       fd.append('entryFee', `₹${currentFee}`);
+      if (useProfileQr && !qrFile && savedQrUrl) fd.append('profileQrUrl', savedQrUrl);
 
       players.forEach((p, i) => {
         fd.append(`playerName_${i}`, p.name);
         fd.append(`playerUid_${i}`, p.uid);
         fd.append(`playerInstagram_${i}`, p.instagram);
-        if (p.file) fd.append(`playerScreenshot_${i}`, p.file);
+        if (p.file) {
+          fd.append(`playerScreenshot_${i}`, p.file);
+        } else if (p.existingUrl) {
+          fd.append(`playerExistingUrl_${i}`, p.existingUrl);
+        }
       });
 
       if (qrFile) fd.append('qrFile', qrFile);
@@ -165,6 +217,12 @@ export const useRegistrationForm = () => {
     isPaid,
     rejectionTargets,
     rejectionIndices,
+    savedQrUrl,
+    savedScreenshotUrl,
+    useProfileQr,
+    setUseProfileQr,
+    useProfileSs,
+    setUseProfileSs,
     isSubmitted,
     loading,
     session,

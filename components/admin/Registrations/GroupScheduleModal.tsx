@@ -50,6 +50,10 @@ const GroupScheduleModal: React.FC<GroupScheduleModalProps> = ({
       if (!res.ok) throw new Error(data.error || 'Failed to update schedule');
       
       const count = data.matchedCount || 0;
+      if (count === 0) {
+        toast.error(`No teams found for Group ${groupNumber} in this tournament. Check if group numbers are assigned.`);
+        return;
+      }
       toast.success(`Schedule assigned to ${count} teams in Group ${groupNumber}!`);
       onSuccess();
       onClose();
