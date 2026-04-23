@@ -6,8 +6,8 @@ interface MediaTabProps {
   mediaList: CloudinaryMedia[];
   mediaSearch: string;
   setMediaSearch: (s: string) => void;
-  mediaTypeFilter: 'All' | 'Profile' | 'Payout';
-  setMediaTypeFilter: (t: 'All' | 'Profile' | 'Payout') => void;
+  mediaTypeFilter: 'All' | 'Payout';
+  setMediaTypeFilter: (t: 'All' | 'Payout') => void;
   setPreviewImg: (url: string | null) => void;
   onDeleteMedia: (regId: string, fieldKey: string) => void;
 }
@@ -33,7 +33,7 @@ const MediaTab: React.FC<MediaTabProps> = ({
             </h2>
           </div>
           <div className="flex h-8 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            {(['All', 'Profile', 'Payout'] as const).map(f => (
+            {(['All', 'Payout'] as const).map(f => (
               <button key={f} onClick={() => setMediaTypeFilter(f)}
                 className={`px-3 text-[9px] font-bold uppercase rounded-md transition-all ${mediaTypeFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
                 {f}
@@ -68,10 +68,8 @@ const MediaTab: React.FC<MediaTabProps> = ({
                   </button>
                 </div>
                 <div className="absolute top-3 left-3">
-                   <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border shadow-lg ${
-                     item.type === 'Profile' ? 'bg-google-blue text-white border-blue-400' : 'bg-google-green text-white border-green-400'
-                   }`}>
-                     {item.type}
+                   <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border shadow-lg bg-google-green text-white border-green-400">
+                     Payout QR
                    </span>
                 </div>
               </div>
@@ -87,17 +85,7 @@ const MediaTab: React.FC<MediaTabProps> = ({
                    </div>
                 </div>
 
-                {item.playerName && (
-                  <div className="flex items-start gap-2">
-                    <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-lg shrink-0">
-                      <User className="w-3.5 h-3.5 text-google-green" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight">{item.playerName}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Player</p>
-                    </div>
-                  </div>
-                )}
+
 
                 <div className="pt-2 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-slate-400">
                    <div className="flex items-center gap-1.5">

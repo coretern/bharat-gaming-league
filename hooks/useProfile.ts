@@ -16,14 +16,13 @@ export interface UserProfile {
   whatsapp: string;
   instagram: string;
   paymentQrUrl: string;
-  profileScreenshotUrl: string;
   savedPlayers: SavedPlayer[];
 }
 
 const emptyProfile: UserProfile = {
   name: '', email: '', image: '',
   teamName: '', gameIGN: '', whatsapp: '', instagram: '',
-  paymentQrUrl: '', profileScreenshotUrl: '',
+  paymentQrUrl: '',
   savedPlayers: [],
 };
 
@@ -64,7 +63,6 @@ export function useProfile() {
       fd.append('instagram', fields.instagram ?? profile.instagram);
       if (players) fd.append('savedPlayers', JSON.stringify(players));
       if (qrFile) fd.append('paymentQr', qrFile);
-      if (ssFile) fd.append('profileScreenshot', ssFile);
 
       const res = await fetch('/api/profile', { method: 'PUT', body: fd });
       const data = await res.json();

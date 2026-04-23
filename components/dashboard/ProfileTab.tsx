@@ -20,12 +20,9 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   const [instagram, setInstagram] = useState('');
   const [savedPlayers, setSavedPlayers] = useState<SavedPlayer[]>([]);
   const [qrFile, setQrFile] = useState<File | null>(null);
-  const [ssFile, setSsFile] = useState<File | null>(null);
   const [qrPreview, setQrPreview] = useState('');
-  const [ssPreview, setSsPreview] = useState('');
 
   const qrRef = useRef<HTMLInputElement>(null);
-  const ssRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading) {
@@ -37,8 +34,8 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   }, [loading, profile]);
 
   const handleSave = async () => {
-    await saveProfile({ name: displayName, teamName, gameIGN, whatsapp, instagram }, qrFile, ssFile, savedPlayers);
-    setQrFile(null); setSsFile(null); setQrPreview(''); setSsPreview('');
+    await saveProfile({ name: displayName, teamName, gameIGN, whatsapp, instagram }, qrFile, undefined, savedPlayers);
+    setQrFile(null); setQrPreview('');
     setEditing(false);
   };
 
@@ -47,7 +44,7 @@ export default function ProfileTab({ user }: ProfileTabProps) {
     setTeamName(profile.teamName); setGameIGN(profile.gameIGN);
     setWhatsapp(profile.whatsapp); setInstagram(profile.instagram);
     setSavedPlayers(profile.savedPlayers?.length ? profile.savedPlayers : []);
-    setQrFile(null); setSsFile(null); setQrPreview(''); setSsPreview('');
+    setQrFile(null); setQrPreview('');
     setEditing(false);
   };
 
@@ -60,7 +57,6 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-google-blue" /></div>;
 
   const qrDisplay = qrPreview || profile.paymentQrUrl;
-  const ssDisplay = ssPreview || profile.profileScreenshotUrl;
   const isEmpty = !profile.teamName && !profile.gameIGN && !profile.whatsapp;
   const isEditable = editing || isEmpty;
   const pencil = !isEditable ? <EditBtn onClick={() => setEditing(true)} /> : undefined;
@@ -104,12 +100,10 @@ export default function ProfileTab({ user }: ProfileTabProps) {
           )}
         </Section>
 
-        <Section icon={<ImageIcon className="w-4 h-4" />} title="Uploads" action={pencil}>
+        <Section icon={<ImageIcon className="w-4 h-4" />} title="Payout QR" action={pencil}>
           <div className="space-y-4">
-            <UploadField label="Payment QR" hint="PhonePe/GPay QR for prizes" preview={qrDisplay} inputRef={qrRef} editable={isEditable}
+            <UploadField label="Payment QR" hint="PhonePe/GPay QR for prize payouts" preview={qrDisplay} inputRef={qrRef} editable={isEditable}
               onFile={(f) => { setQrFile(f); setQrPreview(URL.createObjectURL(f)); }} />
-            <UploadField label="Game Profile Screenshot" hint="Auto-filled during registration" preview={ssDisplay} inputRef={ssRef} editable={isEditable}
-              onFile={(f) => { setSsFile(f); setSsPreview(URL.createObjectURL(f)); }} />
           </div>
         </Section>
       </div>

@@ -52,7 +52,7 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
             <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pb-2 mb-3 border-b border-slate-100 dark:border-slate-800">Squad Members</h3>
             <div className="space-y-2.5">
               {viewReg.players.map((p, i) => (
-                <div key={i} className="p-3 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex justify-between items-start">
+                <div key={i} className="p-3 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
                   <div>
                     <p className="font-bold text-slate-900 dark:text-white text-sm">{p.name}</p>
                     <p className="text-[10px] text-google-blue font-bold mt-0.5">{p.uid}</p>
@@ -62,11 +62,6 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
                       </a>
                     )}
                   </div>
-                  {p.profileScreenshot && (
-                    <button onClick={() => onPreviewImage(p.profileScreenshot)} className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 text-slate-400 hover:text-google-blue transition-all">
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
@@ -119,8 +114,8 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
           </div>
         )}
 
-        {/* Winner Section — full width, only for Approved */}
-        {viewReg.status === 'Approved' && (
+        {/* Winner Section — only visible for Approved registrations that have been scheduled */}
+        {viewReg.status === 'Approved' && viewReg.matchDate && (
           <WinnerSection viewReg={viewReg} updating={updating} onApprove={onApprove} onPreviewImage={onPreviewImage} />
         )}
 

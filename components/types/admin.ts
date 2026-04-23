@@ -1,7 +1,6 @@
 export interface Player {
   name: string;
   uid: string;
-  profileScreenshot: string;
   instagram?: string;
 }
 
@@ -80,10 +79,9 @@ export interface Winner {
 
 export interface CloudinaryMedia {
   url: string;
-  type: 'Profile' | 'Payout';
+  type: 'Payout';
   regId: string;
-  fieldKey: string; // e.g., 'qr' or 'p0', 'p1'...
+  fieldKey: string; // e.g., 'qr'
   teamName: string;
-  playerName?: string;
   createdAt: string;
 }

@@ -16,16 +16,14 @@ export const useRegistrationForm = () => {
   const [matchType, setMatchType] = useState<'Solo' | 'Duo' | 'Squad'>('Solo');
   const [teamName, setTeamName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
-  const [players, setPlayers] = useState([{ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' }]);
+  const [players, setPlayers] = useState([{ name: '', uid: '', instagram: '' }]);
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [existingQrUrl, setExistingQrUrl] = useState('');
   const [isPaid, setIsPaid] = useState(false);
   const [rejectionTargets, setRejectionTargets] = useState<string[]>([]);
   const [rejectionIndices, setRejectionIndices] = useState<number[]>([]);
   const [savedQrUrl, setSavedQrUrl] = useState('');
-  const [savedScreenshotUrl, setSavedScreenshotUrl] = useState('');
   const [useProfileQr, setUseProfileQr] = useState(false);
-  const [useProfileSs, setUseProfileSs] = useState(false);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,8 +43,6 @@ export const useRegistrationForm = () => {
                         name: p.name,
                         uid: p.uid,
                         instagram: p.instagram,
-                        file: null,
-                        existingUrl: p.profileScreenshot
                     })));
                     setExistingQrUrl(reg.payoutDetails?.qrCodeUrl || '');
                     setIsPaid(reg.paymentVerified || reg.paymentStatus === 'Paid');
@@ -83,7 +79,6 @@ export const useRegistrationForm = () => {
                         if (p.teamName) setTeamName(p.teamName);
                         if (p.whatsapp) setWhatsapp(p.whatsapp);
                         if (p.paymentQrUrl) { setSavedQrUrl(p.paymentQrUrl); setExistingQrUrl(p.paymentQrUrl); setUseProfileQr(true); }
-                        if (p.profileScreenshotUrl) setSavedScreenshotUrl(p.profileScreenshotUrl);
 
                         const savedTeam: any[] = p.savedPlayers || [];
 
@@ -94,8 +89,6 @@ export const useRegistrationForm = () => {
                                     name: '',
                                     uid: p.gameIGN || '',
                                     instagram: p.instagram || '',
-                                    file: null as File | null,
-                                    existingUrl: p.profileScreenshotUrl || ''
                                 };
                             }
                             // Fill teammates from saved team (offset by 1 since leader is slot 0)
@@ -104,17 +97,14 @@ export const useRegistrationForm = () => {
                                 name: teammate?.name || '',
                                 uid: teammate?.uid || '',
                                 instagram: teammate?.instagram || '',
-                                file: null as File | null,
-                                existingUrl: ''
                             };
                         });
                         setPlayers(defaultPlayers);
-                        if (p.profileScreenshotUrl) setUseProfileSs(true);
                         return; // skip default player init below
                     }
                 } catch { /* profile fetch optional */ }
 
-                setPlayers(Array(defCount).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
+                setPlayers(Array(defCount).fill(0).map(() => ({ name: '', uid: '', instagram: '' })));
             }
         } catch (err) {
             console.error('Init error:', err);
@@ -128,7 +118,7 @@ export const useRegistrationForm = () => {
   const handleMatchTypeChange = (type: 'Solo' | 'Duo' | 'Squad') => {
     setMatchType(type);
     const count = type === 'Solo' ? 1 : type === 'Duo' ? 2 : 4;
-    setPlayers(Array(count).fill(0).map(() => ({ name: '', uid: '', instagram: '', file: null as File | null, existingUrl: '' })));
+    setPlayers(Array(count).fill(0).map(() => ({ name: '', uid: '', instagram: '' })));
   };
 
   const updatePlayer = (index: number, field: string, value: any) => {
@@ -164,11 +154,6 @@ export const useRegistrationForm = () => {
         fd.append(`playerName_${i}`, p.name);
         fd.append(`playerUid_${i}`, p.uid);
         fd.append(`playerInstagram_${i}`, p.instagram);
-        if (p.file) {
-          fd.append(`playerScreenshot_${i}`, p.file);
-        } else if (p.existingUrl) {
-          fd.append(`playerExistingUrl_${i}`, p.existingUrl);
-        }
       });
 
       if (qrFile) fd.append('qrFile', qrFile);
@@ -218,11 +203,8 @@ export const useRegistrationForm = () => {
     rejectionTargets,
     rejectionIndices,
     savedQrUrl,
-    savedScreenshotUrl,
     useProfileQr,
     setUseProfileQr,
-    useProfileSs,
-    setUseProfileSs,
     isSubmitted,
     loading,
     session,

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Trophy, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert,
-  Eye, ChevronDown, ChevronUp, Gamepad, Copy, Share2, FileDown, Calendar
+  Eye, ChevronDown, ChevronUp, Gamepad, Copy, Share2, FileDown
 } from 'lucide-react';
 import { to12Hour } from '@/lib/time-utils';
 import toast from 'react-hot-toast';
@@ -136,8 +136,8 @@ export default function RegCard({ reg }: { reg: RegCardData }) {
             </InfoCell>
             <InfoCell label="Schedule">
               {reg.matchDate ? (
-                <span className="font-bold text-google-blue flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> {reg.matchDate}, {to12Hour(reg.matchTime)}
+                <span className="font-bold text-google-blue">
+                  {reg.matchDate}, {to12Hour(reg.matchTime)}
                 </span>
               ) : (
                 <span className="font-medium text-slate-400 italic">Awaiting</span>

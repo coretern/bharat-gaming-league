@@ -30,7 +30,6 @@ export async function GET(req: NextRequest) {
       whatsapp: user.whatsapp || '',
       instagram: user.instagram || '',
       paymentQrUrl: user.paymentQrUrl || '',
-      profileScreenshotUrl: user.profileScreenshotUrl || '',
       savedPlayers: user.savedPlayers || [],
     });
   } catch (err: any) {
@@ -89,12 +88,7 @@ export async function PUT(req: NextRequest) {
       updateData.paymentQrUrl = await uploadToCloudinary(buffer, 'arenax/profile/qr');
     }
 
-    // Handle profile screenshot upload
-    const ssFile = formData.get('profileScreenshot') as File | null;
-    if (ssFile && ssFile.size > 0) {
-      const buffer = Buffer.from(await ssFile.arrayBuffer());
-      updateData.profileScreenshotUrl = await uploadToCloudinary(buffer, 'arenax/profile/screenshots');
-    }
+
 
     const user = await User.findOneAndUpdate(
       { email: token.email },
@@ -112,7 +106,6 @@ export async function PUT(req: NextRequest) {
       whatsapp: user.whatsapp,
       instagram: user.instagram,
       paymentQrUrl: user.paymentQrUrl,
-      profileScreenshotUrl: user.profileScreenshotUrl,
       savedPlayers: user.savedPlayers || [],
     });
   } catch (err: any) {

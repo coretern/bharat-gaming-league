@@ -68,17 +68,8 @@ export async function POST(req: NextRequest) {
         const pName = formData.get(`playerName_${i}`) as string;
         const pUid = formData.get(`playerUid_${i}`) as string;
         const pInstagram = formData.get(`playerInstagram_${i}`) as string;
-        const pFile = formData.get(`playerScreenshot_${i}`) as File;
-        const pExistingUrl = formData.get(`playerExistingUrl_${i}`) as string || '';
         
-        let pScreenshotUrl = '';
-        if (pFile && pFile.size > 0) {
-            pScreenshotUrl = await uploadToCloudinary(pFile, 'arenax/profiles');
-        } else if (pExistingUrl) {
-            // Use saved profile screenshot URL
-            pScreenshotUrl = pExistingUrl;
-        }
-        players.push({ name: pName, uid: pUid, instagram: pInstagram, profileScreenshot: pScreenshotUrl });
+        players.push({ name: pName, uid: pUid, instagram: pInstagram });
     }
 
     // Handle Payout Details
@@ -233,13 +224,8 @@ export async function PUT(req: NextRequest) {
         const pName = formData.get(`playerName_${i}`) as string;
         const pUid = formData.get(`playerUid_${i}`) as string;
         const pInstagram = formData.get(`playerInstagram_${i}`) as string;
-        const pFile = formData.get(`playerScreenshot_${i}`) as File;
         
-        let pScreenshotUrl = existing.players[i]?.profileScreenshot || '';
-        if (pFile && pFile.size > 0) {
-            pScreenshotUrl = await uploadToCloudinary(pFile, 'arenax/profiles');
-        }
-        players.push({ name: pName, uid: pUid, instagram: pInstagram, profileScreenshot: pScreenshotUrl });
+        players.push({ name: pName, uid: pUid, instagram: pInstagram });
     }
 
     const qrFile = formData.get('qrFile') as File;

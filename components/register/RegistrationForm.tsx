@@ -34,7 +34,6 @@ export default function RegistrationForm() {
     rejectionTargets,
     rejectionIndices,
     savedQrUrl,
-    savedScreenshotUrl,
     isSubmitted,
     loading,
     status,
@@ -139,7 +138,6 @@ export default function RegistrationForm() {
               rejectionTargets={rejectionTargets} 
               rejectionIndices={rejectionIndices} 
               onUpdate={updatePlayer}
-              savedScreenshotUrl={idx === 0 ? savedScreenshotUrl : ''}
             />
           ))}
         </div>

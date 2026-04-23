@@ -193,11 +193,6 @@ export const useAdminLogic = () => {
       if (reg.payoutDetails?.qrCodeUrl) {
         items.push({ url: reg.payoutDetails.qrCodeUrl, type: 'Payout', regId: reg._id, fieldKey: 'qr', teamName: reg.teamName, createdAt: reg.createdAt });
       }
-      reg.players.forEach((p, idx) => {
-        if (p.profileScreenshot) {
-          items.push({ url: p.profileScreenshot, type: 'Profile', regId: reg._id, fieldKey: `p${idx}`, teamName: reg.teamName, playerName: p.name, createdAt: reg.createdAt });
-        }
-      });
       return items;
     }).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .filter(m => mediaTypeFilter === 'All' || m.type === mediaTypeFilter)

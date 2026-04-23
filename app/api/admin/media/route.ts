@@ -19,13 +19,6 @@ export async function DELETE(req: NextRequest) {
     const update: any = {};
     if (fieldKey === 'qr') {
       update['payoutDetails.qrCodeUrl'] = '';
-    } else if (fieldKey.startsWith('p')) {
-      const index = parseInt(fieldKey.replace('p', ''));
-      const players = [...reg.players];
-      if (players[index]) {
-        players[index].profileScreenshot = '';
-        update['players'] = players;
-      }
     }
 
     await Registration.findByIdAndUpdate(regId, { $set: update });
