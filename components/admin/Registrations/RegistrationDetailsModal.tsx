@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Trash2, ExternalLink, Eye, ShieldCheck, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Trash2, ExternalLink, Eye, ShieldCheck, ShieldAlert, RefreshCw } from 'lucide-react';
 import { Reg } from '../../types/admin';
 import WinnerSection from './WinnerSection';
 import { to12Hour } from '@/lib/time-utils';
@@ -17,6 +17,29 @@ interface RegistrationDetailsModalProps {
 const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
   viewReg, updating, onClose, onDelete, onApprove, onRejectRequest, onPreviewImage
 }) => {
+  const [liveQr, setLiveQr] = useState<string | null>(viewReg.payoutDetails?.qrCodeUrl || null);
+  const [syncing, setSyncing] = useState(false);
+
+  useEffect(() => {
+    const syncQr = async () => {
+      setSyncing(true);
+      try {
+        const res = await fetch('/api/admin/users');
+        const users = await res.json();
+        const u = users.find((x: any) => 
+          (x.email && viewReg.userEmail && x.email.toLowerCase() === viewReg.userEmail.toLowerCase()) || 
+          x._id === viewReg.userId
+        );
+        if (u?.paymentQrUrl) setLiveQr(u.paymentQrUrl);
+      } catch (err) {
+        console.error("Manual QR Sync failed:", err);
+      } finally {
+        setSyncing(false);
+      }
+    };
+    syncQr();
+  }, [viewReg.userEmail, viewReg.userId]);
+
   return (
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto" onClick={onClose}>
       <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl p-6 md:p-8 relative mt-10 mb-10" onClick={e => e.stopPropagation()}>
@@ -92,9 +115,12 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
 
             {/* QR Code */}
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-800">
-              <h4 className="text-[10px] font-bold uppercase text-slate-400 mb-3 tracking-widest">Payout QR</h4>
-              {viewReg.payoutDetails?.qrCodeUrl ? (
-                <button onClick={() => onPreviewImage(viewReg.payoutDetails!.qrCodeUrl!)}
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Payout QR</h4>
+                {syncing && <RefreshCw className="w-3 h-3 text-google-blue animate-spin" />}
+              </div>
+              {liveQr ? (
+                <button onClick={() => onPreviewImage(liveQr)}
                   className="w-full h-10 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-sm">
                   <Eye className="w-3.5 h-3.5" /> View QR
                 </button>

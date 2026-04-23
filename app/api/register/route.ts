@@ -293,8 +293,46 @@ export async function GET() {
   try {
     await connectDB();
     const registrations = await Registration.find().sort({ createdAt: -1 }).lean();
-    console.log('Sample Registration:', registrations[0]?.teamName, 'Group:', registrations[0]?.groupNumber);
-    return NextResponse.json(registrations);
+    
+    // Get unique user identifiers (emails or IDs)
+    const userIds = [...new Set(registrations.map(r => r.userId).filter(Boolean))];
+    
+    // Fetch user profiles to get LATEST payout QRs
+    const users = await User.find({
+      $or: [
+        { email: { $in: userIds } },
+        { _id: { $in: userIds.filter(id => id.length === 24) } } // Only if it looks like an ObjectId
+      ]
+    }, 'email paymentQrUrl').lean();
+
+    // Create a lookup map (lowercase emails for case-insensitive matching)
+    const userMap = new Map();
+    users.forEach(u => {
+      if (u.email) userMap.set(u.email.toLowerCase(), u.paymentQrUrl);
+      if (u._id) userMap.set(u._id.toString(), u.paymentQrUrl);
+    });
+
+    // Merge LATEST QR into registrations
+    const enriched = registrations.map(reg => {
+      const uIdStr = reg.userId?.toString();
+      const uEmail = reg.userEmail?.toLowerCase();
+      
+      // Try lookup by ID first, then by email
+      const latestQr = (uIdStr ? userMap.get(uIdStr) : null) || (uEmail ? userMap.get(uEmail) : null);
+      
+      if (latestQr && latestQr !== '') {
+        return {
+          ...reg,
+          payoutDetails: {
+            ...reg.payoutDetails,
+            qrCodeUrl: latestQr // Prioritize profile QR
+          }
+        };
+      }
+      return reg;
+    });
+
+    return NextResponse.json(enriched);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

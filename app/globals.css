@@ -58,6 +58,13 @@ a, button, [role="button"], label[for], select, summary {
   cursor: pointer;
 }
 
+/* Global placeholder styling */
+input::placeholder, 
+textarea::placeholder {
+  opacity: 0.35;
+  font-weight: 400;
+}
+
 @layer components {
   .glass-card {
     background-color: var(--color-glass);
