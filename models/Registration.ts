@@ -38,6 +38,8 @@ const RegistrationSchema = new Schema({
   matchDate: { type: String },
   matchTime: { type: String },
   winnerScreenshot: { type: String },
+  roomId: { type: String, default: '' },
+  roomPassword: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
 });
 

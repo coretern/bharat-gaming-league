@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pencil, Eye, Upload } from 'lucide-react';
+import { optimizeCloudinaryUrl } from '@/lib/cloudinary-utils';
 
 export function EditBtn({ onClick }: { onClick: () => void }) {
   return (
@@ -54,7 +55,7 @@ export function UploadField({ label, hint, preview, inputRef, onFile, editable }
       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block ml-0.5">{label}</label>
       {preview ? (
         <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700">
-          <img src={preview} alt="" className="w-14 h-14 rounded-lg object-cover border border-slate-200" />
+          <img src={optimizeCloudinaryUrl(preview, { width: 150, height: 150 })} alt="" className="w-14 h-14 rounded-lg object-cover border border-slate-200" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-google-green uppercase mb-0.5">Uploaded</p>
             <p className="text-[9px] text-slate-400">{hint}</p>

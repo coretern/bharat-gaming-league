@@ -37,6 +37,8 @@ export interface Reg {
   matchDate?: string;
   matchTime?: string;
   winnerScreenshot?: string;
+  roomId?: string;
+  roomPassword?: string;
   createdAt: string;
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Trash2, ExternalLink, Eye, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { Reg } from '../../types/admin';
 import WinnerSection from './WinnerSection';
+import { to12Hour } from '@/lib/time-utils';
 
 interface RegistrationDetailsModalProps {
   viewReg: Reg;
@@ -83,7 +84,7 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
                 </span>
               } />
               {viewReg.matchDate && (
-                <InfoRow label="Schedule" value={<span className="text-xs font-black text-google-blue uppercase italic tabular-nums">{viewReg.matchDate} @ {viewReg.matchTime || 'TBA'}</span>} />
+                <InfoRow label="Schedule" value={<span className="text-xs font-black text-google-blue uppercase italic tabular-nums">{viewReg.matchDate} @ {to12Hour(viewReg.matchTime)}</span>} />
               )}
               {viewReg.orderId && (
                 <div className="pt-2 border-t border-slate-50 dark:border-slate-800">

@@ -72,17 +72,13 @@ const SchedulesTab: React.FC<SchedulesTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Match Schedule
-              <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[10px] font-black uppercase tracking-widest">
-                {activeCount} Teams Active
-              </span>
-            </h2>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Finalized Groups and Match Timings</p>
-          </div>
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            Match Schedule
+            <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[9px] font-black uppercase">{activeCount} active</span>
+          </h2>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Finalized groups with match timings</p>
         </div>
       </div>
 

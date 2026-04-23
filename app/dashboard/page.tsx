@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User, Trophy } from 'lucide-react';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Hooks
 import { useDashboardData } from '@/hooks/useDashboardData';
@@ -80,9 +81,11 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen pt-24 pb-24 bg-background">
       <Navbar />
-      <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold uppercase italic">Syncing Data...</div>}>
-        <DashboardContent />
-      </Suspense>
+      <ErrorBoundary fallbackTitle="Dashboard Error">
+        <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold uppercase italic">Syncing Data...</div>}>
+          <DashboardContent />
+        </Suspense>
+      </ErrorBoundary>
       <Footer />
     </main>
   );

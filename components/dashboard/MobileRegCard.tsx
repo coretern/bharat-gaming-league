@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Trophy, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trophy, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, Eye, ChevronDown, ChevronUp, Gamepad, Key, Copy, Share2, FileDown } from 'lucide-react';
+import { to12Hour } from '@/lib/time-utils';
 
 interface MyReg {
   _id: string;
@@ -18,6 +19,8 @@ interface MyReg {
   winnerScreenshot?: string;
   matchDate?: string;
   matchTime?: string;
+  roomId?: string;
+  roomPassword?: string;
   createdAt: string;
 }
 
@@ -152,7 +155,7 @@ export default function MobileRegCard({ reg }: { reg: MyReg }) {
         <div>
           <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-0.5">Final Match Info</p>
           {reg.matchDate ? (
-            <p className="font-bold text-google-blue">{reg.matchDate} @ {reg.matchTime || 'TBA'}</p>
+            <p className="font-bold text-google-blue">{reg.matchDate} @ {to12Hour(reg.matchTime)}</p>
           ) : (
             <p className="font-bold text-slate-400 italic">Awaiting Schedule</p>
           )}
@@ -163,24 +166,71 @@ export default function MobileRegCard({ reg }: { reg: MyReg }) {
         </div>
       </div>
 
+      {/* Room Details */}
+      {reg.roomId && (
+        <div className="mb-3 p-3 rounded-xl bg-purple-50/50 dark:bg-purple-500/5 border border-purple-100 dark:border-purple-500/20">
+          <p className="text-[9px] font-black uppercase tracking-widest text-purple-500 mb-2 flex items-center gap-1">
+            <Gamepad className="w-3 h-3" /> Match Room Details
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <p className="text-[9px] font-bold text-purple-400 uppercase mb-0.5">Room ID</p>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-black text-purple-700 dark:text-purple-300 font-mono">{reg.roomId}</span>
+                <button onClick={() => { navigator.clipboard.writeText(reg.roomId || ''); }} className="p-0.5 text-purple-400 hover:text-purple-600"><Copy className="w-3 h-3" /></button>
+              </div>
+            </div>
+            {reg.roomPassword && (
+              <div>
+                <p className="text-[9px] font-bold text-purple-400 uppercase mb-0.5">Password</p>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-black text-purple-700 dark:text-purple-300 font-mono">{reg.roomPassword}</span>
+                  <button onClick={() => { navigator.clipboard.writeText(reg.roomPassword || ''); }} className="p-0.5 text-purple-400 hover:text-purple-600"><Copy className="w-3 h-3" /></button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Download */}
+      {reg.paymentVerified && (
+        <button onClick={() => window.open(`/api/receipt?id=${reg._id}`, '_blank')}
+          className="w-full mb-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
+          <FileDown className="w-3.5 h-3.5" /> Download Receipt
+        </button>
+      )}
+
       {/* Outcome View */}
       {reg.resultStatus === 'Won' && (
-        <div className="rounded-xl overflow-hidden mb-2">
-          <div className="p-3 bg-google-green text-white shadow-lg shadow-green-500/20 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-widest">VICTORY DETECTED</span>
+        <>
+          <div className="rounded-xl overflow-hidden mb-2">
+            <div className="p-3 bg-google-green text-white shadow-lg shadow-green-500/20 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-widest">VICTORY DETECTED</span>
+              </div>
+              <span className="text-sm font-black italic">₹{reg.prizeAmount} Won!</span>
             </div>
-            <span className="text-sm font-black italic">₹{reg.prizeAmount} Won!</span>
+            {reg.winnerScreenshot && (
+              <a href={reg.winnerScreenshot} target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-2.5 bg-green-50 text-google-green border-t border-green-100 hover:bg-green-100 transition-colors">
+                <Eye className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">View Winner Proof</span>
+              </a>
+            )}
           </div>
-          {reg.winnerScreenshot && (
-            <a href={reg.winnerScreenshot} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 bg-green-50 text-google-green border-t border-green-100 hover:bg-green-100 transition-colors">
-              <Eye className="w-4 h-4" />
-              <span className="text-[10px] font-black uppercase tracking-widest">View Winner Proof</span>
-            </a>
-          )}
-        </div>
+          <button onClick={() => {
+            const text = `🏆 I won ₹${reg.prizeAmount} in ${reg.tournamentName}!\n\nTeam: ${reg.teamName}\n\nPlay on Bharat Gaming League!\n${window.location.origin}`;
+            if (navigator.share) {
+              navigator.share({ title: 'My Win on BGL!', text }).catch(() => {});
+            } else {
+              window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            }
+          }} className="w-full py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-500/20 mb-2">
+            <Share2 className="w-3.5 h-3.5" /> Share Your Win
+          </button>
+        </>
       )}
 
       {reg.resultStatus === 'Lost' && (

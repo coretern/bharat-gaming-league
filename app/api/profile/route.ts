@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { v2 as cloudinary } from 'cloudinary';
+import { checkRateLimit, getRequestIP } from '@/lib/rate-limit';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -53,6 +54,12 @@ async function uploadToCloudinary(buffer: Buffer, folder: string): Promise<strin
 /** PUT /api/profile — Update gaming profile with optional file uploads */
 export async function PUT(req: NextRequest) {
   try {
+    const ip = getRequestIP(req);
+    const rl = checkRateLimit(`profile:${ip}`, { limit: 10, windowSec: 60 });
+    if (!rl.allowed) {
+      return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfterSec}s.` }, { status: 429 });
+    }
+
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!token?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 

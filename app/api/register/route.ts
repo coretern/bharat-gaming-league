@@ -5,6 +5,7 @@ import { Registration } from '@/models/Registration';
 import { Tournament } from '@/models/Tournament';
 import { v2 as cloudinary } from 'cloudinary';
 import { addLog } from '@/lib/logger';
+import { checkRateLimit, getRequestIP } from '@/lib/rate-limit';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,6 +15,13 @@ cloudinary.config({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 registrations per 60 seconds per IP
+    const ip = getRequestIP(req);
+    const rl = checkRateLimit(`register:${ip}`, { limit: 5, windowSec: 60 });
+    if (!rl.allowed) {
+      return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfterSec}s.` }, { status: 429 });
+    }
+
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!token?.email) {
       return NextResponse.json({ error: 'You must be logged in to register.' }, { status: 401 });

@@ -17,86 +17,68 @@ interface TournamentsTabProps {
   onDeleteTournament: (id: string) => void;
 }
 
-const TournamentsTab: React.FC<TournamentsTabProps> = ({
-  liveTournaments,
-  loadingTours,
-  tourSearch,
-  setTourSearch,
-  tourGameFilter,
-  setTourGameFilter,
-  tourStatusFilter,
-  setTourStatusFilter,
-  setShowCreateTour,
-  setEditTour,
-  onDeleteTournament
-}) => {
+const TournamentsTab: React.FC<TournamentsTabProps> = (props) => {
+  const {
+    liveTournaments, loadingTours, tourSearch, setTourSearch,
+    tourGameFilter, setTourGameFilter, tourStatusFilter, setTourStatusFilter,
+    setShowCreateTour, setEditTour, onDeleteTournament
+  } = props;
+
   return (
-    <div className="space-y-6">
-      {/* Management Header */}
-      <div className="flex flex-col gap-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      Event Registry
-                      <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[10px] font-black uppercase tracking-widest">{liveTournaments.length} Active</span>
-                  </h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Global Tournament Distribution & Control</p>
-              </div>
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        {/* Row 1: Title + Create */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              Tournaments
+              <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[9px] font-black uppercase">{liveTournaments.length}</span>
+            </h2>
+          </div>
+          <button onClick={() => setShowCreateTour(true)}
+            className="h-8 px-4 bg-google-blue text-white rounded-lg text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90 transition-all shadow-sm">
+            <Plus className="w-3.5 h-3.5" /> New Tournament
+          </button>
+        </div>
 
-              <button onClick={() => setShowCreateTour(true)} 
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-google-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all hover:bg-blue-600">
-                  <Plus className="w-4 h-4" /> Initialize Tournament
+        {/* Row 2: Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <input type="text" placeholder="Search..." value={tourSearch} onChange={(e) => setTourSearch(e.target.value)}
+              className="w-full h-8 pl-9 pr-3 rounded-lg bg-slate-100 dark:bg-slate-800 border-0 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/10 transition-all" />
+          </div>
+
+          {/* Game */}
+          <div className="flex h-8 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+            {(['All', 'BGMI', 'Free Fire'] as const).map(f => (
+              <button key={f} onClick={() => setTourGameFilter(f)}
+                className={`flex-1 text-[9px] font-bold uppercase rounded-md transition-all ${tourGameFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                {f === 'Free Fire' ? 'FF' : f}
               </button>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-              {/* Search Bar */}
-              <div className="space-y-2 lg:col-span-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Search Events</label>
-                  <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input type="text" placeholder="Title or Game Name..." value={tourSearch} onChange={(e) => setTourSearch(e.target.value)}
-                          className="w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none focus:ring-4 focus:ring-google-blue/10 transition-all" />
-                  </div>
-              </div>
-
-              {/* Game Platform Filter */}
-              <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Filter by Game</label>
-                  <div className="flex p-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {(['All', 'BGMI', 'Free Fire'] as const).map(f => (
-                          <button key={f} onClick={() => setTourGameFilter(f)} 
-                              className={`flex-1 py-2 text-[10px] font-black uppercase transition-all rounded-lg ${tourGameFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                              {f}
-                          </button>
-                      ))}
-                  </div>
-              </div>
-
-              {/* Event Status Filter */}
-              <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Event Status</label>
-                  <div className="flex p-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {(['All', 'Open', 'Closed', 'Coming Soon'] as const).map(f => (
-                          <button key={f} onClick={() => setTourStatusFilter(f)} 
-                              className={`flex-1 py-2 text-[10px] font-black uppercase transition-all rounded-lg ${tourStatusFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                              {f === 'Coming Soon' ? 'Soon' : f}
-                          </button>
-                      ))}
-                  </div>
-              </div>
+          {/* Status */}
+          <div className="flex h-8 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+            {(['All', 'Open', 'Closed', 'Coming Soon'] as const).map(f => (
+              <button key={f} onClick={() => setTourStatusFilter(f)}
+                className={`flex-1 text-[9px] font-bold uppercase rounded-md transition-all ${tourStatusFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                {f === 'Coming Soon' ? 'Soon' : f}
+              </button>
+            ))}
           </div>
+        </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
-        <TournamentTable 
-          tournaments={liveTournaments} 
-          loading={loadingTours} 
-          tourSearch={tourSearch} 
-          tourGameFilter={tourGameFilter} 
-          tourStatusFilter={tourStatusFilter} 
-          onEdit={setEditTour} 
-          onDelete={onDeleteTournament}
+      {/* Table */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <TournamentTable
+          tournaments={liveTournaments} loading={loadingTours}
+          tourSearch={tourSearch} tourGameFilter={tourGameFilter} tourStatusFilter={tourStatusFilter}
+          onEdit={setEditTour} onDelete={onDeleteTournament}
         />
       </div>
     </div>

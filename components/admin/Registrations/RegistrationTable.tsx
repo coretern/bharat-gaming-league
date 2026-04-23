@@ -1,6 +1,7 @@
 import React from 'react';
 import { Eye, Trash2 } from 'lucide-react';
 import { Reg } from '../../types/admin';
+import { to12Hour } from '@/lib/time-utils';
 
 interface RegistrationTableProps {
   registrations: Reg[];
@@ -101,7 +102,7 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                        </span>
                        {reg.matchDate && (
                           <span className="text-[9px] text-google-blue font-black uppercase mt-0.5">
-                             {reg.matchDate} @ {reg.matchTime || 'TBA'}
+                             {reg.matchDate} @ {to12Hour(reg.matchTime)}
                           </span>
                        )}
                     </div>

@@ -18,6 +18,9 @@ export interface MyReg {
   prizeAmount?: number;
   winnerTeamName?: string;
   winnerScreenshot?: string;
+  roomId?: string;
+  roomPassword?: string;
+  orderId?: string;
   createdAt: string;
 }
 

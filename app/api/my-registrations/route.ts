@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
         rejectionReason: r.rejectionReason || '',
         rejectionTargets: r.rejectionTargets || [],
         winnerTeamName: r.winnerTeamName || '',
-        winnerScreenshot: r.winnerScreenshot || ''
+        winnerScreenshot: r.winnerScreenshot || '',
+        roomId: r.roomId || '',
+        roomPassword: r.roomPassword || '',
+        orderId: r.orderId || '',
     }));
 
     return NextResponse.json(sanitized);

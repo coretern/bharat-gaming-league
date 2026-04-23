@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, Calendar, Settings2 } from 'lucide-react';
+import { Search, Download, Calendar } from 'lucide-react';
 import RegistrationTable from '../Registrations/RegistrationTable';
 import { Reg, Tournament } from '../../types/admin';
 import GroupScheduleModal from '../Registrations/GroupScheduleModal';
@@ -30,42 +30,25 @@ interface RegistrationsTabProps {
   setActiveTab: (tab: any) => void;
 }
 
-const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
-  registrations,
-  loading,
-  regFilter,
-  setRegFilter,
-  regSearch,
-  setRegSearch,
-  regTourFilter,
-  setRegTourFilter,
-  regGameFilter,
-  setRegGameFilter,
-  regGroupFilter,
-  setRegGroupFilter,
-  regMatchTypeFilter,
-  setRegMatchTypeFilter,
-  setViewReg,
-  handleDeleteRegistration,
-  onSync,
-  onRefresh,
-  loadingRegs,
-  liveTournaments,
-  setActiveTab
-}) => {
+const RegistrationsTab: React.FC<RegistrationsTabProps> = (props) => {
+  const {
+    registrations, loading, regFilter, setRegFilter, regSearch, setRegSearch,
+    regTourFilter, setRegTourFilter, regGameFilter, setRegGameFilter,
+    regGroupFilter, setRegGroupFilter, regMatchTypeFilter, setRegMatchTypeFilter,
+    setViewReg, handleDeleteRegistration, onSync, onRefresh, loadingRegs,
+    liveTournaments, setActiveTab
+  } = props;
+
   const [syncing, setSyncing] = React.useState(false);
   const [editingGroup, setEditingGroup] = useState<{ number: number, tourName: string, tourId?: string } | null>(null);
 
   const handleSync = async () => {
     setSyncing(true);
-    try {
-      await onSync();
-    } finally {
-      setSyncing(false);
-    }
+    try { await onSync(); } finally { setSyncing(false); }
   };
+
   const filteredRegs = registrations
-    .filter(r => !r.matchDate) // Exclude scheduled groups
+    .filter(r => !r.matchDate)
     .filter(r => r.status === regFilter)
     .filter(r => r.teamName.toLowerCase().includes(regSearch.toLowerCase()) || r.players.some(p => p.name.toLowerCase().includes(regSearch.toLowerCase())))
     .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
@@ -77,290 +60,223 @@ const RegistrationsTab: React.FC<RegistrationsTabProps> = ({
     .filter(r => regGroupFilter === 'All' || r.groupNumber?.toString() === regGroupFilter)
     .filter(r => regMatchTypeFilter === 'All' || r.matchType === regMatchTypeFilter);
 
-  // Get unique group numbers for the current selection to show in filter
-  const availableGroups = Array.from(new Set(
-    registrations
-      .filter(r => regTourFilter === 'All' || r.tournamentName === regTourFilter)
-      .filter(r => {
-        if (regGameFilter === 'All') return true;
-        if (r.game) return r.game === regGameFilter;
-        return r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
-      })
-      .map(r => r.groupNumber)
-      .filter(Boolean)
-  )).sort((a, b) => (a || 0) - (b || 0));
-
-  const exportToExcel = (data: any[], fileName: string) => {
+  const exportToExcel = () => {
     try {
+      const data = filteredRegs.map(r => ({
+        'Team': r.teamName, 'Game': r.game || 'N/A', 'WhatsApp': r.whatsapp,
+        'Tournament': r.tournamentName, 'Type': r.matchType, 'Status': r.status,
+        'Group': r.groupNumber ? `G${r.groupNumber}` : 'N/A', 'Slot': r.slotNumber || 'N/A',
+        'Payment': r.paymentVerified ? 'Verified' : 'Pending',
+        'Date': new Date(r.createdAt).toLocaleString(),
+        'Leader': r.players[0]?.name || 'N/A', 'UID': r.players[0]?.uid || 'N/A'
+      }));
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Data");
-      XLSX.writeFile(wb, `${fileName}_${new Date().toLocaleDateString()}.xlsx`);
-      toast.success('Excel exported successfully');
-    } catch (err) {
-      toast.error('Export failed');
-    }
+      XLSX.utils.book_append_sheet(wb, ws, "Registrations");
+      XLSX.writeFile(wb, `BGL_Registrations_${new Date().toLocaleDateString()}.xlsx`);
+      toast.success('Exported successfully');
+    } catch { toast.error('Export failed'); }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Primary Management Header */}
-      <div className="flex flex-col gap-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      Control Center
-                      <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[10px] font-black uppercase tracking-widest">{regFilter}</span>
-                  </h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Manage and Monitor Tournament Pulse</p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                  <button 
-                      onClick={() => {
-                          const dataToExport = filteredRegs.map(r => ({
-                              'Team Name': r.teamName,
-                              'Game': r.game || (r.tournamentName.toLowerCase().includes('bgmi') ? 'BGMI' : 'Free Fire'),
-                              'WhatsApp': r.whatsapp,
-                              'Tournament': r.tournamentName,
-                              'Type': r.matchType,
-                              'Status': r.status,
-                              'Group': r.groupNumber ? `Group ${r.groupNumber}` : 'N/A',
-                              'Slot': r.slotNumber || 'N/A',
-                              'Payment': r.paymentVerified ? 'Verified' : 'Pending',
-                              'Date': new Date(r.createdAt).toLocaleString(),
-                              'Leader': r.players[0]?.name || 'N/A',
-                              'Leader UID': r.players[0]?.uid || 'N/A'
-                          }));
-                          exportToExcel(dataToExport, 'Registrations');
-                      }}
-                      className="h-10 px-4 bg-google-green text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20 hover:shadow-xl transition-all active:scale-95 flex items-center gap-2"
-                  >
-                      <Download className="w-3.5 h-3.5" /> Export Data
-                  </button>
-                  
-                  <button 
-                      onClick={handleSync}
-                      disabled={syncing || loadingRegs}
-                      className="h-10 px-4 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:shadow-xl transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50"
-                  >
-                      <svg className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      {syncing ? 'Syncing...' : 'Sync Groups'}
-                  </button>
-              </div>
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4">
+        {/* Row 1: Title + Actions */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              Registrations
+              <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[9px] font-black uppercase">{regFilter} · {filteredRegs.length}</span>
+            </h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-              {/* Status Filter */}
-              <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Reg Status</label>
-                  <div className="flex p-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {(['Pending', 'Approved', 'Rejected'] as const).map(f => (
-                          <button key={f} onClick={() => setRegFilter(f)} 
-                              className={`flex-1 py-2 text-[10px] font-black uppercase transition-all rounded-lg ${regFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                              {f}
-                          </button>
-                      ))}
-                  </div>
-              </div>
-
-              {/* Game Platform Filter */}
-              <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Platform</label>
-                  <div className="flex p-1 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {(['All', 'BGMI', 'Free Fire'] as const).map(f => (
-                          <button key={f} onClick={() => setRegGameFilter(f)} 
-                              className={`flex-1 py-2 text-[10px] font-black uppercase transition-all rounded-lg ${regGameFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                              {f}
-                          </button>
-                      ))}
-                  </div>
-              </div>
-
-
-              {/* Match Type Selector */}
-              <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Match Type</label>
-                  <select value={regMatchTypeFilter} onChange={(e) => setRegMatchTypeFilter(e.target.value)}
-                      className="w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-[11px] font-black uppercase outline-none focus:ring-2 focus:ring-google-blue/10 appearance-none">
-                      <option value="All">All Categories</option>
-                      <option value="Solo">Solo</option>
-                      <option value="Duo">Duo</option>
-                      <option value="Squad">Squad</option>
-                  </select>
-              </div>
+          <div className="flex items-center gap-2">
+            <button onClick={exportToExcel} className="h-8 px-3 bg-google-green text-white rounded-lg text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90 transition-all">
+              <Download className="w-3 h-3" /> Export
+            </button>
+            <button onClick={handleSync} disabled={syncing || loadingRegs}
+              className="h-8 px-3 bg-slate-900 dark:bg-slate-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90 transition-all disabled:opacity-50">
+              <svg className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Sync
+            </button>
           </div>
-
-          {/* Group Filling Pulse */}
-          <div className="pt-6 border-t border-slate-50 dark:border-slate-800">
-             <h4 className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-3 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-google-blue animate-pulse" />
-                Live Tournament Filling Pulse
-             </h4>
-             <div className="flex flex-wrap gap-2">
-                <div 
-                   onClick={() => {
-                      setRegTourFilter('All');
-                      setRegGroupFilter('All');
-                      setRegGameFilter('All');
-                   }}
-                   className="px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex flex-col justify-center cursor-pointer transition-all hover:scale-105 hover:bg-slate-100 min-w-[100px]"
-                >
-                   <span className="text-[10px] font-black uppercase text-slate-400">View All</span>
-                   <p className="text-[11px] font-black uppercase text-slate-800 dark:text-white">Full List</p>
-                </div>
-
-                {(() => {
-                   // Group registrations by Tournament -> Group Number (exclude scheduled)
-                    const unscheduledRegs = registrations.filter(r => !r.matchDate);
-                    const tournamentGroups: Record<string, number[]> = {};
-                    unscheduledRegs.forEach(r => {
-                       if (!r.tournamentName || !r.groupNumber) return;
-                       // Respect current platform filter if selected
-                       if (regGameFilter !== 'All') {
-                          const isMatch = r.game === regGameFilter || r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
-                          if (!isMatch) return;
-                       }
-                       if (!tournamentGroups[r.tournamentName]) tournamentGroups[r.tournamentName] = [];
-                       if (!tournamentGroups[r.tournamentName].includes(r.groupNumber)) {
-                         tournamentGroups[r.tournamentName].push(r.groupNumber);
-                       }
-                    });
-
-                   const tourList = Object.keys(tournamentGroups).sort();
-                   if (tourList.length === 0) return <p className="text-[10px] italic text-slate-400 font-medium">No active registrations found...</p>;
-
-                   return tourList.map(tourName => {
-                      const groups = tournamentGroups[tourName].sort((a, b) => a - b);
-                      const tournament = liveTournaments.find(t => t.title === tourName);
-                      const gameType = tournament?.game || (tourName.toLowerCase().includes('bgmi') ? 'BGMI' : 'Free Fire');
-                      
-                        return groups.map(gNum => {
-                           const teamsInGroup = unscheduledRegs.filter(r => r.tournamentName === tourName && r.groupNumber === gNum);
-                           const approvedTeams = teamsInGroup.filter(r => r.status === 'Approved');
-                           const approvedCount = approvedTeams.length;
-                           const totalCount = teamsInGroup.length;
-                           
-                           let target = 48; // Default
-                           if (tournament?.slots) {
-                              const parts = tournament.slots.split('/');
-                              const parsed = parseInt(parts[parts.length - 1]);
-                              if (!isNaN(parsed)) target = parsed;
-                           } else if (gameType === 'BGMI') {
-                               target = 94;
-                           }
-                           
-                           const isFull = totalCount >= target;
-                           const isFullyApproved = approvedCount >= target;
-
-                          return (
-                             <div key={`${tourName}-${gNum}`} 
-                                 onClick={() => {
-                                    setRegTourFilter(tourName);
-                                    setRegGroupFilter(gNum.toString());
-                                 }}
-                                 className={`px-4 py-3 rounded-2xl border flex flex-col gap-1 cursor-pointer transition-colors min-w-[140px] group/pulse relative ${
-                                   isFullyApproved 
-                                       ? 'bg-google-green/10 border-google-green/30' 
-                                       : isFull
-                                            ? 'bg-google-blue/5 border-google-blue/20'
-                                            : 'bg-slate-50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'
-                                 }`}
-                             >
-                                {/* Quick Schedule Trigger - Only show for fully approved groups */}
-                                {isFullyApproved && (
-                                   <button 
-                                     onClick={(e) => {
-                                       e.stopPropagation();
-                                       setEditingGroup({ number: gNum, tourName: tourName, tourId: teamsInGroup[0]?.tournamentId });
-                                     }}
-                                     className="absolute top-2 right-2 p-1.5 rounded-lg bg-google-green text-white shadow-lg shadow-green-500/30 opacity-0 group-hover/pulse:opacity-100 transition-opacity hover:bg-google-green/90 active:scale-90 z-[20]"
-                                     title="Assign Group Schedule"
-                                   >
-                                      <Calendar className="w-3.5 h-3.5" />
-                                   </button>
-                                )}
-
-                                <div className="flex items-center justify-between gap-1 relative z-10 pr-6">
-                                   <span className={`text-[8px] font-black uppercase tracking-widest ${gameType === 'BGMI' ? 'text-google-blue' : 'text-google-red'}`}>
-                                       {gameType}
-                                   </span>
-                                   <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${
-                                       isFullyApproved ? 'bg-google-green text-white' : 
-                                       isFull ? 'bg-google-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
-                                   }`}>
-                                       {isFullyApproved ? 'APPROVED' : isFull ? 'FULL' : 'Filling'}
-                                   </span>
-                                </div>
-                                <p className="text-[11px] font-black italic uppercase text-slate-800 dark:text-white truncate max-w-[140px] relative z-10 mt-1">
-                                   {tourName}
-                               </p>
-                               <div className="flex items-end justify-between mt-2 pt-2 border-t border-slate-500/5 relative z-10">
-                                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight">Group {gNum}</span>
-                                  <span className="text-sm font-black text-slate-900 dark:text-white tabular-nums">
-                                      {totalCount}<span className="text-[10px] text-slate-400 font-bold ml-0.5">/{target}</span>
-                                  </span>
-                               </div>
-                            </div>
-                         );
-                      });
-                   });
-                })()}
-             </div>
-          </div>
-      </div>
-
-
-      {/* Tab Content Area */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-slate-50 dark:border-slate-800">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" placeholder="Search by Team or Player UID..." value={regSearch} onChange={(e) => setRegSearch(e.target.value)}
-                      className="w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-bold outline-none ring-google-blue/5 focus:ring-4 transition-all" />
-              </div>
-              
-              <div className="w-full md:w-64">
-                <select value={regTourFilter} onChange={(e) => setRegTourFilter(e.target.value)} 
-                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-[11px] font-black uppercase outline-none appearance-none">
-                    <option value="All">Active Tournaments</option>
-                    {Array.from(new Set(registrations.map(r => r.tournamentName))).map(name => <option key={name} value={name}>{name}</option>)}
-                </select>
-              </div>
-            </div>
         </div>
 
-        <RegistrationTable 
-          registrations={registrations} 
-          loading={loading} 
-          regFilter={regFilter} 
-          regSearch={regSearch} 
-          regTourFilter={regTourFilter} 
-          regGameFilter={regGameFilter} 
-          regGroupFilter={regGroupFilter}
-          regMatchTypeFilter={regMatchTypeFilter}
-          setViewReg={setViewReg} 
-          deleteRegistration={handleDeleteRegistration} 
+        {/* Row 2: Filters */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* Status */}
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 block">Status</label>
+            <div className="flex h-8 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              {(['Pending', 'Approved', 'Rejected'] as const).map(f => (
+                <button key={f} onClick={() => setRegFilter(f)}
+                  className={`flex-1 text-[9px] font-bold uppercase rounded-md transition-all ${regFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                  {f.slice(0, 3)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform */}
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 block">Platform</label>
+            <div className="flex h-8 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              {(['All', 'BGMI', 'Free Fire'] as const).map(f => (
+                <button key={f} onClick={() => setRegGameFilter(f)}
+                  className={`flex-1 text-[9px] font-bold uppercase rounded-md transition-all ${regGameFilter === f ? 'bg-white dark:bg-slate-700 text-google-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                  {f === 'Free Fire' ? 'FF' : f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Match Type */}
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 block">Type</label>
+            <select value={regMatchTypeFilter} onChange={(e) => setRegMatchTypeFilter(e.target.value)}
+              className="w-full h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-0 text-[10px] font-bold uppercase outline-none appearance-none text-slate-600 dark:text-slate-300">
+              <option value="All">All</option>
+              <option value="Solo">Solo</option>
+              <option value="Duo">Duo</option>
+              <option value="Squad">Squad</option>
+            </select>
+          </div>
+
+          {/* Tournament filter */}
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1 block">Tournament</label>
+            <select value={regTourFilter} onChange={(e) => setRegTourFilter(e.target.value)}
+              className="w-full h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-0 text-[10px] font-bold uppercase outline-none appearance-none text-slate-600 dark:text-slate-300 truncate">
+              <option value="All">All</option>
+              {Array.from(new Set(registrations.map(r => r.tournamentName))).map(name => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Group pulse */}
+      <GroupPulse
+        registrations={registrations}
+        regGameFilter={regGameFilter}
+        liveTournaments={liveTournaments}
+        setRegTourFilter={setRegTourFilter}
+        setRegGroupFilter={setRegGroupFilter}
+        setRegGameFilter={setRegGameFilter}
+        setEditingGroup={setEditingGroup}
+      />
+
+      {/* Search + Table */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <input type="text" placeholder="Search team or player..." value={regSearch} onChange={(e) => setRegSearch(e.target.value)}
+              className="w-full h-9 pl-9 pr-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/10 transition-all" />
+          </div>
+        </div>
+
+        <RegistrationTable
+          registrations={registrations} loading={loading}
+          regFilter={regFilter} regSearch={regSearch}
+          regTourFilter={regTourFilter} regGameFilter={regGameFilter}
+          regGroupFilter={regGroupFilter} regMatchTypeFilter={regMatchTypeFilter}
+          setViewReg={setViewReg} deleteRegistration={handleDeleteRegistration}
         />
       </div>
-       {/* Bulk Schedule Modal */}
-       {editingGroup && (
-         <GroupScheduleModal 
-           groupNumber={editingGroup.number}
-           tournamentName={editingGroup.tourName}
-           tournamentId={editingGroup.tourId}
-           onClose={() => setEditingGroup(null)}
-           onSuccess={() => {
-             onRefresh();
-             setActiveTab('Schedules');
-           }}
-         />
-       )}
+
+      {editingGroup && (
+        <GroupScheduleModal
+          groupNumber={editingGroup.number}
+          tournamentName={editingGroup.tourName}
+          tournamentId={editingGroup.tourId}
+          onClose={() => setEditingGroup(null)}
+          onSuccess={() => { onRefresh(); setActiveTab('Schedules'); }}
+        />
+      )}
     </div>
   );
 };
+
+/** Group filling pulse cards */
+function GroupPulse({ registrations, regGameFilter, liveTournaments, setRegTourFilter, setRegGroupFilter, setRegGameFilter, setEditingGroup }: any) {
+  const unscheduled = registrations.filter((r: Reg) => !r.matchDate);
+  const groups: Record<string, number[]> = {};
+
+  unscheduled.forEach((r: Reg) => {
+    if (!r.tournamentName || !r.groupNumber) return;
+    if (regGameFilter !== 'All') {
+      const match = r.game === regGameFilter || r.tournamentName.toLowerCase().includes(regGameFilter.toLowerCase());
+      if (!match) return;
+    }
+    if (!groups[r.tournamentName]) groups[r.tournamentName] = [];
+    if (!groups[r.tournamentName].includes(r.groupNumber)) groups[r.tournamentName].push(r.groupNumber);
+  });
+
+  const tours = Object.keys(groups).sort();
+  if (tours.length === 0) return null;
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-google-blue animate-pulse" />
+        <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Group Fill Status</h4>
+        <button onClick={() => { setRegTourFilter('All'); setRegGroupFilter('All'); setRegGameFilter('All'); }}
+          className="ml-auto text-[9px] font-bold text-google-blue hover:underline">Reset Filters</button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {tours.map(tourName => {
+          const gNums = groups[tourName].sort((a, b) => a - b);
+          const tournament = liveTournaments.find((t: any) => t.title === tourName);
+          const game = tournament?.game || (tourName.toLowerCase().includes('bgmi') ? 'BGMI' : 'Free Fire');
+
+          return gNums.map(gNum => {
+            const teams = unscheduled.filter((r: Reg) => r.tournamentName === tourName && r.groupNumber === gNum);
+            const approved = teams.filter((r: Reg) => r.status === 'Approved').length;
+            const total = teams.length;
+            let target = 48;
+            if (tournament?.slots) {
+              const p = parseInt(tournament.slots.split('/').pop());
+              if (!isNaN(p)) target = p;
+            } else if (game === 'BGMI') target = 94;
+
+            const isFull = total >= target;
+            const isApproved = approved >= target;
+
+            return (
+              <button key={`${tourName}-${gNum}`}
+                onClick={() => { setRegTourFilter(tourName); setRegGroupFilter(gNum.toString()); }}
+                className={`px-3 py-2 rounded-xl border text-left transition-all hover:shadow-md relative group/p min-w-[120px] ${
+                  isApproved ? 'bg-green-50/50 dark:bg-green-500/5 border-green-200 dark:border-green-500/20' :
+                  isFull ? 'bg-blue-50/50 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/20' :
+                  'bg-slate-50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'
+                }`}
+              >
+                {isApproved && (
+                  <span onClick={(e) => { e.stopPropagation(); setEditingGroup({ number: gNum, tourName, tourId: teams[0]?.tournamentId }); }}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-md bg-google-green text-white opacity-0 group-hover/p:opacity-100 transition-opacity shadow-sm hover:bg-green-600 z-10">
+                    <Calendar className="w-3 h-3" />
+                  </span>
+                )}
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className={`text-[8px] font-black uppercase ${game === 'BGMI' ? 'text-google-blue' : 'text-google-red'}`}>{game}</span>
+                  <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-full ${
+                    isApproved ? 'bg-google-green text-white' : isFull ? 'bg-google-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
+                  }`}>{isApproved ? '✓' : isFull ? 'Full' : 'Open'}</span>
+                </div>
+                <p className="text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">{tourName}</p>
+                <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <span className="text-[9px] font-bold text-slate-400">G{gNum}</span>
+                  <span className="text-xs font-black text-slate-800 dark:text-white tabular-nums">{total}<span className="text-[9px] text-slate-400 font-medium">/{target}</span></span>
+                </div>
+              </button>
+            );
+          });
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default RegistrationsTab;

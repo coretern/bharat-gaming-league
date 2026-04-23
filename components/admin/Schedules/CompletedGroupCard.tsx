@@ -1,6 +1,7 @@
 import React from 'react';
 import { Clock, Trophy } from 'lucide-react';
 import { Reg } from '../../types/admin';
+import { to12Hour } from '@/lib/time-utils';
 
 interface CompletedGroupCardProps {
   groupNumber: number;
@@ -15,7 +16,7 @@ const CompletedGroupCard: React.FC<CompletedGroupCardProps> = ({
   teams,
   onViewReg
 }) => {
-  const matchTime = teams[0]?.matchTime || 'TBA';
+  const matchTime = to12Hour(teams[0]?.matchTime);
   const winner = teams.find(t => t.resultStatus === 'Won');
 
   return (

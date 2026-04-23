@@ -71,28 +71,33 @@ export default function LogsTab() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-black italic uppercase tracking-tight">
-          Activity Logs <span className="text-slate-400 font-medium text-sm not-italic">({total})</span>
-        </h2>
-        <button onClick={fetchLogs} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-google-blue transition-colors">
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search logs..." className="w-full h-10 pl-10 pr-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-google-blue/20" />
+      {/* Toolbar */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              Activity Logs
+              <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[9px] font-black uppercase">{total}</span>
+            </h2>
+          </div>
+          <button onClick={fetchLogs} className="p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 transition-colors">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
-        <div className="flex gap-1 overflow-x-auto pb-1">
+
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search logs..." className="w-full h-9 pl-9 pr-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/10 transition-all" />
+        </div>
+
+        {/* Category pills */}
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map(c => (
             <button key={c.value} onClick={() => { setCategory(c.value); setPage(1); }}
-              className={`px-3 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap flex items-center gap-1.5 transition-all ${
-                category === c.value ? 'bg-google-blue text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50'
+              className={`px-2.5 h-7 rounded-lg text-[9px] font-bold uppercase whitespace-nowrap flex items-center gap-1 transition-all shrink-0 ${
+                category === c.value ? 'bg-google-blue text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600'
               }`}>
               <c.icon className="w-3 h-3" /> {c.label}
             </button>

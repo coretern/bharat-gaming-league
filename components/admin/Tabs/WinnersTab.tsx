@@ -10,33 +10,26 @@ interface WinnersTabProps {
   handleDeleteWinner: (id: string) => void;
 }
 
-const WinnersTab: React.FC<WinnersTabProps> = ({
-  winners,
-  loadingWinners,
-  setShowAddWinner,
-  handleDeleteWinner
-}) => {
+const WinnersTab: React.FC<WinnersTabProps> = ({ winners, loadingWinners, setShowAddWinner, handleDeleteWinner }) => {
   return (
-    <div className="space-y-6">
-      {/* Management Header */}
-      <div className="flex flex-col gap-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      Victory Registry
-                      <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[10px] font-black uppercase tracking-widest">{winners.length} Hall of Famers</span>
-                  </h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Celebrate and Manage Champion Records</p>
-              </div>
-
-              <button onClick={() => setShowAddWinner(true)} 
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-google-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all hover:bg-blue-600">
-                  <Plus className="w-4 h-4" /> Add Champion
-              </button>
-          </div>
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            Winners
+            <span className="px-2 py-0.5 rounded-full bg-google-blue/10 text-google-blue text-[9px] font-black uppercase">{winners.length}</span>
+          </h2>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Champion records & prize history</p>
+        </div>
+        <button onClick={() => setShowAddWinner(true)}
+          className="h-8 px-4 bg-google-blue text-white rounded-lg text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90 transition-all shadow-sm">
+          <Plus className="w-3.5 h-3.5" /> Add Winner
+        </button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+      {/* Table */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <WinnerTable winners={winners} loading={loadingWinners} onDelete={handleDeleteWinner} />
       </div>
     </div>
