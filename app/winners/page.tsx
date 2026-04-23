@@ -70,7 +70,7 @@ export default function WinnersPage() {
               🏆 Hall of Fame
             </div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-              Tournament <span className="text-google-blue">Legends</span>
+              Tournament <span className="text-google-blue">Champions</span>
             </h1>
             <p className="text-slate-500 font-medium text-base max-w-xl mx-auto">
               Champions who dominated the <span className="text-slate-900 dark:text-white font-bold">Bharat Gaming League</span>.
@@ -81,7 +81,7 @@ export default function WinnersPage() {
           <div className="flex justify-center gap-2 mb-10">
             <button onClick={() => setTab('winners')}
               className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'winners' ? 'bg-google-blue text-white shadow-lg shadow-blue-500/20' : 'bg-white dark:bg-slate-900 border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
-              <Trophy className="w-3.5 h-3.5 inline mr-1.5" /> Winners
+              <Trophy className="w-3.5 h-3.5 inline mr-1.5" /> Champions
             </button>
             <button onClick={() => setTab('past')}
               className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'past' ? 'bg-google-blue text-white shadow-lg shadow-blue-500/20' : 'bg-white dark:bg-slate-900 border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>

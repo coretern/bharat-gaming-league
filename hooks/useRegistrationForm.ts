@@ -17,13 +17,10 @@ export const useRegistrationForm = () => {
   const [teamName, setTeamName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [players, setPlayers] = useState([{ name: '', uid: '', instagram: '' }]);
-  const [qrFile, setQrFile] = useState<File | null>(null);
-  const [existingQrUrl, setExistingQrUrl] = useState('');
   const [isPaid, setIsPaid] = useState(false);
   const [rejectionTargets, setRejectionTargets] = useState<string[]>([]);
   const [rejectionIndices, setRejectionIndices] = useState<number[]>([]);
-  const [savedQrUrl, setSavedQrUrl] = useState('');
-  const [useProfileQr, setUseProfileQr] = useState(false);
+
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,7 +41,7 @@ export const useRegistrationForm = () => {
                         uid: p.uid,
                         instagram: p.instagram,
                     })));
-                    setExistingQrUrl(reg.payoutDetails?.qrCodeUrl || '');
+
                     setIsPaid(reg.paymentVerified || reg.paymentStatus === 'Paid');
                     setRejectionTargets(reg.rejectionTargets || []);
                     setRejectionIndices((reg.rejectionIndices || []).map((i: any) => Number(i)));
@@ -78,7 +75,7 @@ export const useRegistrationForm = () => {
                         const p = await profileRes.json();
                         if (p.teamName) setTeamName(p.teamName);
                         if (p.whatsapp) setWhatsapp(p.whatsapp);
-                        if (p.paymentQrUrl) { setSavedQrUrl(p.paymentQrUrl); setExistingQrUrl(p.paymentQrUrl); setUseProfileQr(true); }
+                        if (p.paymentQrUrl) { /* QR is handled on backend from profile */ }
 
                         const savedTeam: any[] = p.savedPlayers || [];
 
@@ -86,8 +83,8 @@ export const useRegistrationForm = () => {
                         const defaultPlayers = Array(defCount).fill(0).map((_, i) => {
                             if (i === 0) {
                                 return {
-                                    name: '',
-                                    uid: p.gameIGN || '',
+                                    name: p.gameUsername || '',
+                                    uid: p.gameUID || '',
                                     instagram: p.instagram || '',
                                 };
                             }
@@ -148,7 +145,7 @@ export const useRegistrationForm = () => {
       fd.append('tournamentId', isEdit ? tournament?.id : tournamentId);
       fd.append('tournamentName', tournament?.title || '');
       fd.append('entryFee', `₹${currentFee}`);
-      if (useProfileQr && !qrFile && savedQrUrl) fd.append('profileQrUrl', savedQrUrl);
+
 
       players.forEach((p, i) => {
         fd.append(`playerName_${i}`, p.name);
@@ -156,7 +153,7 @@ export const useRegistrationForm = () => {
         fd.append(`playerInstagram_${i}`, p.instagram);
       });
 
-      if (qrFile) fd.append('qrFile', qrFile);
+
 
       const res = await fetch('/api/register', { 
         method: isEdit ? 'PUT' : 'POST', 
@@ -196,15 +193,10 @@ export const useRegistrationForm = () => {
     setWhatsapp,
     players,
     setPlayers,
-    qrFile,
-    setQrFile,
-    existingQrUrl,
     isPaid,
     rejectionTargets,
     rejectionIndices,
-    savedQrUrl,
-    useProfileQr,
-    setUseProfileQr,
+
     isSubmitted,
     loading,
     session,

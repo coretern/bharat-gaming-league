@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
       email: user.email || '',
       image: user.image || '',
       teamName: user.teamName || '',
-      gameIGN: user.gameIGN || '',
+      gameUsername: user.gameUsername || '',
+      gameUID: user.gameUID || '',
       whatsapp: user.whatsapp || '',
       instagram: user.instagram || '',
       paymentQrUrl: user.paymentQrUrl || '',
@@ -67,11 +68,12 @@ export async function PUT(req: NextRequest) {
     const formData = await req.formData();
     const name = formData.get('name') as string || '';
     const teamName = formData.get('teamName') as string || '';
-    const gameIGN = formData.get('gameIGN') as string || '';
+    const gameUsername = formData.get('gameUsername') as string || '';
+    const gameUID = formData.get('gameUID') as string || '';
     const whatsapp = formData.get('whatsapp') as string || '';
     const instagram = formData.get('instagram') as string || '';
 
-    const updateData: Record<string, any> = { name, teamName, gameIGN, whatsapp, instagram };
+    const updateData: Record<string, any> = { name, teamName, gameUsername, gameUID, whatsapp, instagram };
 
     // Handle saved players
     const savedPlayersRaw = formData.get('savedPlayers') as string;
@@ -102,7 +104,8 @@ export async function PUT(req: NextRequest) {
       success: true,
       name: user.name,
       teamName: user.teamName,
-      gameIGN: user.gameIGN,
+      gameUsername: user.gameUsername,
+      gameUID: user.gameUID,
       whatsapp: user.whatsapp,
       instagram: user.instagram,
       paymentQrUrl: user.paymentQrUrl,

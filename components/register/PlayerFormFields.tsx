@@ -20,9 +20,9 @@ export default function PlayerFormFields({ player, idx, isEdit, rejectionTargets
       
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name <span className="text-red-500">*</span></label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Game Username <span className="text-red-500">*</span></label>
           <input required 
-            value={player.name} onChange={e => onUpdate(idx, 'name', e.target.value)} type="text" placeholder="Gamer Name"
+            value={player.name} onChange={e => onUpdate(idx, 'name', e.target.value)} type="text" placeholder="Game profile name"
             className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm focus:ring-2 focus:ring-neon-purple/20 transition-all outline-none" />
         </div>
         <div className="space-y-2">

@@ -12,7 +12,8 @@ export interface UserProfile {
   email: string;
   image: string;
   teamName: string;
-  gameIGN: string;
+  gameUsername: string;
+  gameUID: string;
   whatsapp: string;
   instagram: string;
   paymentQrUrl: string;
@@ -21,7 +22,7 @@ export interface UserProfile {
 
 const emptyProfile: UserProfile = {
   name: '', email: '', image: '',
-  teamName: '', gameIGN: '', whatsapp: '', instagram: '',
+  teamName: '', gameUsername: '', gameUID: '', whatsapp: '', instagram: '',
   paymentQrUrl: '',
   savedPlayers: [],
 };
@@ -58,7 +59,8 @@ export function useProfile() {
       const fd = new FormData();
       fd.append('name', fields.name ?? profile.name);
       fd.append('teamName', fields.teamName ?? profile.teamName);
-      fd.append('gameIGN', fields.gameIGN ?? profile.gameIGN);
+      fd.append('gameUsername', fields.gameUsername ?? profile.gameUsername);
+      fd.append('gameUID', fields.gameUID ?? profile.gameUID);
       fd.append('whatsapp', fields.whatsapp ?? profile.whatsapp);
       fd.append('instagram', fields.instagram ?? profile.instagram);
       if (players) fd.append('savedPlayers', JSON.stringify(players));

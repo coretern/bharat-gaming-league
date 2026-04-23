@@ -50,7 +50,7 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
           <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800">
             <th className="px-6 py-4 w-12 text-center">#</th>
             <th className="px-6 py-4">Team / Contact</th>
-            <th className="px-6 py-4">Leader / UID</th>
+            <th className="px-6 py-4">Game Username / UID</th>
             <th className="px-6 py-4">Tournament</th>
             <th className="px-6 py-4">Group / Slot</th>
             <th className="px-6 py-4">Verification</th>
@@ -175,7 +175,7 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
                
                 <div className="flex gap-10">
                    <div className="min-width-0">
-                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Leader</p>
+                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 opacity-60">Game Username</p>
                      <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{reg.players[0]?.name || reg.userName}</p>
                      <p className="text-[10px] text-slate-400 font-mono tracking-tighter mt-0.5">{reg.players[0]?.uid || 'N/A'}</p>
                    </div>

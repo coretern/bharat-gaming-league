@@ -15,7 +15,8 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   const [displayName, setDisplayName] = useState(user.name || '');
 
   const [teamName, setTeamName] = useState('');
-  const [gameIGN, setGameIGN] = useState('');
+  const [gameUsername, setGameUsername] = useState('');
+  const [gameUID, setGameUID] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
   const [savedPlayers, setSavedPlayers] = useState<SavedPlayer[]>([]);
@@ -27,21 +28,25 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   useEffect(() => {
     if (!loading) {
       setDisplayName(profile.name || user.name || '');
-      setTeamName(profile.teamName); setGameIGN(profile.gameIGN);
-      setWhatsapp(profile.whatsapp); setInstagram(profile.instagram);
+      setTeamName(profile.teamName || ''); 
+      setGameUsername(profile.gameUsername || '');
+      setGameUID(profile.gameUID || '');
+      setWhatsapp(profile.whatsapp || ''); setInstagram(profile.instagram || '');
       setSavedPlayers(profile.savedPlayers?.length ? profile.savedPlayers : []);
     }
   }, [loading, profile]);
 
   const handleSave = async () => {
-    await saveProfile({ name: displayName, teamName, gameIGN, whatsapp, instagram }, qrFile, undefined, savedPlayers);
+    await saveProfile({ name: displayName, teamName, gameUsername, gameUID, whatsapp, instagram }, qrFile, undefined, savedPlayers);
     setQrFile(null); setQrPreview('');
     setEditing(false);
   };
 
   const handleCancel = () => {
     setDisplayName(profile.name || user.name || '');
-    setTeamName(profile.teamName); setGameIGN(profile.gameIGN);
+    setTeamName(profile.teamName);
+    setGameUsername(profile.gameUsername);
+    setGameUID(profile.gameUID);
     setWhatsapp(profile.whatsapp); setInstagram(profile.instagram);
     setSavedPlayers(profile.savedPlayers?.length ? profile.savedPlayers : []);
     setQrFile(null); setQrPreview('');
@@ -57,7 +62,7 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-google-blue" /></div>;
 
   const qrDisplay = qrPreview || profile.paymentQrUrl;
-  const isEmpty = !profile.teamName && !profile.gameIGN && !profile.whatsapp;
+  const isEmpty = !profile.teamName && !profile.gameUsername && !profile.gameUID && !profile.whatsapp;
   const isEditable = editing || isEmpty;
   const pencil = !isEditable ? <EditBtn onClick={() => setEditing(true)} /> : undefined;
 
@@ -86,14 +91,16 @@ export default function ProfileTab({ user }: ProfileTabProps) {
           {isEditable ? (
             <div className="space-y-4">
               <ProfileInput label="Team Name" placeholder="e.g. Team Phoenix" value={teamName} onChange={setTeamName} />
-              <ProfileInput label="Game UID" placeholder="Your in-game UID" value={gameIGN} onChange={setGameIGN} />
+              <ProfileInput label="Game Username" placeholder="Game profile name" value={gameUsername} onChange={setGameUsername} />
+              <ProfileInput label="Game UID" placeholder="Your in-game UID" value={gameUID} onChange={setGameUID} />
               <ProfileInput label="WhatsApp" placeholder="+91 9876543210" value={whatsapp} onChange={setWhatsapp} />
               <ProfileInput label="Instagram" placeholder="https://instagram.com/..." value={instagram} onChange={setInstagram} />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               <InfoField label="Team Name" value={teamName || '—'} />
-              <InfoField label="Game UID" value={gameIGN || '—'} />
+              <InfoField label="Game Username" value={gameUsername || '—'} />
+              <InfoField label="Game UID" value={gameUID || '—'} />
               <InfoField label="WhatsApp" value={whatsapp || '—'} />
               <InfoField label="Instagram" value={instagram || '—'} link />
             </div>
@@ -123,7 +130,7 @@ export default function ProfileTab({ user }: ProfileTabProps) {
                 <div className="w-7 h-7 rounded-lg bg-google-blue/10 text-google-blue flex items-center justify-center text-xs font-black shrink-0 mt-1">{i + 1}</div>
                 {isEditable ? (
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input value={p.name} onChange={e => updatePlayer(i, 'name', e.target.value)} placeholder="Name" className="h-9 px-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/20" />
+                    <input value={p.name} onChange={e => updatePlayer(i, 'name', e.target.value)} placeholder="Game profile name" className="h-9 px-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/20" />
                     <input value={p.uid} onChange={e => updatePlayer(i, 'uid', e.target.value)} placeholder="Game UID" className="h-9 px-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/20" />
                     <input value={p.instagram} onChange={e => updatePlayer(i, 'instagram', e.target.value)} placeholder="Instagram" className="h-9 px-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium outline-none focus:ring-2 focus:ring-google-blue/20" />
                   </div>

@@ -14,7 +14,7 @@ import AuthModal from './AuthModal';
 const navLinks = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Tournaments', href: '/tournaments', icon: Trophy },
-  { name: 'Winners', href: '/winners', icon: Medal },
+  { name: 'Champions', href: '/winners', icon: Medal },
   { name: 'Rules', href: '/rules', icon: ShieldCheck },
 ];
 

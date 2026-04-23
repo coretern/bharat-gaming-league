@@ -13,7 +13,7 @@ import TournamentHeader from '@/components/register/TournamentHeader';
 import FormatSelection from '@/components/register/FormatSelection';
 import TeamInformation from '@/components/register/TeamInformation';
 import PlayerFormFields from '@/components/register/PlayerFormFields';
-import PayoutQRUpload from '@/components/register/PayoutQRUpload';
+
 
 export default function RegistrationForm() {
   const {
@@ -27,13 +27,9 @@ export default function RegistrationForm() {
     whatsapp,
     setWhatsapp,
     players,
-    qrFile,
-    setQrFile,
-    existingQrUrl,
     isPaid,
     rejectionTargets,
     rejectionIndices,
-    savedQrUrl,
     isSubmitted,
     loading,
     status,
@@ -142,14 +138,15 @@ export default function RegistrationForm() {
           ))}
         </div>
 
-        <PayoutQRUpload 
-          qrFile={qrFile} 
-          setQrFile={setQrFile} 
-          existingQrUrl={existingQrUrl} 
-          isEdit={isEdit} 
-          rejectionTargets={rejectionTargets}
-          savedQrUrl={savedQrUrl}
-        />
+
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex items-start gap-3">
+            <Info className="w-4 h-4 text-google-blue shrink-0 mt-0.5" />
+            <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+              <span className="font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tighter mr-1">Payout Note:</span> 
+              Prize winnings will be sent to the <span className="text-google-blue font-bold">Payout QR</span> linked to your profile. Ensure your profile is updated before the match starts.
+            </p>
+        </div>
 
         <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
            <button 

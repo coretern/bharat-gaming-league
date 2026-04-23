@@ -54,10 +54,11 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
               {viewReg.players.map((p, i) => (
                 <div key={i} className="p-3 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
                   <div>
-                    <p className="font-bold text-slate-900 dark:text-white text-sm">{p.name}</p>
-                    <p className="text-[10px] text-google-blue font-bold mt-0.5">{p.uid}</p>
+                    <p className="text-[9px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Game Username</p>
+                    <p className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-tight">{p.name}</p>
+                    <p className="text-[10px] text-google-blue font-black uppercase tracking-widest mt-1.5 leading-none">UID: {p.uid}</p>
                     {p.instagram && (
-                      <a href={p.instagram} target="_blank" rel="noopener noreferrer" className="text-[10px] text-slate-400 hover:text-google-blue flex items-center gap-1 mt-0.5">
+                      <a href={p.instagram} target="_blank" rel="noopener noreferrer" className="text-[10px] text-slate-400 hover:text-google-blue flex items-center gap-1 mt-2">
                         <ExternalLink className="w-2.5 h-2.5" /> Instagram
                       </a>
                     )}

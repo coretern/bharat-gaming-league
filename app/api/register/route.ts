@@ -1,3 +1,4 @@
+import { User } from '@/models/User';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
@@ -72,21 +73,10 @@ export async function POST(req: NextRequest) {
         players.push({ name: pName, uid: pUid, instagram: pInstagram });
     }
 
-    // Handle Payout Details
-    const qrFile = formData.get('qrFile') as File;
-    const profileQrUrl = formData.get('profileQrUrl') as string || '';
-
-    let qrCodeUrl = '';
-    if (qrFile && qrFile.size > 0) {
-        qrCodeUrl = await uploadToCloudinary(qrFile, 'arenax/payouts');
-    } else if (profileQrUrl) {
-        // Use saved profile QR URL
-        qrCodeUrl = profileQrUrl;
-    }
-
-    const payoutDetails = { qrCodeUrl };
-
+    // Handle Payout Details from User Profile
     await connectDB();
+    const userProfile = await User.findOne({ email: token.email });
+    const payoutDetails = { qrCodeUrl: userProfile?.paymentQrUrl || '' };
     
     // Fetch tournament to get game type for group size
     const tournament = await Tournament.findOne({ id: tournamentId });
@@ -228,11 +218,9 @@ export async function PUT(req: NextRequest) {
         players.push({ name: pName, uid: pUid, instagram: pInstagram });
     }
 
-    const qrFile = formData.get('qrFile') as File;
-    let qrCodeUrl = existing.payoutDetails?.qrCodeUrl || '';
-    if (qrFile && qrFile.size > 0) {
-        qrCodeUrl = await uploadToCloudinary(qrFile, 'arenax/payouts');
-    }
+    // Payout details handled from profile during registration
+    const userProfile = await User.findOne({ email: token.email });
+    let qrCodeUrl = existing.payoutDetails?.qrCodeUrl || userProfile?.paymentQrUrl || '';
 
     let paymentSessionId = '';
     let orderId = existing.orderId;

@@ -67,7 +67,37 @@ const RejectionModal: React.FC<RejectionModalProps> = ({
             </div>
           </label>
 
-
+          {/* Player Identity Issue */}
+          <label className={`block group cursor-pointer transition-all duration-300 ${rejectionOptions.playerIndices.length > 0 ? 'scale-[1.02]' : 'hover:scale-[1.01]'}`}>
+            <div className={`p-5 rounded-3xl border-2 transition-all ${
+              rejectionOptions.playerIndices.length > 0 
+                ? 'bg-amber-50 border-amber-500 dark:bg-amber-900/10' 
+                : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
+                    rejectionOptions.playerIndices.length > 0 ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                  }`}>
+                    <ShieldOff className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className={`text-sm font-black uppercase italic ${rejectionOptions.playerIndices.length > 0 ? 'text-amber-600' : 'text-foreground'}`}>Identity Issue</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase">Wrong Game Username or UID</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const newIndices = rejectionOptions.playerIndices.length > 0 ? [] : [0];
+                    setRejectionOptions({...rejectionOptions, playerIndices: newIndices});
+                  }}
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${rejectionOptions.playerIndices.length > 0 ? 'bg-amber-500 border-amber-500' : 'border-slate-200 dark:border-slate-700'}`}>
+                  {rejectionOptions.playerIndices.length > 0 && <CheckCircle className="w-4 h-4 text-white" />}
+                </button>
+              </div>
+            </div>
+          </label>
 
           {/* Custom Message Card */}
           <div className="space-y-3">
@@ -90,8 +120,10 @@ const RejectionModal: React.FC<RejectionModalProps> = ({
               const targets = [];
               let finalMsg = rejectionOptions.msg;
               if (rejectionOptions.qr) targets.push('qr');
+              if (rejectionOptions.playerIndices.length > 0) targets.push('player');
               
               if (!finalMsg && rejectionOptions.qr) finalMsg = "Payment QR code is invalid or not clear.";
+              if (!finalMsg && rejectionOptions.playerIndices.length > 0) finalMsg = "One or more Game Usernames or UIDs are incorrect.";
               
               onConfirm(finalMsg || 'Registration rejected due to data issues.', targets);
             }}

@@ -40,7 +40,7 @@ export function ProfileInput({ label, placeholder, value, onChange }: { label: s
   return (
     <div>
       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block ml-0.5">{label}</label>
-      <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      <input value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         className="w-full h-10 px-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-google-blue/20 transition-all" />
     </div>
   );

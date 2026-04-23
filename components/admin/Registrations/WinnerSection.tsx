@@ -64,7 +64,7 @@ const WinnerSection: React.FC<WinnerSectionProps> = ({
       {/* Winner Outcome */}
       <div>
         <h4 className="text-[10px] font-black uppercase text-google-green mb-3 tracking-[0.2em]">
-          Match Outcome Management
+          Match Champion Management
         </h4>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 group">
@@ -89,7 +89,7 @@ const WinnerSection: React.FC<WinnerSectionProps> = ({
                 : 'bg-white dark:bg-slate-900 text-google-green border border-green-200 dark:border-green-900/30 hover:bg-google-green hover:text-white'
             }`}
           >
-            {viewReg.resultStatus === 'Won' ? 'Winner ✓' : 'Set Winner'}
+            {viewReg.resultStatus === 'Won' ? 'Champion ✓' : 'Set Champion'}
           </button>
         </div>
         <p className="mt-2 text-[9px] font-black text-slate-400 uppercase tracking-tighter">

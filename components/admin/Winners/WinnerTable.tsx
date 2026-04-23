@@ -19,7 +19,7 @@ const WinnerTable: React.FC<WinnerTableProps> = ({
       <table className="w-full text-left hidden md:table">
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800">
-            <th className="px-6 py-4">Winner/Team</th>
+            <th className="px-6 py-4">Champion / Team</th>
             <th className="px-6 py-4">Tournament</th>
             <th className="px-6 py-4">Prize</th>
             <th className="px-6 py-4 text-right">Action</th>
