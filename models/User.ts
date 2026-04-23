@@ -16,6 +16,7 @@ export interface IUser extends Document {
   loginCount: number;
   isBanned: boolean;
   // Gaming Profile
+  teamName: string;
   gameUsername: string;
   gameUID: string;
   whatsapp: string;
@@ -40,6 +41,7 @@ const UserSchema = new Schema<IUser>({
   loginCount: { type: Number, default: 1 },
   isBanned: { type: Boolean, default: false },
   // Gaming Profile Fields
+  teamName: { type: String, default: '' },
   gameUsername: { type: String, default: '' },
   gameUID: { type: String, default: '' },
   whatsapp: { type: String, default: '' },
