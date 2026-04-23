@@ -19,8 +19,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       
       // Initialize Native Google One Tap logic
       const initOneTap = () => {
-        if (window.google?.accounts?.id && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
-           window.google.accounts.id.initialize({
+        const win = window as any;
+        if (win.google?.accounts?.id && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+           win.google.accounts.id.initialize({
              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
              callback: (response: any) => {
                // On success, sign in with NextAuth
@@ -33,7 +34,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
            });
            
            // This triggers the native "Continue as [Account]" UI at the top
-           window.google.accounts.id.prompt((notification: any) => {
+           win.google.accounts.id.prompt((notification: any) => {
               if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
                  console.log('One tap skipped or suppressed');
               }
