@@ -16,9 +16,10 @@ function LoginContent() {
   useEffect(() => {
     // Initialize Google One Tap specifically for the Login Page
     const initOneTap = () => {
-      if (window.google?.accounts?.id && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+      const win = window as any;
+      if (win.google?.accounts?.id && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
         setOneTapReady(true);
-        window.google.accounts.id.initialize({
+        win.google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           callback: (response: any) => {
             signIn('google', { 
