@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "How do I register for a tournament?",
-    a: "Go to the Tournaments page, select a tournament, and click Register. You'll need to log in with Google, fill in your team details (team name, in-game UID, WhatsApp), and upload a screenshot of your entry fee payment."
+    a: "Go to the Tournaments page, select a tournament, and click Register. You'll need to log in with Google, fill in your team details (team name, in-game UID, WhatsApp), and complete the secure payment process."
   },
   {
     q: "What payment methods are accepted?",
-    a: "We accept UPI payments (GPay, PhonePe, Paytm). After paying, take a screenshot showing the transaction ID and amount, then upload it during registration."
+    a: "We accept all major UPI apps (GPay, PhonePe, Paytm) via our secure payment gateway. Your registration will be automatically verified once the transaction is complete."
   },
   {
     q: "How long does registration approval take?",

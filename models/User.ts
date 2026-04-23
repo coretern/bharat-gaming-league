@@ -21,7 +21,6 @@ export interface IUser extends Document {
   whatsapp: string;
   instagram: string;
   paymentQrUrl: string;
-  profileScreenshotUrl: string;
   savedPlayers: ISavedPlayer[];
 }
 
@@ -46,7 +45,7 @@ const UserSchema = new Schema<IUser>({
   whatsapp: { type: String, default: '' },
   instagram: { type: String, default: '' },
   paymentQrUrl: { type: String, default: '' },
-  profileScreenshotUrl: { type: String, default: '' },
+
   savedPlayers: { type: [SavedPlayerSchema], default: [] },
 });
 

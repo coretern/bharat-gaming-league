@@ -14,7 +14,7 @@ export default function RegisterPage() {
           <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-2 text-foreground">
             Team <span className="text-neon-purple">Registration</span>
           </h1>
-          <p className="text-slate-500 text-sm font-semibold max-w-lg">Secure your slot in the upcoming tournament. Fill in your details and upload your game proof screenshots.</p>
+          <p className="text-slate-500 text-sm font-semibold max-w-lg">Secure your slot in the upcoming tournament. Fill in your details and provide your payout QR for winnings.</p>
         </header>
 
         <Suspense fallback={<div className="text-center py-24 text-foreground font-black uppercase italic animate-pulse">Initializing Portal...</div>}>

@@ -6,7 +6,6 @@ interface RejectionModalProps {
   viewReg: Reg;
   rejectionOptions: {
     qr: boolean;
-    profiles: boolean;
     playerIndices: number[];
     msg: string;
   };
@@ -68,45 +67,7 @@ const RejectionModal: React.FC<RejectionModalProps> = ({
             </div>
           </label>
 
-          {/* Player Issues Section */}
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Player Proof Issues:</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {viewReg.players.map((p, idx) => (
-                <label key={idx} className="block group cursor-pointer transition-all">
-                  <div className={`p-4 rounded-2xl border-2 transition-all ${
-                    rejectionOptions.playerIndices.includes(idx) 
-                      ? 'bg-amber-50 border-amber-500 dark:bg-amber-900/10 scale-[1.02] shadow-sm' 
-                      : 'bg-white dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 hover:border-amber-200'
-                  }`}>
-                    <input type="checkbox" 
-                      checked={rejectionOptions.playerIndices.includes(idx)} 
-                      onChange={e => {
-                        const newIndices = e.target.checked 
-                          ? [...rejectionOptions.playerIndices, idx]
-                          : rejectionOptions.playerIndices.filter(i => i !== idx);
-                        setRejectionOptions({ ...rejectionOptions, playerIndices: newIndices, profiles: newIndices.length > 0 });
-                      }} 
-                      className="hidden" />
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black transition-all ${
-                        rejectionOptions.playerIndices.includes(idx) ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                      }`}>
-                        P{idx + 1}
-                      </div>
-                      <div>
-                        <p className={`text-xs font-black uppercase italic ${rejectionOptions.playerIndices.includes(idx) ? 'text-amber-600' : 'text-foreground'}`}>{p.name}</p>
-                        <p className="text-[8px] text-slate-500 font-bold uppercase">{p.uid}</p>
-                      </div>
-                      {rejectionOptions.playerIndices.includes(idx) && (
-                        <ShieldOff className="w-4 h-4 text-amber-500 ml-auto" />
-                      )}
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
+
 
           {/* Custom Message Card */}
           <div className="space-y-3">
@@ -129,12 +90,7 @@ const RejectionModal: React.FC<RejectionModalProps> = ({
               const targets = [];
               let finalMsg = rejectionOptions.msg;
               if (rejectionOptions.qr) targets.push('qr');
-              if (rejectionOptions.playerIndices.length > 0) {
-                targets.push('profiles');
-                const names = rejectionOptions.playerIndices.map(i => viewReg.players[i].name).join(', ');
-                if (!finalMsg) finalMsg = `Screenshots invalid for: ${names}`;
-                else finalMsg = `[Issues: ${names}] ${finalMsg}`;
-              }
+              
               if (!finalMsg && rejectionOptions.qr) finalMsg = "Payment QR code is invalid or not clear.";
               
               onConfirm(finalMsg || 'Registration rejected due to data issues.', targets);

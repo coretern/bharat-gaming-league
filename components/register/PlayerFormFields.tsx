@@ -1,4 +1,4 @@
-import { Upload, ShieldCheck, CheckCircle2 } from "lucide-react";
+import React from 'react';
 
 interface PlayerFormFieldsProps {
   player: any;

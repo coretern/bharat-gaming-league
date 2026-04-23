@@ -50,7 +50,7 @@ export const useAdminLogic = () => {
   const [loadingWinners, setLoadingWinners] = useState(true);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
-  const [rejectionOptions, setRejectionOptions] = useState({ qr: false, profiles: false, playerIndices: [] as number[], msg: "" });
+  const [rejectionOptions, setRejectionOptions] = useState({ qr: false, playerIndices: [] as number[], msg: "" });
   const [viewReg, setViewReg] = useState<Reg | null>(null);
   const [editTour, setEditTour] = useState<Tournament | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ email: string, stage: number } | null>(null);

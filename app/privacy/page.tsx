@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">1. Information We Collect</h2>
-            <p>When you register on Bharat Gaming League, we collect the following information via Google OAuth: your name, email address, and profile picture. We also collect tournament registration data including team name, in-game UID, WhatsApp number, and payment screenshots.</p>
+            <p>When you register on Bharat Gaming League, we collect the following information via Google OAuth: your name, email address, and profile picture. We also collect tournament registration data including team name, in-game UID, WhatsApp number, and payout QR codes.</p>
           </section>
 
           <section>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-foreground font-black uppercase tracking-widest text-sm mb-3">3. Data Storage & Security</h2>
-            <p>Your data is stored securely on MongoDB Atlas servers. Payment screenshots are stored on Cloudinary with access-controlled URLs. We do not store your Google password or any financial credentials. We implement industry-standard security measures to protect your data.</p>
+            <p>Your data is stored securely on MongoDB Atlas servers. Payout QR codes are stored on Cloudinary with access-controlled URLs. We do not store your Google password or any financial credentials. We implement industry-standard security measures to protect your data.</p>
           </section>
 
           <section>

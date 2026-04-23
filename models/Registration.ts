@@ -15,7 +15,6 @@ const RegistrationSchema = new Schema({
   players: [{
     name: { type: String },
     uid: { type: String },
-    profileScreenshot: { type: String },
     instagram: { type: String }
   }],
   payoutDetails: {
