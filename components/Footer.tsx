@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Youtube, Mail, MessageCircle, Send } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import LiveClock from './LiveClock';
 
 const socials = [
   { icon: Instagram, href: '#', label: 'Instagram' },
@@ -93,9 +94,13 @@ export default function Footer() {
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left">
             © 2026 Bharat Gaming League · India's Premier Esports Hub
           </p>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Theme</span>
-            <ThemeToggle />
+          <div className="flex items-center gap-4">
+            <LiveClock />
+            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Theme</span>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
 
