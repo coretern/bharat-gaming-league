@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProfile, SavedPlayer } from '@/hooks/useProfile';
-import { Loader2, Save, Gamepad2, User2, Users, Plus, Trash2, Image as ImageIcon, X } from 'lucide-react';
-import { EditBtn, Section, InfoField, ProfileInput, UploadField } from './ProfileComponents';
+import { Loader2, Save, Gamepad2, User2, Users, Plus, Trash2, X } from 'lucide-react';
+import { EditBtn, Section, InfoField, ProfileInput } from './ProfileComponents';
 
 interface ProfileTabProps {
   user: { name?: string | null; email?: string | null; image?: string | null };
@@ -20,10 +20,6 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
   const [savedPlayers, setSavedPlayers] = useState<SavedPlayer[]>([]);
-  const [qrFile, setQrFile] = useState<File | null>(null);
-  const [qrPreview, setQrPreview] = useState('');
-
-  const qrRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading) {
@@ -37,8 +33,7 @@ export default function ProfileTab({ user }: ProfileTabProps) {
   }, [loading, profile]);
 
   const handleSave = async () => {
-    await saveProfile({ name: displayName, teamName, gameUsername, gameUID, whatsapp, instagram }, qrFile, undefined, savedPlayers);
-    setQrFile(null); setQrPreview('');
+    await saveProfile({ name: displayName, teamName, gameUsername, gameUID, whatsapp, instagram }, undefined, undefined, savedPlayers);
     setEditing(false);
   };
 
@@ -49,7 +44,6 @@ export default function ProfileTab({ user }: ProfileTabProps) {
     setGameUID(profile.gameUID);
     setWhatsapp(profile.whatsapp); setInstagram(profile.instagram);
     setSavedPlayers(profile.savedPlayers?.length ? profile.savedPlayers : []);
-    setQrFile(null); setQrPreview('');
     setEditing(false);
   };
 
@@ -61,7 +55,6 @@ export default function ProfileTab({ user }: ProfileTabProps) {
 
   if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-google-blue" /></div>;
 
-  const qrDisplay = qrPreview || profile.paymentQrUrl;
   const isEmpty = !profile.teamName && !profile.gameUsername && !profile.gameUID && !profile.whatsapp;
   const isEditable = editing || isEmpty;
   const pencil = !isEditable ? <EditBtn onClick={() => setEditing(true)} /> : undefined;
@@ -85,35 +78,26 @@ export default function ProfileTab({ user }: ProfileTabProps) {
         )}
       </Section>
 
-      {/* Gaming + Uploads row */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        <Section icon={<Gamepad2 className="w-4 h-4" />} title="Gaming Profile" action={pencil}>
-          {isEditable ? (
-            <div className="space-y-4">
-              <ProfileInput label="Team Name" placeholder="e.g. Team Phoenix" value={teamName} onChange={setTeamName} />
-              <ProfileInput label="Game Username" placeholder="Game profile name" value={gameUsername} onChange={setGameUsername} />
-              <ProfileInput label="Game UID" placeholder="Your in-game UID" value={gameUID} onChange={setGameUID} />
-              <ProfileInput label="WhatsApp" placeholder="+91 9876543210" value={whatsapp} onChange={setWhatsapp} />
-              <ProfileInput label="Instagram" placeholder="https://instagram.com/..." value={instagram} onChange={setInstagram} />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <InfoField label="Team Name" value={teamName || '—'} />
-              <InfoField label="Game Username" value={gameUsername || '—'} />
-              <InfoField label="Game UID" value={gameUID || '—'} />
-              <InfoField label="WhatsApp" value={whatsapp || '—'} />
-              <InfoField label="Instagram" value={instagram || '—'} link />
-            </div>
-          )}
-        </Section>
-
-        <Section icon={<ImageIcon className="w-4 h-4" />} title="Payout QR" action={pencil}>
+      {/* Gaming Profile */}
+      <Section icon={<Gamepad2 className="w-4 h-4" />} title="Gaming Profile" action={pencil}>
+        {isEditable ? (
           <div className="space-y-4">
-            <UploadField label="Payment QR" hint="PhonePe/GPay QR for prize payouts" preview={qrDisplay} inputRef={qrRef} editable={isEditable}
-              onFile={(f) => { setQrFile(f); setQrPreview(URL.createObjectURL(f)); }} />
+            <ProfileInput label="Team Name" placeholder="e.g. Team Phoenix" value={teamName} onChange={setTeamName} />
+            <ProfileInput label="Game Username" placeholder="Game profile name" value={gameUsername} onChange={setGameUsername} />
+            <ProfileInput label="Game UID" placeholder="Your in-game UID" value={gameUID} onChange={setGameUID} />
+            <ProfileInput label="WhatsApp" placeholder="+91 9876543210" value={whatsapp} onChange={setWhatsapp} />
+            <ProfileInput label="Instagram" placeholder="https://instagram.com/..." value={instagram} onChange={setInstagram} />
           </div>
-        </Section>
-      </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+            <InfoField label="Team Name" value={teamName || '—'} />
+            <InfoField label="Game Username" value={gameUsername || '—'} />
+            <InfoField label="Game UID" value={gameUID || '—'} />
+            <InfoField label="WhatsApp" value={whatsapp || '—'} />
+            <InfoField label="Instagram" value={instagram || '—'} link />
+          </div>
+        )}
+      </Section>
 
       {/* Team Members */}
       <Section icon={<Users className="w-4 h-4" />} title="Saved Team Members" action={pencil}>

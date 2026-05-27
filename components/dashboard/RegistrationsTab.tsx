@@ -32,7 +32,7 @@ export default function RegistrationsTab({ myRegs, loadingRegs }: RegistrationsT
           <Link href="/tournaments" className="inline-block mt-4 btn-neon-purple text-xs">Browse Tournaments</Link>
         </div>
       ) : (
-        <div className="p-2 sm:p-3 space-y-1">
+        <div className="p-1 sm:p-3 space-y-1">
           {myRegs.map(reg => (
             <RegCard key={reg._id} reg={reg} />
           ))}
