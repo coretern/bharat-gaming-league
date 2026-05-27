@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
 import { addLog } from '@/lib/logger';
+import { sendTournamentScheduleEmail } from '@/lib/mail';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
@@ -30,6 +31,17 @@ export async function PATCH(req: NextRequest) {
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: 'No teams found for this group' }, { status: 404 });
     }
+
+    // Fetch updated registrations to dispatch emails
+    const updatedRegistrations = await Registration.find(query);
+    
+    Promise.all(
+      updatedRegistrations.map(reg => 
+        sendTournamentScheduleEmail(reg).catch(err => 
+          console.error(`Failed to send bulk room details email to ${reg.userEmail}:`, err)
+        )
+      )
+    ).catch(err => console.error('Bulk room details email sending failed:', err));
 
     await addLog({
       action: 'Room details shared', category: 'schedule',

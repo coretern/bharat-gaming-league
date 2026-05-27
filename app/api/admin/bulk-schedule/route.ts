@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
 import { addLog } from '@/lib/logger';
+import { sendTournamentScheduleEmail } from '@/lib/mail';
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -64,9 +65,18 @@ export async function PATCH(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // Fetch the updated registrations to confirm and show names
-    const updatedTeams = await Registration.find(query, 'teamName').lean();
-    const teamNames = updatedTeams.map(t => t.teamName);
+    // Fetch the updated registrations to confirm, show names, and send emails
+    const updatedRegistrations = await Registration.find(query);
+    const teamNames = updatedRegistrations.map(t => t.teamName);
+
+    // Send emails in the background to avoid blocking the API response
+    Promise.all(
+      updatedRegistrations.map(reg =>
+        sendTournamentScheduleEmail(reg).catch(err =>
+          console.error(`Failed to send bulk schedule email to ${reg.userEmail}:`, err)
+        )
+      )
+    ).catch(err => console.error('Bulk schedule email sending failed:', err));
     
     await addLog({
       action: 'Scheduled group', category: 'schedule',

@@ -45,10 +45,12 @@ export async function PATCH(
     }
 
     const hasScheduleChanged = 
-      (body.matchDate && body.matchDate !== previous.matchDate) ||
-      (body.matchTime && body.matchTime !== previous.matchTime) ||
-      (body.roomId && body.roomId !== previous.roomId) ||
-      (body.roomPassword && body.roomPassword !== previous.roomPassword);
+      (body.matchDate !== undefined && body.matchDate !== previous.matchDate) ||
+      (body.matchTime !== undefined && body.matchTime !== previous.matchTime) ||
+      (body.roomId !== undefined && body.roomId !== previous.roomId) ||
+      (body.roomPassword !== undefined && body.roomPassword !== previous.roomPassword) ||
+      (body.groupNumber !== undefined && body.groupNumber !== previous.groupNumber) ||
+      (body.slotNumber !== undefined && body.slotNumber !== previous.slotNumber);
 
     if (hasScheduleChanged) {
       await sendTournamentScheduleEmail(reg).catch(err => {
