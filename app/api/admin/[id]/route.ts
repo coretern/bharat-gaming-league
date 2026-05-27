@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
 import { addLog } from '@/lib/logger';
-import { sendTournamentApprovalEmail, sendTournamentScheduleEmail } from '@/lib/mail';
+import { sendTournamentApprovalEmail, sendTournamentScheduleEmail, sendTournamentRejectionEmail } from '@/lib/mail';
 
 export async function PATCH(
   req: NextRequest,
@@ -41,6 +41,12 @@ export async function PATCH(
     if (body.status === 'Approved' && previous.status !== 'Approved') {
       await sendTournamentApprovalEmail(reg).catch(err => {
         console.error('Failed to send approval email:', err);
+      });
+    }
+
+    if (body.status === 'Rejected' && previous.status !== 'Rejected') {
+      await sendTournamentRejectionEmail(reg).catch(err => {
+        console.error('Failed to send rejection email:', err);
       });
     }
 

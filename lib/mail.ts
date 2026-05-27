@@ -342,3 +342,71 @@ export async function sendTournamentScheduleEmail(reg: any) {
     console.error('sendTournamentScheduleEmail error:', err);
   }
 }
+
+export async function sendTournamentRejectionEmail(reg: any) {
+  try {
+    const reason = reg.rejectionReason || 'No specific reason was provided by the admin.';
+    const dashboardUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/dashboard?tab=My%20Registrations`;
+
+    const content = `
+      <h3 style="color: #c62828; font-size: 15px; font-weight: 800; margin-top: 0; margin-bottom: 8px; text-align: center;">
+        ❌ Enrollment Rejected
+      </h3>
+      <p style="text-align: center; color: #64748b; font-size: 11px; margin-bottom: 20px;">
+        Unfortunately, your registration has been reviewed and rejected by the BGL admin team.
+      </p>
+      
+      <div style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px; margin-bottom: 16px; box-sizing: border-box;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 5px 0; color: #94a3b8; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; width: 35%;">Tournament</td>
+            <td style="padding: 5px 0; color: #0f172a; font-size: 11.5px; font-weight: 700; text-align: right;">${reg.tournamentName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; color: #94a3b8; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Format</td>
+            <td style="padding: 5px 0; color: #1a73e8; font-size: 11.5px; font-weight: 700; text-align: right; text-transform: uppercase;">${reg.matchType}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; color: #94a3b8; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Team Name</td>
+            <td style="padding: 5px 0; color: #0f172a; font-size: 11.5px; font-weight: 700; text-align: right;">${reg.teamName}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #c62828; border-radius: 12px; padding: 14px; margin-bottom: 20px; box-sizing: border-box;">
+        <p style="color: #c62828; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 6px 0;">
+          ⚠ Reason for Rejection
+        </p>
+        <p style="color: #991b1b; font-size: 12px; font-weight: 600; margin: 0; line-height: 1.55; font-style: italic;">
+          "${reason}"
+        </p>
+      </div>
+
+      <p style="margin-bottom: 6px; text-align: center; color: #475569; font-size: 12px; line-height: 1.6;">
+        Don't worry — you can fix the issue and resubmit your registration for admin review. Click below to go to your dashboard, correct the highlighted problems, and send it back.
+      </p>
+      <p style="margin-bottom: 20px; text-align: center; color: #94a3b8; font-size: 10px; font-weight: 600;">
+        Once resubmitted, admins will re-review and approve your corrected entry.
+      </p>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <a href="${dashboardUrl}" target="_blank" style="background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%); color: #ffffff; text-decoration: none; padding: 11px 24px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; box-shadow: 0 4px 6px -1px rgba(198, 40, 40, 0.2);">
+          🔧 Fix & Resubmit Registration
+        </a>
+      </div>
+
+      <p style="color: #94a3b8; font-size: 10px; text-align: center; margin-bottom: 0; line-height: 1.5;">
+        If you believe this rejection was made in error, please contact our support team via WhatsApp or Telegram.
+      </p>
+    `;
+
+    await transporter.sendMail({
+      from: `"BGL Esports" <${process.env.SMTP_USER}>`,
+      to: reg.userEmail,
+      subject: `❌ Registration Rejected — ${reg.tournamentName}`,
+      html: getEmailWrapper(content),
+    });
+  } catch (err) {
+    console.error('sendTournamentRejectionEmail error:', err);
+  }
+}
