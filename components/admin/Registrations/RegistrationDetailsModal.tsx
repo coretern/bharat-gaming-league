@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Trash2, ExternalLink, Eye, ShieldCheck, ShieldAlert, RefreshCw } from 'lucide-react';
 import { Reg } from '../../types/admin';
 import WinnerSection from './WinnerSection';
+import RejectionHistory from './RejectionHistory';
 import { to12Hour } from '@/lib/time-utils';
 
 interface RegistrationDetailsModalProps {
@@ -133,13 +134,8 @@ const RegistrationDetailsModal: React.FC<RegistrationDetailsModalProps> = ({
           </div>
         </div>
 
-        {/* Rejection Reason */}
-        {viewReg.status === 'Rejected' && viewReg.rejectionReason && (
-          <div className="p-4 rounded-xl bg-red-50/50 border border-red-100 dark:bg-red-500/5 dark:border-red-500/10 mb-6">
-            <h4 className="text-[9px] font-bold uppercase text-google-red mb-1 tracking-widest">Rejection Reason</h4>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">"{viewReg.rejectionReason}"</p>
-          </div>
-        )}
+        {/* Rejection Info & History */}
+        <RejectionHistory viewReg={viewReg} />
 
         {/* Winner Section — only visible for Approved registrations that have been scheduled */}
         {viewReg.status === 'Approved' && viewReg.matchDate && (

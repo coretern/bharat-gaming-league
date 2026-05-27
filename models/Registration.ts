@@ -28,6 +28,11 @@ const RegistrationSchema = new Schema({
    rejectionTargets: [String],
    rejectionIndices: [Number],
    previousRejectionReason: { type: String },
+   rejectionHistory: [{
+     reason: { type: String },
+     targets: [String],
+     date: { type: Date, default: Date.now },
+   }],
   isResubmitted: { type: Boolean, default: false },
   groupNumber: { type: Number },
   slotNumber: { type: Number },

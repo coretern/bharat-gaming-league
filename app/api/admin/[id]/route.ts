@@ -28,9 +28,21 @@ export async function PATCH(
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
     }
 
+    // Build the update operation — push rejection history when rejecting
+    const updateOp: any = { $set: body };
+    if (body.status === 'Rejected' && body.rejectionReason) {
+      updateOp.$push = {
+        rejectionHistory: {
+          reason: body.rejectionReason,
+          targets: body.rejectionTargets || [],
+          date: new Date(),
+        },
+      };
+    }
+
     const reg = await Registration.findByIdAndUpdate(
       id, 
-      { $set: body }, 
+      updateOp, 
       { new: true, runValidators: true }
     );
     if (!reg) {
@@ -50,15 +62,12 @@ export async function PATCH(
       });
     }
 
-    const hasScheduleChanged = 
-      (body.matchDate !== undefined && body.matchDate !== previous.matchDate) ||
-      (body.matchTime !== undefined && body.matchTime !== previous.matchTime) ||
+    // Only send lobby email when Room ID or Password is assigned/changed
+    const hasRoomChanged = 
       (body.roomId !== undefined && body.roomId !== previous.roomId) ||
-      (body.roomPassword !== undefined && body.roomPassword !== previous.roomPassword) ||
-      (body.groupNumber !== undefined && body.groupNumber !== previous.groupNumber) ||
-      (body.slotNumber !== undefined && body.slotNumber !== previous.slotNumber);
+      (body.roomPassword !== undefined && body.roomPassword !== previous.roomPassword);
 
-    if (hasScheduleChanged) {
+    if (hasRoomChanged) {
       await sendTournamentScheduleEmail(reg).catch(err => {
         console.error('Failed to send schedule email:', err);
       });

@@ -26,6 +26,7 @@ export interface Reg {
   rejectionTargets?: string[];
   rejectionIndices?: number[];
   previousRejectionReason?: string;
+  rejectionHistory?: { reason: string; targets?: string[]; date: string }[];
   isResubmitted?: boolean;
   paymentVerified: boolean;
   paymentStatus?: 'Pending' | 'Paid' | 'Failed';
