@@ -4,7 +4,7 @@ import { Trophy, Users, Zap, Play } from 'lucide-react';
 import Link from 'next/link';
 
 const stats = [
-  { label: 'Players Joined', value: '50K+', icon: Users, color: 'text-neon-cyan' },
+  { label: 'Players Joined', value: '500M+', icon: Users, color: 'text-neon-cyan' },
   { label: 'Prize Pool', value: '₹25L+', icon: Trophy, color: 'text-neon-purple' },
   { label: 'Matches Today', value: '120+', icon: Zap, color: 'text-neon-red' },
 ];

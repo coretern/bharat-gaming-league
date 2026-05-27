@@ -48,7 +48,7 @@ export default function HeroSection() {
             </div>
 
             {/* Main Title */}
-            <h1 className="text-[2.5rem] md:text-[3.5rem] lg:text-[4.2rem] font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-[1.08]">
+            <h1 className="text-[2.1rem] xs:text-[2.4rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4.2rem] font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-[1.08]">
               Dominate The Arena
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 dark:from-blue-400 dark:via-blue-400 dark:to-cyan-400">
@@ -83,9 +83,8 @@ export default function HeroSection() {
             {/* Floating stat pills */}
             <div className="mt-10 flex flex-wrap items-center gap-3 w-full justify-center lg:justify-start">
               {[
-                { icon: ShieldCheck, label: 'Anti-Cheat Protected', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
                 { icon: Zap, label: 'Instant UPI Payouts', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
-                { icon: Users, label: '50K+ Players', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+                { icon: Users, label: '500M+ Players', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -125,7 +124,7 @@ export default function HeroSection() {
                     <p className="text-sm font-bold text-white">Active Tournaments Running</p>
                   </div>
                   <div className="px-3 py-1.5 rounded-lg bg-white/15 border border-white/10 text-white font-extrabold text-[11px] tracking-wide whitespace-nowrap">
-                    50K+ PLAYERS
+                    500M+ PLAYERS
                   </div>
                 </div>
               </div>

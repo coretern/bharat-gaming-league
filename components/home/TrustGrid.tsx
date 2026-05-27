@@ -20,7 +20,7 @@ const features = [
   },
   {
     icon: Heart,
-    title: '50K+ Active Players',
+    title: '500M+ Active Players',
     desc: 'Join a massive, passionate gaming community competing daily for glory, rankings, and real cash rewards.',
     color: 'text-rose-500',
     iconBg: 'bg-gradient-to-br from-rose-400 to-red-500',

@@ -47,7 +47,7 @@ const faqs = [
 
 export default function HelpContent() {
   return (
-    <div className="container mx-auto px-6 max-w-3xl relative z-10">
+    <div className="container mx-auto px-4 sm:px-6 max-w-3xl relative z-10">
       
       {/* Header */}
       <div className="mb-12">
@@ -68,7 +68,7 @@ export default function HelpContent() {
         {faqs.map((faq, i) => (
           <div 
             key={i} 
-            className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
           >
             <h3 className="text-slate-855 dark:text-slate-200 font-bold text-sm md:text-base mb-2">
               Q: {faq.q}
@@ -81,7 +81,7 @@ export default function HelpContent() {
       </div>
 
       {/* Support Card */}
-      <div className="mt-16 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-2xl text-center shadow-sm">
+      <div className="mt-16 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 sm:p-8 rounded-2xl text-center shadow-sm">
         <h2 className="text-slate-900 dark:text-white font-extrabold tracking-tight text-lg mb-2">Still need help?</h2>
         <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm mb-6 font-medium">Our support team is available Mon–Sat, 10am–8pm.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

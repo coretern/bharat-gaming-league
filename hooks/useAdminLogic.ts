@@ -54,7 +54,6 @@ export const useAdminLogic = () => {
   const [viewReg, setViewReg] = useState<Reg | null>(null);
   const [editTour, setEditTour] = useState<Tournament | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ email: string, stage: number } | null>(null);
-  const [confirmBan, setConfirmBan] = useState<{ email: string, stage: number } | null>(null);
   const [showCreateTour, setShowCreateTour] = useState(false);
   const [newTour, setNewTour] = useState({ title: '', game: 'BGMI', prizePool: '₹50,000', date: '', time: '08:00 PM', slots: '0/100', image: '/bgmi-thumb.png', status: 'Open', allowedMatchTypes: ['Solo', 'Duo', 'Squad'] });
   const [showAddWinner, setShowAddWinner] = useState(false);
@@ -136,7 +135,6 @@ export const useAdminLogic = () => {
     session, status, activeTab, setActiveTab, registrations, regFilter, setRegFilter, siteUsers, liveTournaments, winners,
     loading, loadingUsers, loadingTours, loadingWinners, previewImg, setPreviewImg, rejectingId, setRejectingId,
     rejectionOptions, setRejectionOptions, viewReg, setViewReg, editTour, setEditTour, updating, confirmDelete, setConfirmDelete,
-    confirmBan, setConfirmBan,
     showCreateTour, setShowCreateTour, newTour, setNewTour, showAddWinner, setShowAddWinner, newWinner, setNewWinner,
     regSearch, setRegSearch, regTourFilter, setRegTourFilter, regGameFilter, setRegGameFilter, 
     regGroupFilter, setRegGroupFilter, regMatchTypeFilter, setRegMatchTypeFilter,
@@ -145,29 +143,7 @@ export const useAdminLogic = () => {
     fetchUsers, fetchRegistrations, fetchTournaments, loadWinnersData,
     handleUpdateStatus: (id: string, update: any) => rActions.handleUpdateStatus(id, update, setViewReg, setRejectingId),
     handleDeleteRegistration: (id: string) => rActions.handleDeleteRegistration(id, setViewReg),
-    handleToggleBan: (email: string, currentStatus: boolean) => {
-      // If unbanning, just do it
-      if (currentStatus) {
-        uActions.handleToggleBan(email, currentStatus);
-        return;
-      }
-      
-      // If first attempt to ban
-      if (!confirmBan || confirmBan.email !== email) {
-        setConfirmBan({ email, stage: 1 });
-        return;
-      }
-
-      // If second attempt to ban
-      if (confirmBan.stage === 1) {
-        setConfirmBan({ email, stage: 2 });
-        return;
-      }
-
-      // Third attempt (Final confirmation)
-      uActions.handleToggleBan(email, currentStatus);
-      setConfirmBan(null);
-    },
+    handleToggleBan: (email: string, currentStatus: boolean) => uActions.handleToggleBan(email, currentStatus),
     handleDeleteUser: (email: string) => uActions.handleDeleteUser(email, setConfirmDelete),
     handleSaveTournament: (e: any) => { e.preventDefault(); tActions.handleSaveTournament(editTour, setEditTour); },
     handleCreateTournament: (e: any) => { e.preventDefault(); tActions.handleCreateTournament(newTour, setShowCreateTour); },

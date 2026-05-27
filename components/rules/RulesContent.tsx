@@ -2,7 +2,7 @@
 
 export default function RulesContent() {
   return (
-    <div className="container mx-auto px-6 max-w-3xl relative z-10">
+    <div className="container mx-auto px-4 sm:px-6 max-w-3xl relative z-10">
       <header className="mb-12">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
@@ -16,7 +16,7 @@ export default function RulesContent() {
       </header>
 
       <div className="space-y-10">
-        <section className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+        <section className="bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-slate-900 dark:text-white font-extrabold text-base mb-4 flex items-center gap-2">
              <div className="w-1.5 h-6 bg-google-blue rounded-full" />
              1. Team Integrity
@@ -37,7 +37,7 @@ export default function RulesContent() {
           </ul>
         </section>
 
-        <section className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+        <section className="bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-slate-900 dark:text-white font-extrabold text-base mb-4 flex items-center gap-2">
              <div className="w-1.5 h-6 bg-google-green rounded-full" />
              2. Match Protocols
@@ -58,7 +58,7 @@ export default function RulesContent() {
           </ul>
         </section>
 
-        <section className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+        <section className="bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-google-red font-extrabold text-base mb-4 flex items-center gap-2 uppercase tracking-wider">
              ⚠️ Prohibited Actions
           </h2>
@@ -71,7 +71,7 @@ export default function RulesContent() {
           </ul>
         </section>
 
-        <section className="p-8 border border-transparent">
+        <section className="p-4 sm:p-8 border border-transparent">
           <h2 className="text-slate-900 dark:text-white font-extrabold text-base mb-4">Official Verification</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
             Bharat Gaming League administrators reserve the final right to all match decisions. Appeals can be filed within 24 hours of match completion via our WhatsApp support.

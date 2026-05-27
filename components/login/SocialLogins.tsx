@@ -27,7 +27,7 @@ export default function SocialLogins({ callbackUrl, email }: SocialLoginsProps) 
   }, []);
 
   return (
-    <div className="space-y-3 w-full">
+    <div className="space-y-2.5 w-full">
       {/* Target container for Google Identity Services GSI button */}
       <div 
         id="google-signin-btn" 
@@ -38,14 +38,14 @@ export default function SocialLogins({ callbackUrl, email }: SocialLoginsProps) 
       {!gsiLoaded && (
         <button
           onClick={() => signIn('google', { callbackUrl }, email ? { login_hint: email } : undefined)}
-          className="group w-full flex items-center justify-between px-5 h-11 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-sm text-left"
+          className="group w-full flex items-center justify-between px-4 h-10 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-sm text-left"
         >
-          <div className="flex items-center gap-3">
-             <div className="w-7 h-7 rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+             <div className="w-6 h-6 rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
                <img 
                  src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" 
                  alt="Google" 
-                 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" 
+                 className="w-3 h-3 group-hover:scale-110 transition-transform" 
                />
              </div>
              <div className="flex flex-col">

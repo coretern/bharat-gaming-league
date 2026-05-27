@@ -14,13 +14,13 @@ export default function WinnersPage() {
   const { sortedDates, groupedWinners, pastTournaments, loading } = useWinnersData();
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-950 bg-dot-grid relative pt-32 pb-12">
+    <main className="min-h-screen bg-white dark:bg-slate-950 bg-dot-grid relative pt-32 pb-12 overflow-x-hidden">
       <Navbar />
 
       <div className="absolute top-20 right-1/4 w-[350px] h-[350px] rounded-full bg-blue-500/5 dark:bg-blue-500/5 blur-3xl pointer-events-none" />
 
       <ErrorBoundary fallbackTitle="Winners Page Error">
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
           
           {/* Header */}
           <div className="text-center mb-10">

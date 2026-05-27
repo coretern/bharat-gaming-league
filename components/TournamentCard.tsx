@@ -79,21 +79,21 @@ export default function TournamentCard({
         </div>
       </div>
 
-      <div className="p-6 flex-1 flex flex-col">
+      <div className="p-4 sm:p-6 flex-1 flex flex-col">
         <h3 className="text-base font-bold text-slate-900 dark:text-white mb-6 line-clamp-1 group-hover:text-google-blue transition-colors">
           {title}
         </h3>
 
         {/* Financial Breakdown Section */}
         <div className="grid grid-cols-2 gap-px bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 mb-8">
-          <div className="bg-white dark:bg-slate-900 p-4">
+          <div className="bg-white dark:bg-slate-900 p-3 sm:p-4">
              <div className="flex items-center gap-1.5 mb-1">
                 <Trophy className="w-3 h-3 text-google-yellow" />
                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Grand Prize</span>
              </div>
              <p className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{prizePool}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 p-4 border-l border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 p-3 sm:p-4 border-l border-slate-100 dark:border-slate-800">
              <div className="flex items-center gap-1.5 mb-1">
                 <DollarSign className="w-3 h-3 text-google-green" />
                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Entry Fee</span>
@@ -103,7 +103,7 @@ export default function TournamentCard({
         </div>
 
         {/* Status & Details Grid */}
-        <div className="grid grid-cols-2 gap-4 items-start mb-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 items-start mb-6">
           <div className="min-w-0">
              <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 flex items-center gap-1.5 whitespace-nowrap">
                 <Users className="w-3 h-3 shrink-0" /> Availability

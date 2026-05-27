@@ -58,13 +58,17 @@ export function useGoogleGsi({ callbackUrl, mode, setSuccessMessage, loginHintEm
 
         (window as any).google.accounts.id.initialize(initOpts);
 
-        // Render the official Google personalized button
+        // Render the official Google personalized button with dynamic width
         const btnContainer = document.getElementById('google-signin-btn');
         if (btnContainer && (mode === 'login' || mode === 'signup')) {
+          // Calculate width dynamically based on container for full responsiveness
+          const containerWidth = btnContainer.parentElement?.offsetWidth || btnContainer.offsetWidth;
+          const buttonWidth = Math.min(Math.max(containerWidth - 4, 200), 400);
+
           (window as any).google.accounts.id.renderButton(btnContainer, {
             theme: 'filled_blue',
             size: 'large',
-            width: 280, // Responsive width to fit smaller screens (like 320px viewports) without overflow
+            width: buttonWidth,
             text: 'continue_with',
             shape: 'pill',
           });

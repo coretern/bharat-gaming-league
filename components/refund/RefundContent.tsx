@@ -4,7 +4,7 @@ import { DollarSign } from "lucide-react";
 
 export default function RefundContent() {
   return (
-    <div className="container mx-auto px-6 max-w-3xl relative z-10">
+    <div className="container mx-auto px-4 sm:px-6 max-w-3xl relative z-10">
       
       {/* Header */}
       <div className="mb-12">
@@ -73,7 +73,7 @@ export default function RefundContent() {
         ].map((sec, idx) => (
           <section 
             key={idx}
-            className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
           >
             <h2 className="text-slate-900 dark:text-white font-extrabold text-base mb-4 flex items-center gap-2">
                <div className="w-1.5 h-6 bg-google-blue rounded-full" />
