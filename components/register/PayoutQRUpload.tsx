@@ -15,7 +15,7 @@ export default function PayoutQRUpload({ qrFile, setQrFile, existingQrUrl, isEdi
   const showSavedBadge = hasSavedQr && !qrFile && existingQrUrl === savedQrUrl;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6">
       <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Payout Details (For Prizes)</h3>
       
       <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-600 uppercase tracking-widest text-center leading-relaxed">

@@ -79,7 +79,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 bg-white dark:bg-slate-950 bg-dot-grid relative">
+    <main className="min-h-screen pt-32 pb-24 bg-white dark:bg-slate-950 bg-dot-grid relative overflow-x-hidden">
       <Navbar />
 
       <div className="absolute top-20 right-1/4 w-[350px] h-[350px] rounded-full bg-blue-500/5 dark:bg-blue-500/5 blur-3xl pointer-events-none" />

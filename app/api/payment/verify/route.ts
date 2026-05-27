@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
+import { sendTournamentConfirmationEmail } from '@/lib/mail';
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,10 +30,18 @@ export async function GET(req: NextRequest) {
 
     if (cfData.order_status === 'PAID') {
       await connectDB();
-      await Registration.findOneAndUpdate(
+      const updatedReg = await Registration.findOneAndUpdate(
         { orderId },
-        { paymentStatus: 'Paid', paymentVerified: true }
+        { paymentStatus: 'Paid', paymentVerified: true },
+        { new: true }
       );
+
+      if (updatedReg) {
+        await sendTournamentConfirmationEmail(updatedReg).catch(err => {
+          console.error('Email confirmation error for paid tournament:', err);
+        });
+      }
+
       return NextResponse.json({ success: true, status: 'PAID' });
     }
 

@@ -11,7 +11,7 @@ interface PlayerFormFieldsProps {
 
 export default function PlayerFormFields({ player, idx, isEdit, rejectionTargets, rejectionIndices, onUpdate }: PlayerFormFieldsProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-sm space-y-6">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">
           {idx === 0 ? '3. Team Leader' : `Player ${idx + 1}`}

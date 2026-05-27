@@ -2,24 +2,42 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
+import crypto from 'crypto';
 
-/** GET /api/receipt?id=<registrationId> — Generate HTML payment receipt */
+/** GET /api/receipt?id=<registrationId>&token=<secureToken> — Generate HTML payment receipt */
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    if (!token?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
+    const tokenParam = searchParams.get('token');
+
     if (!id) return NextResponse.json({ error: 'Missing registration ID' }, { status: 400 });
 
     await connectDB();
     const reg = await Registration.findById(id).lean() as any;
     if (!reg) return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
 
-    // Verify ownership
-    if (reg.userEmail !== token.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    let isAuthorized = false;
+
+    // 1. Secure signed token bypass check (for downloading from email)
+    if (tokenParam) {
+      const expectedToken = crypto
+        .createHmac('sha256', process.env.NEXTAUTH_SECRET || 'bgl-esports-secret-2026')
+        .update(id)
+        .digest('hex');
+      if (tokenParam === expectedToken) {
+        isAuthorized = true;
+      }
+    }
+
+    // 2. Fall back to standard session ownership check
+    if (!isAuthorized) {
+      const sessionToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+      if (!sessionToken?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+      if (reg.userEmail !== sessionToken.email) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
     }
 
     const date = new Date(reg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });

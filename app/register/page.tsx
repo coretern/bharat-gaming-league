@@ -7,7 +7,7 @@ import RegistrationForm from '@/components/register/RegistrationForm';
 
 export default function RegisterPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 bg-white dark:bg-slate-950 bg-dot-grid relative">
+    <main className="min-h-screen pt-32 pb-24 bg-white dark:bg-slate-950 bg-dot-grid relative overflow-x-hidden">
       <Navbar />
 
       {/* Background glow orb */}

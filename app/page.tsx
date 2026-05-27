@@ -14,7 +14,7 @@ export default function Home() {
   const { tournaments: liveTournaments, loading } = useTournaments(3);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-950 font-sans">
+    <main className="min-h-screen bg-white dark:bg-slate-950 font-sans overflow-x-hidden">
       <Navbar />
       <HeroSection />
       <WinnersTicker />

@@ -33,6 +33,7 @@ const RegistrationSchema = new Schema({
   slotNumber: { type: Number },
   resultStatus: { type: String, enum: ['Playing', 'Won', 'Lost'], default: 'Playing' },
   prizeAmount: { type: Number, default: 0 },
+  entryFee: { type: Number, default: 0 },
   winnerTeamName: { type: String },
   matchDate: { type: String },
   matchTime: { type: String },

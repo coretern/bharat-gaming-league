@@ -7,7 +7,7 @@ interface FormatSelectionProps {
 
 export default function FormatSelection({ allowedMatchTypes, matchType, isEdit, onMatchTypeChange }: FormatSelectionProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-sm">
       <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-slate-400">1. Tournament Format</h3>
       <div className="grid grid-cols-3 gap-3">
         {(allowedMatchTypes || ['Solo', 'Duo', 'Squad']).map((type: any) => (

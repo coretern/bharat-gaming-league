@@ -49,7 +49,7 @@ export default function AdminPanel() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-black pb-12 font-sans text-slate-900 dark:text-white">
+    <main className="min-h-screen bg-slate-50 dark:bg-black pb-12 font-sans text-slate-900 dark:text-white overflow-x-hidden">
       <Navbar />
 
       <div className="container mx-auto px-4 sm:px-6 pt-24">

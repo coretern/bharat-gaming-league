@@ -7,6 +7,7 @@ import { Tournament } from '@/models/Tournament';
 import { v2 as cloudinary } from 'cloudinary';
 import { addLog } from '@/lib/logger';
 import { checkRateLimit, getRequestIP } from '@/lib/rate-limit';
+import { sendTournamentConfirmationEmail } from '@/lib/mail';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -163,8 +164,15 @@ export async function POST(req: NextRequest) {
       groupNumber,
       slotNumber,
       paymentStatus: orderAmount > 0 ? 'Pending' : 'Paid',
-      paymentVerified: orderAmount === 0
+      paymentVerified: orderAmount === 0,
+      entryFee: orderAmount
     });
+
+    if (orderAmount === 0) {
+      await sendTournamentConfirmationEmail(registration).catch(err => {
+        console.error('Email confirmation error for free tournament:', err);
+      });
+    }
 
     await addLog({
       action: 'New registration', category: 'registration',

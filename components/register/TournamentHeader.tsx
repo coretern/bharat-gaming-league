@@ -8,7 +8,7 @@ interface TournamentHeaderProps {
 export default function TournamentHeader({ tournament, entryFee }: TournamentHeaderProps) {
   if (!tournament) return null;
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] relative overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-8 shadow-[0_1px_2px_0_rgba(60,64,67,.30)] relative overflow-hidden">
        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 text-google-blue mb-3">
