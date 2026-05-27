@@ -24,7 +24,7 @@ const supportLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+    <footer className="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800/80">
       <div className="container mx-auto px-5 sm:px-6">
 
         {/* Main grid */}
@@ -35,19 +35,19 @@ export default function Footer() {
             <Link href="/" className="inline-flex items-center gap-2 mb-3">
               <Image src="/logo.png" alt="BGL" width={28} height={28} className="rounded-lg" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-none">
-                  BHARAT<span className="text-google-blue">GAMING</span>
+                <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none uppercase">
+                  Bharat<span className="text-google-blue">Gaming</span>
                 </span>
-                <span className="text-[8px] font-bold tracking-[0.25em] text-slate-400 uppercase">League</span>
+                <span className="text-[7px] font-black tracking-[0.3em] text-slate-400 dark:text-slate-500 uppercase mt-0.5">League</span>
               </div>
             </Link>
-            <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-4 max-w-xs">
+            <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-4 max-w-xs font-medium">
               India's premier competitive gaming platform. Safe, transparent esports for everyone.
             </p>
             <div className="flex items-center gap-2">
               {socials.map(({ icon: Icon, href, label }) => (
                 <a key={label} href={href} aria-label={label}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-slate-900 text-slate-400 hover:text-google-blue hover:border-google-blue/30 transition-all border border-slate-200 dark:border-slate-800">
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-slate-900 text-slate-450 hover:text-google-blue hover:border-google-blue/30 transition-all border border-slate-100 dark:border-slate-800/60 shadow-sm">
                   <Icon className="w-3.5 h-3.5" />
                 </a>
               ))}
@@ -90,7 +90,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="py-4 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left">
             © 2026 Bharat Gaming League · India's Premier Esports Hub
           </p>
@@ -112,7 +112,7 @@ export default function Footer() {
 function ContactLink({ href, icon: Icon, color, label }: { href: string; icon: any; color: string; label: string }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+      className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 hover:border-slate-200 dark:hover:border-slate-700 transition-colors shadow-sm">
       <div className={`w-7 h-7 flex items-center justify-center rounded-md ${color}`}>
         <Icon className="w-3.5 h-3.5" />
       </div>
@@ -120,3 +120,4 @@ function ContactLink({ href, icon: Icon, color, label }: { href: string; icon: a
     </a>
   );
 }
+

@@ -43,28 +43,33 @@ export async function GET() {
 
     // Dynamic Slot Calculation
     const tournamentsWithSlots = await Promise.all(list.map(async (t: any) => {
-      const currentCount = await Registration.countDocuments({ tournamentId: t.id });
-      
-      // Dynamically determine group size from tournament.slots
-      let groupSize = (t.game === 'BGMI') ? 94 : 48;
-      if (t.slots) {
-        const parts = t.slots.split('/');
-        const totalPart = parts[parts.length - 1].trim();
-        const parsed = parseInt(totalPart);
-        if (!isNaN(parsed) && parsed > 0) groupSize = parsed;
+      try {
+        const currentCount = await Registration.countDocuments({ tournamentId: t.id }).catch(() => 0);
+        
+        let groupSize = (t.game === 'BGMI') ? 94 : 48;
+        if (t.slots) {
+          const parts = t.slots.split('/');
+          const totalPart = parts[parts.length - 1].trim();
+          const parsed = parseInt(totalPart);
+          if (!isNaN(parsed) && parsed > 0) groupSize = parsed;
+        }
+        
+        const filledInCurrentGroup = currentCount % groupSize;
+        const displaySlots = `${filledInCurrentGroup}/${groupSize}`;
+        
+        const obj = typeof t.toObject === 'function' ? t.toObject() : JSON.parse(JSON.stringify(t));
+        obj.slots = displaySlots;
+        return obj;
+      } catch (err) {
+        console.error('Error processing tournament:', t.id, err);
+        return t; // Return raw tournament if processing fails
       }
-      
-      // Calculate current group's progress
-      const filledInCurrentGroup = currentCount % groupSize;
-      const displaySlots = `${filledInCurrentGroup}/${groupSize}`;
-      
-      const obj = t.toObject();
-      obj.slots = displaySlots;
-      return obj;
     }));
 
+    console.log(`API returning ${tournamentsWithSlots.length} tournaments`);
     return NextResponse.json(tournamentsWithSlots);
   } catch (err: any) {
+    console.error('API Error:', err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

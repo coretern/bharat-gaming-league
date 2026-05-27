@@ -1,8 +1,9 @@
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import type { NextAuthOptions } from 'next-auth';
 import { connectDB } from './db';
 import { User } from '@/models/User';
+import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,9 +11,96 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+        idToken: { label: "IdToken", type: "text" }
+      },
+      async authorize(credentials) {
+        await connectDB();
+
+        // Check if signing in with a Google ID Token (One Tap or client-rendered button)
+        if (credentials?.idToken) {
+          try {
+            const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credentials.idToken}`);
+            if (!verifyRes.ok) {
+              throw new Error('INVALID_GOOGLE_TOKEN');
+            }
+            const payload = await verifyRes.json();
+            const email = payload.email?.toLowerCase();
+            if (!email) {
+              throw new Error('NO_EMAIL_IN_TOKEN');
+            }
+
+            let user = await User.findOne({ email });
+            if (user?.isBanned) {
+              throw new Error('BAN_ACTIVE');
+            }
+
+            if (!user) {
+              user = await User.create({
+                email,
+                name: payload.name || email.split('@')[0],
+                image: payload.picture || '',
+                provider: 'google',
+                firstLoginAt: new Date(),
+                lastLoginAt: new Date(),
+                loginCount: 1,
+              });
+            } else {
+              await User.updateOne(
+                { email },
+                {
+                  $set: {
+                    name: user.name || payload.name || '',
+                    image: user.image || payload.picture || '',
+                    provider: 'google',
+                    lastLoginAt: new Date(),
+                  },
+                  $inc: { loginCount: 1 }
+                }
+              );
+            }
+
+            return {
+              id: user._id.toString(),
+              name: user.name,
+              email: user.email,
+              image: user.image || '',
+            };
+          } catch (err: any) {
+            console.error('Google One Tap verification failed:', err);
+            throw new Error(err.message || 'GOOGLE_ONE_TAP_FAILED');
+          }
+        }
+
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('MISSING_CREDENTIALS');
+        }
+        const email = credentials.email.toLowerCase();
+        const user = await User.findOne({ email });
+        if (!user) {
+          throw new Error('USER_NOT_FOUND');
+        }
+        if (!user.password) {
+          throw new Error('GOOGLE_LOGIN_REQUIRED');
+        }
+        if (user.isBanned) {
+          throw new Error('BAN_ACTIVE');
+        }
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) {
+          throw new Error('INVALID_PASSWORD');
+        }
+        return {
+          id: user._id.toString(),
+          name: user.name || user.email.split('@')[0],
+          email: user.email,
+          image: user.image || '',
+        };
+      }
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
@@ -27,6 +115,19 @@ export const authOptions: NextAuthOptions = {
         const existingUser = await User.findOne({ email });
         if (existingUser?.isBanned) {
           throw new Error('BAN_ACTIVE');
+        }
+
+        if (account?.provider === 'credentials') {
+          if (existingUser) {
+            await User.updateOne(
+              { email },
+              {
+                $set: { lastLoginAt: new Date() },
+                $inc: { loginCount: 1 }
+              }
+            );
+          }
+          return true;
         }
 
         await User.findOneAndUpdate(

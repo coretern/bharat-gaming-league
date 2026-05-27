@@ -28,7 +28,7 @@ function DashboardContent() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  if (!mounted || status === 'loading') return <div className="min-h-screen bg-background flex items-center justify-center font-bold text-slate-500 uppercase italic animate-pulse">Checking Profile...</div>;
+  if (!mounted || status === 'loading') return <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs animate-pulse">Checking Profile...</div>;
   if (!session) return null;
 
   // Merge session user with profile name so sidebar updates when name is edited
@@ -79,10 +79,13 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen pt-24 pb-24 bg-background">
+    <main className="min-h-screen pt-32 pb-24 bg-white dark:bg-slate-950 bg-dot-grid relative">
       <Navbar />
+
+      <div className="absolute top-20 right-1/4 w-[350px] h-[350px] rounded-full bg-blue-500/5 dark:bg-blue-500/5 blur-3xl pointer-events-none" />
+
       <ErrorBoundary fallbackTitle="Dashboard Error">
-        <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-slate-500 font-bold uppercase italic">Syncing Data...</div>}>
+        <Suspense fallback={<div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center text-slate-500 font-bold uppercase tracking-wider text-xs animate-pulse">Syncing Data...</div>}>
           <DashboardContent />
         </Suspense>
       </ErrorBoundary>
@@ -90,3 +93,4 @@ export default function DashboardPage() {
     </main>
   );
 }
+

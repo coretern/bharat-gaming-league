@@ -15,6 +15,10 @@ export interface IUser extends Document {
   lastLoginAt: Date;
   loginCount: number;
   isBanned: boolean;
+  password?: string;
+  otp?: string | null;
+  otpExpiry?: Date | null;
+  phoneNumber?: string;
   // Gaming Profile
   teamName: string;
   gameUsername: string;
@@ -40,6 +44,10 @@ const UserSchema = new Schema<IUser>({
   lastLoginAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 1 },
   isBanned: { type: Boolean, default: false },
+  password: { type: String },
+  otp: { type: String, default: null },
+  otpExpiry: { type: Date, default: null },
+  phoneNumber: { type: String, default: '' },
   // Gaming Profile Fields
   teamName: { type: String, default: '' },
   gameUsername: { type: String, default: '' },

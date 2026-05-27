@@ -47,7 +47,7 @@ export default function RegistrationForm() {
       <div className="text-center py-24 max-w-lg mx-auto">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-md">
           <Info className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Registration Closed</h2>
+          <h2 className="text-xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">Registration Closed</h2>
           <p className="text-slate-500 mb-6 text-sm">Applications for this tournament are currently closed or have been recently completed.</p>
           <button onClick={() => router.push('/')} className="w-full h-12 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors">Back to Home</button>
         </div>
@@ -59,8 +59,8 @@ export default function RegistrationForm() {
     return (
       <div className="text-center py-24 max-w-lg mx-auto">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-md">
-          <LogIn className="w-12 h-12 text-neon-purple mx-auto mb-4" />
-          <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Login Required</h2>
+          <LogIn className="w-12 h-12 text-google-blue mx-auto mb-4" />
+          <h2 className="text-xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">Login Required</h2>
           <p className="text-slate-500 mb-6 text-sm">You need to sign in with Google before registering.</p>
           <button onClick={() => signIn('google', { callbackUrl: `/register?tournament=${tournamentId}` })}
             className="w-full flex items-center justify-center gap-3 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white hover:bg-slate-50 transition-colors"
@@ -77,7 +77,7 @@ export default function RegistrationForm() {
       <div className="text-center py-16 max-w-lg mx-auto">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-md">
           <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-black italic uppercase mb-2 text-foreground">Registered!</h2>
+          <h2 className="text-xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">Registered Successfully!</h2>
           <p className="text-slate-500 text-sm mb-6">Redirecting to your dashboard...</p>
         </div>
       </div>

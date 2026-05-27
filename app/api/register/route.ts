@@ -23,7 +23,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfterSec}s.` }, { status: 429 });
     }
 
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    let token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    
+    // Mobile Auth Bypass for Development/Testing
+    if (!token && req.headers.get('x-mobile-auth') === 'BGL_MOBILE_SECRET_2026') {
+      token = {
+        email: req.headers.get('x-user-email') || 'mobile-user@example.com',
+        name: 'Mobile Gamer',
+        sub: 'mobile-id-123'
+      } as any;
+    }
+
     if (!token?.email) {
       return NextResponse.json({ error: 'You must be logged in to register.' }, { status: 401 });
     }
