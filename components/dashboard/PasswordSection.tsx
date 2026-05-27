@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useProfilePassword } from '@/hooks/useProfilePassword';
 import { Section } from './ProfileComponents';
-import { KeyRound, ShieldAlert, ShieldCheck, Loader2, Key, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, Loader2, Key, Eye, EyeOff } from 'lucide-react';
 
 interface PasswordSectionProps {
   hasPassword: boolean;
@@ -31,43 +31,16 @@ export default function PasswordSection({ hasPassword, email, onSuccess }: Passw
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   return (
-    <Section icon={<KeyRound className="w-4 h-4" />} title="Account Security">
-      {hasPassword ? (
-        <div className="flex gap-4 p-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800/20">
-          <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-500/20 flex items-center justify-center text-google-green shrink-0">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-xs font-black text-slate-800 dark:text-green-400 uppercase tracking-wider mb-1">
-              Login Password Configured
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-              Your account has a configured password. You can now securely sign in to BGL using either your Google login or your email and password.
-            </p>
-          </div>
-        </div>
-      ) : step === 'idle' ? (
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center p-4 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-900/20">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-google-yellow shrink-0">
-              <ShieldAlert className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-xs font-black text-slate-800 dark:text-amber-400 uppercase tracking-wider mb-1">
-                No Login Password Configured
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-md">
-                You are authenticated via Google OAuth. To enable standard email/password logins alongside Google, configure a login password now.
-              </p>
-            </div>
-          </div>
+    <Section icon={<KeyRound className="w-4 h-4" />} title="Change Password">
+      {step === 'idle' ? (
+        <div className="flex justify-start">
           <button
             onClick={requestOtp}
             disabled={loading}
-            className="w-full sm:w-auto h-10 px-5 shrink-0 rounded-lg bg-google-blue hover:bg-blue-600 active:scale-[0.98] text-white text-[11px] font-black uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            className="h-10 px-6 rounded-lg bg-google-blue hover:bg-blue-600 active:scale-[0.98] text-white text-[11px] font-black uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Key className="w-3.5 h-3.5" />}
-            Create Password
+            {hasPassword ? 'Change Password' : 'Set Password'}
           </button>
         </div>
       ) : (
@@ -77,7 +50,7 @@ export default function PasswordSection({ hasPassword, email, onSuccess }: Passw
               Verify Account Identity
             </h3>
             <p className="text-[11px] text-slate-400 font-medium">
-              We sent a 6-digit verification code to your email <strong className="text-slate-650 dark:text-slate-350">{email}</strong>.
+              We sent a 6-digit verification code to your email <strong className="text-slate-650 dark:text-slate-350 break-all">{email}</strong>.
             </p>
           </div>
 
@@ -171,7 +144,7 @@ export default function PasswordSection({ hasPassword, email, onSuccess }: Passw
               {loading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                'Configure Password'
+                hasPassword ? 'Change Password' : 'Set Password'
               )}
             </button>
           </div>

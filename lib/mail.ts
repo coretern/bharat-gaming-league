@@ -69,6 +69,8 @@ function getEmailWrapper(contentHtml: string) {
 }
 
 export async function sendOTPEmail(email: string, otp: string, subject: string) {
+  console.log(`\n========================================\n[OTP EMAIL] To: ${email}\nOTP: ${otp}\nSubject: ${subject}\n========================================\n`);
+
   const content = `
     <p style="margin-top: 0;">Hello,</p>
     <p>Please use the verification code below to verify your account or complete your request:</p>
@@ -82,12 +84,16 @@ export async function sendOTPEmail(email: string, otp: string, subject: string) 
     </p>
   `;
 
-  await transporter.sendMail({
-    from: `"BGL Esports" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject,
-    html: getEmailWrapper(content),
-  });
+  try {
+    await transporter.sendMail({
+      from: `"BGL Esports" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject,
+      html: getEmailWrapper(content),
+    });
+  } catch (err) {
+    console.error('Failed to send SMTP email. Logging OTP to console instead:', err);
+  }
 }
 
 export async function sendTournamentConfirmationEmail(reg: any) {

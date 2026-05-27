@@ -65,13 +65,13 @@ export default function ProfileTab({ user }: ProfileTabProps) {
       {/* Personal Info */}
       <Section icon={<User2 className="w-4 h-4" />} title="Personal Information" subtle action={pencil}>
         {isEditable ? (
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             <ProfileInput label="Full Name" placeholder="Your name" value={displayName} onChange={setDisplayName} />
             <InfoField label="Email" value={user.email || '—'} />
             <InfoField label="Status" value="Verified Participant" accent />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             <InfoField label="Full Name" value={displayName || user.name || '—'} />
             <InfoField label="Email" value={user.email || '—'} />
             <InfoField label="Status" value="Verified Participant" accent />
@@ -90,7 +90,7 @@ export default function ProfileTab({ user }: ProfileTabProps) {
             <ProfileInput label="Instagram" placeholder="https://instagram.com/..." value={instagram} onChange={setInstagram} />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             <InfoField label="Team Name" value={teamName || '—'} />
             <InfoField label="Game Username" value={gameUsername || '—'} />
             <InfoField label="Game UID" value={gameUID || '—'} />

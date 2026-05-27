@@ -30,7 +30,7 @@ export function InfoField({ label, value, accent, link }: { label: string; value
       {link && value.startsWith('http') ? (
         <a href={value} target="_blank" rel="noopener noreferrer" className="font-medium text-sm text-google-blue hover:underline truncate block">{value}</a>
       ) : (
-        <p className={`font-medium text-sm ${accent ? 'text-google-green' : 'text-slate-700 dark:text-slate-200'}`}>{value}</p>
+        <p className={`font-medium text-sm break-all ${accent ? 'text-google-green' : 'text-slate-700 dark:text-slate-200'}`}>{value}</p>
       )}
     </div>
   );
