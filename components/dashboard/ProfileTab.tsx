@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useProfile, SavedPlayer } from '@/hooks/useProfile';
 import { Loader2, Save, Gamepad2, User2, Users, Plus, Trash2, X } from 'lucide-react';
 import { EditBtn, Section, InfoField, ProfileInput } from './ProfileComponents';
+import PasswordSection from './PasswordSection';
 
 interface ProfileTabProps {
   user: { name?: string | null; email?: string | null; image?: string | null };
 }
 
 export default function ProfileTab({ user }: ProfileTabProps) {
-  const { profile, loading, saving, saveProfile } = useProfile();
+  const { profile, loading, saving, saveProfile, fetchProfile } = useProfile();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.name || '');
 
@@ -138,6 +139,15 @@ export default function ProfileTab({ user }: ProfileTabProps) {
           </>
         )}
       </Section>
+
+      {/* Account Security (Google Password Config) */}
+      {!isEditable && (
+        <PasswordSection
+          hasPassword={profile.hasPassword || false}
+          email={profile.email || user.email || ''}
+          onSuccess={fetchProfile}
+        />
+      )}
 
       {/* Save / Cancel */}
       {isEditable && (

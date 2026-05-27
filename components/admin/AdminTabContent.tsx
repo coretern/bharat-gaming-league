@@ -6,6 +6,7 @@ import MediaTab from '@/components/admin/Tabs/MediaTab';
 import SchedulesTab from '@/components/admin/Tabs/SchedulesTab';
 import LogsTab from '@/components/admin/Tabs/LogsTab';
 import UserTable from '@/components/admin/Users/UserTable';
+import SettingsTab from '@/components/admin/Tabs/SettingsTab';
 
 interface AdminTabContentProps {
   adminState: any;
@@ -124,6 +125,8 @@ export default function AdminTabContent({ adminState, activeTab, setActiveTab, s
       )}
 
       {activeTab === 'Logs' && <LogsTab />}
+
+      {activeTab === 'Settings' && <SettingsTab />}
     </>
   );
 }

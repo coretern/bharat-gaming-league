@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Trophy, Medal, Image as ImageIcon, Calendar, FileText, Shield } from "lucide-react";
+import { Users, Trophy, Medal, Image as ImageIcon, Calendar, FileText, Shield, Settings } from "lucide-react";
 
 interface AdminSidebarProps {
   user: { name?: string | null; image?: string | null };
@@ -16,6 +16,7 @@ const tabs = [
   { name: 'Winners', icon: Medal, color: 'text-google-red' },
   { name: 'Media', icon: ImageIcon, color: 'text-cyan-500' },
   { name: 'Logs', icon: FileText, color: 'text-slate-400' },
+  { name: 'Settings', icon: Settings, color: 'text-indigo-500' },
 ] as const;
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ user, activeTab, setActiveTab, onTabClick }) => {

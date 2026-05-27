@@ -53,6 +53,7 @@ export interface SiteUser {
   lastLoginAt: string;
   loginCount: number;
   isBanned: boolean;
+  role?: string;
 }
 
 export interface Tournament {

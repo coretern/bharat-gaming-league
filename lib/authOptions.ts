@@ -118,15 +118,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (account?.provider === 'credentials') {
-          if (existingUser) {
-            await User.updateOne(
-              { email },
-              {
-                $set: { lastLoginAt: new Date() },
-                $inc: { loginCount: 1 }
-              }
-            );
-          }
+          if (existingUser) await User.updateOne({ email }, { $set: { lastLoginAt: new Date() }, $inc: { loginCount: 1 } });
           return true;
         }
 
@@ -171,11 +163,16 @@ export const authOptions: NextAuthOptions = {
       if (email) {
         try {
           await connectDB();
-          const dbUser = await User.findOne({ email }).select('_id isBanned').lean();
+          const dbUser = await User.findOne({ email }).select('_id isBanned role').lean();
           if (!dbUser) {
             token.deleted = true;
-          } else if (dbUser.isBanned) {
-            token.banned = true;
+          } else {
+            if (dbUser.isBanned) {
+              token.banned = true;
+            }
+            if (dbUser.role === 'admin') {
+              token.isAdmin = true;
+            }
           }
         } catch {
           // On DB error, don't block

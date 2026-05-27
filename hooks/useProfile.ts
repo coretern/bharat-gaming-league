@@ -18,6 +18,7 @@ export interface UserProfile {
   instagram: string;
   paymentQrUrl: string;
   savedPlayers: SavedPlayer[];
+  hasPassword?: boolean;
 }
 
 const emptyProfile: UserProfile = {

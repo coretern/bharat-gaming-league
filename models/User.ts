@@ -15,6 +15,7 @@ export interface IUser extends Document {
   lastLoginAt: Date;
   loginCount: number;
   isBanned: boolean;
+  role?: string;
   password?: string;
   otp?: string | null;
   otpExpiry?: Date | null;
@@ -44,6 +45,7 @@ const UserSchema = new Schema<IUser>({
   lastLoginAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 1 },
   isBanned: { type: Boolean, default: false },
+  role: { type: String, default: 'user' },
   password: { type: String },
   otp: { type: String, default: null },
   otpExpiry: { type: Date, default: null },

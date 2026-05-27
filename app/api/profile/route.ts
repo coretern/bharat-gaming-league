@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
       instagram: user.instagram || '',
       paymentQrUrl: user.paymentQrUrl || '',
       savedPlayers: user.savedPlayers || [],
+      hasPassword: !!user.password,
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

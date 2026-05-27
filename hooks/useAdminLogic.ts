@@ -17,10 +17,10 @@ export const useAdminLogic = () => {
   
   // Initialize from URL or default to Registrations
   const initialTab = (searchParams.get('tab') as any) || 'Registrations';
-  const [activeTab, setActiveTabState] = useState<'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media'>(initialTab);
+  const [activeTab, setActiveTabState] = useState<'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media' | 'Logs' | 'Settings'>(initialTab);
 
   // Wrapper to update URL when tab changes
-  const setActiveTab = (tab: 'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media') => {
+  const setActiveTab = (tab: 'Registrations' | 'Schedules' | 'Users' | 'Tournaments' | 'Winners' | 'Media' | 'Logs' | 'Settings') => {
     setActiveTabState(tab);
     // Update URL without full refresh
     const params = new URLSearchParams(searchParams.toString());
