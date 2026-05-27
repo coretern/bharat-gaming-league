@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Registration } from '@/models/Registration';
 import { addLog } from '@/lib/logger';
+import { sendTournamentApprovalEmail, sendTournamentScheduleEmail } from '@/lib/mail';
 
 export async function PATCH(
   req: NextRequest,
@@ -22,6 +23,11 @@ export async function PATCH(
     await connectDB();
     const body = await req.json();
 
+    const previous = await Registration.findById(id);
+    if (!previous) {
+      return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
+    }
+
     const reg = await Registration.findByIdAndUpdate(
       id, 
       { $set: body }, 
@@ -29,6 +35,25 @@ export async function PATCH(
     );
     if (!reg) {
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 });
+    }
+
+    // Trigger emails based on status or scheduling/room updates
+    if (body.status === 'Approved' && previous.status !== 'Approved') {
+      await sendTournamentApprovalEmail(reg).catch(err => {
+        console.error('Failed to send approval email:', err);
+      });
+    }
+
+    const hasScheduleChanged = 
+      (body.matchDate && body.matchDate !== previous.matchDate) ||
+      (body.matchTime && body.matchTime !== previous.matchTime) ||
+      (body.roomId && body.roomId !== previous.roomId) ||
+      (body.roomPassword && body.roomPassword !== previous.roomPassword);
+
+    if (hasScheduleChanged) {
+      await sendTournamentScheduleEmail(reg).catch(err => {
+        console.error('Failed to send schedule email:', err);
+      });
     }
 
     // Special logic for marking a winner

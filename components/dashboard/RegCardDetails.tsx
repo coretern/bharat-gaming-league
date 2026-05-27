@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
-  Trophy, ShieldCheck, ShieldAlert, Gamepad, Copy, Share2, FileDown, Eye
+  Trophy, ShieldCheck, ShieldAlert, Gamepad, Copy, Share2, FileDown, Eye, CreditCard, Loader
 } from 'lucide-react';
 import { to12Hour } from '@/lib/time-utils';
 import toast from 'react-hot-toast';
@@ -31,6 +31,7 @@ export default function RegCardDetails({ reg }: RegCardDetailsProps) {
   const isWon = reg.resultStatus === 'Won';
   const isLost = reg.resultStatus === 'Lost';
   const isCompleted = isWon || isLost;
+  const [repaying, setRepaying] = useState(false);
 
   return (
     <div className="px-4 pb-4 sm:px-5 sm:pb-5 space-y-3">
@@ -146,6 +147,32 @@ export default function RegCardDetails({ reg }: RegCardDetailsProps) {
           <button onClick={() => window.open(`/api/receipt?id=${reg._id}`, '_blank')}
             className="flex-1 sm:flex-none h-10 px-5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
             <FileDown className="w-3.5 h-3.5" /> Download Receipt
+          </button>
+        )}
+        {!reg.paymentVerified && reg.entryFee > 0 && (
+          <button
+            onClick={async () => {
+              if (repaying) return;
+              setRepaying(true);
+              const toastId = toast.loading('Initializing payment session...');
+              try {
+                const res = await fetch(`/api/payment/repay?id=${reg._id}`, { method: 'POST' });
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.error || 'Failed to initialize repayment');
+                
+                toast.success('Redirecting to secure gateway...', { id: toastId });
+                const cashfree = (window as any).Cashfree({ mode: "sandbox" });
+                cashfree.checkout({ paymentSessionId: resData.paymentSessionId, redirectTarget: "_self" });
+              } catch (err: any) {
+                toast.error(err.message || 'Payment failed to initiate', { id: toastId });
+                setRepaying(false);
+              }
+            }}
+            disabled={repaying}
+            className="flex-1 sm:flex-none h-10 px-5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 disabled:opacity-50 transition-all shadow-md shadow-orange-500/10"
+          >
+            {repaying ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+            Pay Entry Fee (₹{reg.entryFee})
           </button>
         )}
         {reg.status === 'Rejected' && (
