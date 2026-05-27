@@ -28,6 +28,7 @@ export interface Reg {
   previousRejectionReason?: string;
   isResubmitted?: boolean;
   paymentVerified: boolean;
+  paymentStatus?: 'Pending' | 'Paid' | 'Failed';
   orderId?: string;
   groupNumber?: number;
   slotNumber?: number;

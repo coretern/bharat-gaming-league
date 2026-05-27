@@ -23,6 +23,7 @@ export interface RegCardData {
   roomId?: string;
   roomPassword?: string;
   orderId?: string;
+  entryFee?: number;
   createdAt: string;
 }
 

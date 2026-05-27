@@ -149,7 +149,7 @@ export default function RegCardDetails({ reg }: RegCardDetailsProps) {
             <FileDown className="w-3.5 h-3.5" /> Download Receipt
           </button>
         )}
-        {!reg.paymentVerified && reg.entryFee > 0 && (
+        {!reg.paymentVerified && (reg.entryFee ?? 0) > 0 && (
           <button
             onClick={async () => {
               if (repaying) return;
@@ -172,7 +172,7 @@ export default function RegCardDetails({ reg }: RegCardDetailsProps) {
             className="flex-1 sm:flex-none h-10 px-5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 disabled:opacity-50 transition-all shadow-md shadow-orange-500/10"
           >
             {repaying ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
-            Pay Entry Fee (₹{reg.entryFee})
+            Pay Entry Fee (₹{reg.entryFee ?? 0})
           </button>
         )}
         {reg.status === 'Rejected' && (
