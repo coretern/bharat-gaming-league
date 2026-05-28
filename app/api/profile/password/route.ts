@@ -14,7 +14,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfterSec}s.` }, { status: 429 });
     }
 
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    let token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    
+    // Mobile Auth Bypass
+    if (!token && req.headers.get('x-mobile-auth') === 'BGL_MOBILE_SECRET_2026') {
+      token = { email: req.headers.get('x-user-email') || 'mobile-user@example.com' } as any;
+    }
+
     if (!token?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

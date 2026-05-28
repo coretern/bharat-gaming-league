@@ -1,0 +1,32 @@
+name: tournament_app
+description: "Bharat Gaming League Mobile App - Complete tournament management, registration, and payments."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Network & Persistence
+  http: ^1.2.0
+  shared_preferences: ^2.2.0
+
+  # UI & Styling
+  google_fonts: ^6.1.0
+  webview_flutter: ^4.4.2
+  intl: ^0.19.0
+
+  # Utility Icons
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
