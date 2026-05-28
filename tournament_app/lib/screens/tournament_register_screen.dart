@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/tournament.dart';
 import '../../models/registration.dart'; // Imports Registration & PlayerRosterItem
@@ -475,7 +475,7 @@ class _TournamentRegisterScreenState extends State<TournamentRegisterScreen> {
 
               // Roster details
               Row(
-                mainAxisAlignment: MainAxisAlignment.between,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'ROSTER SELECTION ($requiredPlayers PLAYERS)',
@@ -506,7 +506,7 @@ class _TournamentRegisterScreenState extends State<TournamentRegisterScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -586,7 +586,7 @@ class _TournamentRegisterScreenState extends State<TournamentRegisterScreen> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      margin: const EdgeInsets.bottom(16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,

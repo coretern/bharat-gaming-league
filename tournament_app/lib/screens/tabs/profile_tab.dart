@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/user_profile.dart';
 import '../../models/registration.dart'; // Imports PlayerRosterItem
@@ -458,7 +458,7 @@ class _ProfileTabState extends State<ProfileTab> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      margin: const EdgeInsets.bottom(16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,

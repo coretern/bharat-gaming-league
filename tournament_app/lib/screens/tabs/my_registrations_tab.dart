@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -262,7 +262,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
           final needsPayment = !isPaid && reg.entryFee > 0;
 
           return Container(
-            margin: const EdgeInsets.bottom(16),
+            margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFF0F172A),
@@ -278,7 +278,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
               children: [
                 // Top Header: Tournament Name + Game Badge
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
@@ -337,7 +337,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
 
                 // Status Row: Roster approval + Payment state
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
@@ -400,7 +400,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
                               'MATCH ROOM DETAILS',
                               style: GoogleFonts.inter(
                                 fontSize: 10,
-                                fontWeight: FontWeight.black,
+                                fontWeight: FontWeight.w900,
                                 color: const Color(0xFF1A73E8),
                                 letterSpacing: 0.5,
                               ),
@@ -409,7 +409,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.between,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Room ID: ${reg.roomId}',
@@ -429,7 +429,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
                         ),
                         const SizedBox(height: 6),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.between,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Password: ${reg.roomPassword}',
@@ -470,7 +470,7 @@ class _MyRegistrationsTabState extends State<MyRegistrationsTab> {
                           'REJECTION REASON:',
                           style: GoogleFonts.inter(
                             fontSize: 9,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             color: const Color(0xFFEF4444),
                             letterSpacing: 0.5,
                           ),

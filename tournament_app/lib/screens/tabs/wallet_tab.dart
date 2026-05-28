@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/api_service.dart';
 
@@ -170,7 +170,7 @@ class _WalletTabState extends State<WalletTab> {
                           'PAYOUT ACCOUNT RULES',
                           style: GoogleFonts.inter(
                             fontSize: 10,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             color: const Color(0xFF10B981),
                             letterSpacing: 0.5,
                           ),
@@ -228,7 +228,7 @@ class _WalletTabState extends State<WalletTab> {
                   final isWon = item['resultStatus'] == 'Won';
 
                   return Container(
-                    margin: const EdgeInsets.bottom(12),
+                    margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F172A),
@@ -236,7 +236,7 @@ class _WalletTabState extends State<WalletTab> {
                       border: Border.all(color: const Color(0xFF1E293B)),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Left detail: Tournament title & Type
                         Expanded(
@@ -300,7 +300,7 @@ class _WalletTabState extends State<WalletTab> {
                               isWon ? 'WON PRIZE' : 'ENTRY FEE',
                               style: GoogleFonts.inter(
                                 fontSize: 8.5,
-                                fontWeight: FontWeight.black,
+                                fontWeight: FontWeight.w900,
                                 color: isWon ? const Color(0xFF10B981) : const Color(0xFF64748B),
                                 letterSpacing: 0.5,
                               ),
@@ -336,7 +336,7 @@ class _WalletTabState extends State<WalletTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.between,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title.toUpperCase(),
@@ -385,7 +385,7 @@ class _WalletTabState extends State<WalletTab> {
         border: Border.all(color: const Color(0xFF1E293B)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.between,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
