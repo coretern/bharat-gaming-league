@@ -124,14 +124,6 @@ export default function ProfileTab({ user }: ProfileTabProps) {
         )}
       </Section>
 
-      {/* Account Security (Google Password Config) */}
-      {!isEditable && (
-        <PasswordSection
-          hasPassword={profile.hasPassword || false}
-          email={profile.email || user.email || ''}
-          onSuccess={fetchProfile}
-        />
-      )}
 
       {/* Save / Cancel */}
       {isEditable && (

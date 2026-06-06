@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { User, LogOut, Pencil, Check, X, Loader2 } from 'lucide-react';
+import { User, LogOut, Pencil } from 'lucide-react';
 import { signOut } from 'next-auth/react';
-import { useProfile } from '@/hooks/useProfile';
+import EditProfileModal from './EditProfileModal';
 
 interface MobileDashboardHeaderProps {
   user: { name?: string | null; email?: string | null; image?: string | null };
@@ -14,24 +14,7 @@ interface MobileDashboardHeaderProps {
 }
 
 export default function MobileDashboardHeader({ user, activeTab, setActiveTab, navItems }: MobileDashboardHeaderProps) {
-  const { profile, loading, saving, saveProfile } = useProfile();
-  const [editingName, setEditingName] = useState(false);
-  const [nameValue, setNameValue] = useState(user.name || '');
-
-  useEffect(() => {
-    if (!loading && profile.name) setNameValue(profile.name);
-  }, [loading, profile.name]);
-
-  const handleSaveName = async () => {
-    if (!nameValue.trim()) return;
-    await saveProfile({ name: nameValue.trim() });
-    setEditingName(false);
-  };
-
-  const handleCancel = () => {
-    setNameValue(profile.name || user.name || '');
-    setEditingName(false);
-  };
+  const [showEditModal, setShowEditModal] = useState(false);
 
   return (
     <div className="lg:hidden space-y-4 mb-6">
@@ -45,30 +28,15 @@ export default function MobileDashboardHeader({ user, activeTab, setActiveTab, n
           </div>
         )}
         <div className="min-w-0 flex-1">
-          {editingName ? (
-            <div className="flex items-center gap-2">
-              <input
-                value={nameValue}
-                onChange={(e) => setNameValue(e.target.value)}
-                className="flex-1 min-w-0 h-8 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-google-blue/30"
-                autoFocus
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-              />
-              <button onClick={handleSaveName} disabled={saving} className="p-1.5 rounded-lg text-google-green hover:bg-green-50 transition-colors">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              </button>
-              <button onClick={handleCancel} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <p className="font-semibold text-slate-900 dark:text-white text-base leading-tight truncate">{nameValue || user.name}</p>
-              <button onClick={() => setEditingName(true)} className="p-1 rounded-md text-slate-400 hover:text-google-blue hover:bg-blue-50 transition-colors shrink-0">
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-slate-900 dark:text-white text-base leading-tight truncate">{user.name}</p>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-google-blue hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors shrink-0"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <p className="text-slate-500 text-[11px] font-medium truncate mt-0.5">{user.email}</p>
           <span className="inline-block mt-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-google-blue border border-blue-100">
             Player
@@ -95,6 +63,13 @@ export default function MobileDashboardHeader({ user, activeTab, setActiveTab, n
           </button>
         ))}
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        user={user}
+      />
     </div>
   );
 }
