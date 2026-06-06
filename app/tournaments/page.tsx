@@ -27,15 +27,6 @@ export default function TournamentsPage() {
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <header className="mb-12">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-google-blue opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-google-blue" />
-            </span>
-            Live Arenas
-          </div>
-          
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
             Explore Active <span className="text-google-blue">Tournaments</span>
           </h1>
@@ -77,13 +68,20 @@ export default function TournamentsPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-24">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-[430px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 flex flex-col justify-between animate-pulse">
+              <div key={i} className="border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/60 p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-pulse">
                 <div>
-                  <div className="w-full h-44 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4" />
-                  <div className="h-6 bg-slate-100 dark:bg-slate-800 rounded w-3/4 mb-4" />
-                  <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4" />
+                  <div className="w-full aspect-[16/9] bg-slate-200/85 dark:bg-slate-800 rounded-xl mb-5" />
+                  <div className="h-5 bg-slate-200/85 dark:bg-slate-800 rounded w-3/4 mb-5" />
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    <div className="h-14 bg-slate-100 dark:bg-slate-800/40 rounded-xl" />
+                    <div className="h-14 bg-slate-100 dark:bg-slate-800/40 rounded-xl" />
+                  </div>
+                  <div className="space-y-2 mb-5">
+                    <div className="h-3 bg-slate-200/80 dark:bg-slate-800 rounded w-1/4" />
+                    <div className="h-1.5 bg-slate-100 dark:bg-slate-800/40 rounded-full w-full" />
+                  </div>
                 </div>
-                <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg w-full" />
+                <div className="h-11 bg-slate-200/85 dark:bg-slate-800 rounded-xl w-full" />
               </div>
             ))}
           </div>

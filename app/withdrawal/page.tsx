@@ -51,9 +51,7 @@ export default function WithdrawalPage() {
 
       <div className="container mx-auto px-5 sm:px-6 relative z-10">
         <header className="mb-10 text-center md:text-left max-w-4xl mx-auto px-1 sm:px-0">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
-            💼 Financial Ledger
-          </div>
+
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 text-slate-900 dark:text-white">
             Withdrawal <span className="text-google-blue">Portal</span>
           </h1>

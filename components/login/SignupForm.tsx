@@ -59,75 +59,75 @@ export default function SignupForm({ email, setEmail, callbackUrl, onSwitchMode,
   };
 
   return (
-    <div className="space-y-3">
-      <form onSubmit={handleSubmit} className="space-y-2.5">
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         {error && (
-          <div className="p-2 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-xl text-left flex items-start gap-2">
+          <div className="p-2.5 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-xl text-left flex items-start gap-2">
             <AlertCircle className="w-3.5 h-3.5 text-google-red shrink-0 mt-0.5" />
-            <span className="text-[10px] font-bold text-google-red leading-tight">{error}</span>
+            <span className="text-xs text-google-red leading-tight">{error}</span>
           </div>
         )}
 
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="email"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-10 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-800 rounded-xl pl-10 pr-3 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 placeholder:opacity-100"
+              className="w-full h-11 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               required
             />
           </div>
 
           <div className="relative">
-            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="tel"
               placeholder="Phone Number"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full h-10 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-800 rounded-xl pl-10 pr-3 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 placeholder:opacity-100"
+              className="w-full h-11 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               required
             />
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Create Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-10 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-800 rounded-xl pl-10 pr-10 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 placeholder:opacity-100"
+              className="w-full h-11 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
-              {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full h-10 bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-800 rounded-xl pl-10 pr-10 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 placeholder:opacity-100"
+              className="w-full h-11 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-google-blue/15 focus:border-google-blue transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
-              {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -135,27 +135,27 @@ export default function SignupForm({ email, setEmail, callbackUrl, onSwitchMode,
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-google-blue text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-md active:scale-98"
+          className="w-full h-11 bg-google-blue text-white rounded-xl font-bold text-sm hover:bg-blue-600 transition-all shadow-sm active:scale-95"
         >
           {loading ? 'Sending verification...' : 'Create Account'}
         </button>
       </form>
 
-      <div className="relative flex items-center justify-center my-3">
+      <div className="relative flex items-center justify-center my-4">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-100 dark:border-slate-800"></div>
+          <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
         </div>
-        <span className="relative px-3 bg-white dark:bg-slate-900 text-[8px] font-black uppercase tracking-widest text-slate-400">Or continue with</span>
+        <span className="relative px-3 bg-white dark:bg-slate-900 text-xs font-normal text-slate-500">or continue with</span>
       </div>
 
       <SocialLogins callbackUrl={callbackUrl} email={email} />
 
-      <div className="text-center pt-1">
-        <p className="text-[10px] font-bold text-slate-400">
+      <div className="text-center pt-2">
+        <p className="text-xs font-normal text-slate-500">
           Already have an account?{' '}
           <button
             onClick={() => onSwitchMode('login')}
-            className="text-google-blue font-black hover:underline"
+            className="text-google-blue font-semibold hover:underline ml-1"
           >
             Sign In
           </button>

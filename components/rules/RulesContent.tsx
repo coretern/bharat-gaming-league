@@ -4,11 +4,6 @@ export default function RulesContent() {
   return (
     <div className="container mx-auto px-4 sm:px-6 max-w-3xl relative z-10">
       <header className="mb-12">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
-          ⚖️ Play Fair
-        </div>
-
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
           Rules & <span className="text-google-blue">Regulations</span>
         </h1>

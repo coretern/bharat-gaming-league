@@ -8,10 +8,6 @@ export default function PrivacyContent() {
       
       {/* Header */}
       <div className="mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-google-blue dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
-          <Shield className="w-3.5 h-3.5" /> Security
-        </div>
-
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
           Privacy <span className="text-google-blue">Policy</span>
         </h1>

@@ -42,7 +42,21 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-[400px] rounded-2xl bg-slate-100 dark:bg-slate-900 animate-pulse border border-slate-200/30 dark:border-slate-800/30" />
+              <div key={i} className="border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/60 p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-pulse">
+                <div>
+                  <div className="w-full aspect-[16/9] bg-slate-200/85 dark:bg-slate-800 rounded-xl mb-5" />
+                  <div className="h-5 bg-slate-200/85 dark:bg-slate-800 rounded w-3/4 mb-5" />
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    <div className="h-14 bg-slate-100 dark:bg-slate-800/40 rounded-xl" />
+                    <div className="h-14 bg-slate-100 dark:bg-slate-800/40 rounded-xl" />
+                  </div>
+                  <div className="space-y-2 mb-5">
+                    <div className="h-3 bg-slate-200/80 dark:bg-slate-800 rounded w-1/4" />
+                    <div className="h-1.5 bg-slate-100 dark:bg-slate-800/40 rounded-full w-full" />
+                  </div>
+                </div>
+                <div className="h-11 bg-slate-200/85 dark:bg-slate-800 rounded-xl w-full" />
+              </div>
             ))
           ) : liveTournaments.length > 0 ? (
             liveTournaments.map((t) => (

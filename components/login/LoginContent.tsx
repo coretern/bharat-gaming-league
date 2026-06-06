@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 
 // Form Subcomponents & Hooks
 import LoginForm from '@/components/login/LoginForm';
@@ -17,11 +17,30 @@ type AuthMode = 'login' | 'signup' | 'otp-signup' | 'forgot-init';
 
 export default function LoginContent() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [mode, setMode] = useState<AuthMode>(pathname === '/signup' ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Sync mode state with route pathname when navigating back/forward
+  useEffect(() => {
+    if (pathname === '/signup') {
+      setMode('signup');
+    } else if (pathname === '/login') {
+      setMode('login');
+    }
+  }, [pathname]);
+
+  const handleSwitchMode = (newMode: AuthMode) => {
+    setMode(newMode);
+    if (newMode === 'signup') {
+      window.history.pushState(null, '', '/signup' + window.location.search);
+    } else if (newMode === 'login') {
+      window.history.pushState(null, '', '/login' + window.location.search);
+    }
+  };
 
   // Auto-detect and render Google Identity Services
   useGoogleGsi({ callbackUrl, mode, setSuccessMessage, loginHintEmail: email });
@@ -29,7 +48,7 @@ export default function LoginContent() {
   const handleSignupInitSuccess = (registeredEmail: string) => {
     setEmail(registeredEmail);
     setSuccessMessage('OTP code sent to verify your email!');
-    setMode('otp-signup');
+    handleSwitchMode('otp-signup');
   };
 
   const handleSuccessNotification = (msg: string) => {
@@ -42,14 +61,7 @@ export default function LoginContent() {
 
       <div className="w-full max-w-[320px] xs:max-w-[360px] sm:max-w-sm relative z-10">
         <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 xs:p-5 sm:p-7 shadow-xl text-center relative overflow-hidden">
-          {/* Back button */}
-          <Link 
-            href="/" 
-            className="absolute left-3 top-3 w-6 h-6 xs:w-7 xs:h-7 rounded-full bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 transition-all shadow-sm"
-          >
-            <ArrowLeft className="w-3 h-3" />
-          </Link>
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500" />
+
           
           <div className="relative mb-2 pt-1">
              <div className="relative w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-md border border-slate-100 dark:border-slate-800 mx-auto">
@@ -57,24 +69,25 @@ export default function LoginContent() {
              </div>
           </div>
 
-          <h1 className="text-base xs:text-lg font-extrabold tracking-tight mb-0.5 text-slate-900 dark:text-white leading-none">
-            {mode === 'login' && <span>Welcome to <span className="text-google-blue font-black">BGL Esports</span></span>}
-            {mode === 'signup' && <span>Create <span className="text-google-blue font-black">Account</span></span>}
-            {mode === 'otp-signup' && <span>Email <span className="text-google-blue font-black">Verification</span></span>}
-            {mode === 'forgot-init' && <span>Reset <span className="text-google-blue font-black">Password</span></span>}
+          <h1 className="text-lg xs:text-xl font-bold tracking-tight mb-1 text-slate-900 dark:text-white leading-none">
+            {mode === 'login' && <span>Welcome to BGL Esports</span>}
+            {mode === 'signup' && <span>Create Account</span>}
+            {mode === 'otp-signup' && <span>Email Verification</span>}
+            {mode === 'forgot-init' && <span>Reset Password</span>}
           </h1>
           
-          <p className="text-slate-400 mb-3 xs:mb-4 text-[8px] xs:text-[9px] font-bold uppercase tracking-widest">
-            {mode === 'login' && 'India\'s #1 Gaming League'}
-            {mode === 'signup' && 'Register your details to join BGL'}
-            {mode === 'otp-signup' && 'Verify your account authorization'}
-            {mode === 'forgot-init' && 'Recover your credentials securely'}
-          </p>
+          {mode !== 'login' && (
+            <p className="text-slate-500 dark:text-slate-400 mb-5 text-xs font-normal">
+              {mode === 'signup' && 'Register your details to join BGL'}
+              {mode === 'otp-signup' && 'Verify your account authorization'}
+              {mode === 'forgot-init' && 'Recover your password'}
+            </p>
+          )}
 
           {successMessage && (
-            <div className="mb-3 p-2.5 bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl text-left flex items-start gap-2">
+            <div className="mb-4 p-2.5 bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 rounded-xl text-left flex items-start gap-2">
               <ShieldCheck className="w-3.5 h-3.5 text-google-green shrink-0 mt-0.5" />
-              <span className="text-[10px] font-bold text-google-green leading-tight">{successMessage}</span>
+              <span className="text-xs text-google-green leading-tight">{successMessage}</span>
             </div>
           )}
 
@@ -84,7 +97,7 @@ export default function LoginContent() {
                 email={email}
                 setEmail={setEmail}
                 callbackUrl={callbackUrl} 
-                onSwitchMode={setMode} 
+                onSwitchMode={handleSwitchMode} 
                 onSuccess={() => setSuccessMessage('')} 
               />
             )}
@@ -93,14 +106,14 @@ export default function LoginContent() {
                 email={email}
                 setEmail={setEmail}
                 callbackUrl={callbackUrl} 
-                onSwitchMode={setMode} 
+                onSwitchMode={handleSwitchMode} 
                 onSignupInitSuccess={handleSignupInitSuccess} 
               />
             )}
             {mode === 'otp-signup' && (
               <OTPForm 
                 email={email} 
-                onSwitchMode={setMode} 
+                onSwitchMode={handleSwitchMode} 
                 onVerificationSuccess={handleSuccessNotification} 
               />
             )}
@@ -108,7 +121,7 @@ export default function LoginContent() {
               <ForgotPasswordForm 
                 email={email}
                 setEmail={setEmail}
-                onSwitchMode={setMode} 
+                onSwitchMode={handleSwitchMode} 
                 onResetSuccess={handleSuccessNotification} 
               />
             )}
@@ -116,20 +129,18 @@ export default function LoginContent() {
 
           {/* Terms Agreement */}
           {mode === 'login' && (
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/50 mt-3">
-               <p className="text-[8px] xs:text-[9px] text-slate-400 font-medium leading-relaxed max-w-[240px] mx-auto">
+            <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/50 mt-4">
+               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-[260px] mx-auto opacity-65">
                  By signing in, you agree to our 
-                 <Link href="/rules" className="text-google-blue font-bold px-1 hover:underline">Fair Play Policy</Link> 
+                 <Link href="/rules" className="text-google-blue font-medium px-1 hover:underline">Fair Play Policy</Link> 
                  and 
-                 <Link href="/terms" className="text-google-blue font-bold px-1 hover:underline">Tournament Terms</Link>.
+                 <Link href="/terms" className="text-google-blue font-medium px-1 hover:underline">Tournament Terms</Link>.
                </p>
             </div>
           )}
         </div>
         
-        <p className="mt-4 text-center text-[8px] xs:text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-           Bharat Gaming League &bull; India's #1 League
-        </p>
+
       </div>
     </main>
   );
